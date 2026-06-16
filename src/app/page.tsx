@@ -1,5 +1,6 @@
 import { ArrowUpIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DarkModeToggle } from "@/components/ui/darkmode-toggle";
 
 export default function Page() {
   return (
@@ -8,6 +9,7 @@ export default function Page() {
       <Button variant="outline" size="icon" aria-label="Submit">
         <ArrowUpIcon />
       </Button>
+      <DarkModeToggle />
     </div>
   );
 }
