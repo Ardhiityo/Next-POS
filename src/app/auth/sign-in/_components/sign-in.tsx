@@ -2,7 +2,7 @@
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,15 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { signInSchema, SignInForm } from "@/validations/auth-validation";
 import { INITIAL_SIGNIN_FORM } from "@/constants/auth-constant";
+import { Field } from "@/components/ui/field";
+import FormInput from "@/components/common/form-input";
 
 export default function SignIn() {
   const { control, handleSubmit, reset } = useForm<SignInForm>({
@@ -36,51 +31,25 @@ export default function SignIn() {
         <CardTitle className="text-2xl font-semibold">Sign In</CardTitle>
       </CardHeader>
       <CardContent>
-        <form id="sign-in" onSubmit={handleSubmit(onSubmit)}>
-          <FieldGroup>
-            <Controller
-              control={control}
-              name="email"
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="email">Email</FieldLabel>
-                  <Input
-                    {...field}
-                    id="email"
-                    type="email"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Your email"
-                    autoComplete="off"
-                    required
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              control={control}
-              name="password"
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <Input
-                    {...field}
-                    type="password"
-                    id="password"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Your password"
-                    autoComplete="off"
-                    required
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-          </FieldGroup>
+        <form
+          id="sign-in"
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
+          <FormInput
+            name="email"
+            label="Email"
+            type="email"
+            control={control}
+            placeholder="Your email"
+          />
+          <FormInput
+            name="password"
+            label="Password"
+            type="password"
+            control={control}
+            placeholder="Your password"
+          />
         </form>
       </CardContent>
       <CardFooter>
