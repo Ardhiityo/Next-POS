@@ -1,8 +1,26 @@
 import z from "zod";
 
-export const signInSchema = z.object({
+export const signInFormSchema = z.object({
   email: z.email(),
-  password: z.string().min(6, "Password field must be at least 6 characters."),
+  password: z.string().min(8, "Password field must be at least 8 characters."),
 });
 
-export type SignInForm = z.infer<typeof signInSchema>;
+export type SignInForm = z.infer<typeof signInFormSchema>;
+
+export const signUpFormSchema = z
+  .object({
+    name: z.string().min(3),
+    email: z.email(),
+    password: z
+      .string()
+      .min(8, "Password field must be at least 8 characters."),
+    passwordConfirmation: z
+      .string()
+      .min(8, "Password field must be at least 8 characters."),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: "Password do not match",
+    path: ["password"], // error akan muncul di field ini
+  });
+
+export type SignUpForm = z.infer<typeof signUpFormSchema>;
