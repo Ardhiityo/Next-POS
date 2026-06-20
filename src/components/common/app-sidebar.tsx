@@ -4,64 +4,42 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { CoffeeIcon, DatabaseIcon, LayoutDashboardIcon } from "lucide-react";
-import { NavDocuments } from "./nav-document";
+import { CoffeeIcon } from "lucide-react";
 import { NavUser } from "./nav-user";
-import { NavMain } from "./nav-main";
 import Link from "next/link";
+import { NavMenu } from "./nav-menu";
+import { User } from "better-auth";
+import { SIDEBAR_MENU_LIST } from "@/constants/sidebar-constant";
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: LayoutDashboardIcon,
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: DatabaseIcon,
-    },
-  ],
-};
-
-const AppSidebar = () => {
+export function AppSidebar({ user }: { user: User }) {
   return (
     <Sidebar collapsible="icon" variant="floating">
       <SidebarHeader className="py-5">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton
+              asChild
+              className="data-[slot=sidebar-menu-button]:p-1.5!"
+            >
               <Link href="/">
                 <CoffeeIcon className="size-5!" />
-                <h1 className="text-2xl">Cafeku</h1>
+                <span className="text-base font-semibold">Cafeku.</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        <NavMenu items={SIDEBAR_MENU_LIST.admin} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );
-};
-
-export default AppSidebar;
+}
