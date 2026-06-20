@@ -13,10 +13,9 @@ import { CoffeeIcon } from "lucide-react";
 import { NavUser } from "./nav-user";
 import Link from "next/link";
 import { NavMenu } from "./nav-menu";
-import { User } from "better-auth";
 import { SIDEBAR_MENU_LIST } from "@/constants/sidebar-constant";
 
-export function AppSidebar({ user }: { user: User }) {
+export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" variant="floating">
       <SidebarHeader className="py-5">
@@ -38,7 +37,7 @@ export function AppSidebar({ user }: { user: User }) {
         <NavMenu items={SIDEBAR_MENU_LIST.admin} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );
