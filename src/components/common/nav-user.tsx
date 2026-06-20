@@ -1,5 +1,6 @@
 "use client";
 
+import { signOut } from "@/actions/auth-action";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -18,9 +19,20 @@ import {
 } from "@/components/ui/sidebar";
 import { User } from "better-auth";
 import { EllipsisVerticalIcon, LogOutIcon, UserCircleIcon } from "lucide-react";
+import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
+
+  async function handleSignOut() {
+    const { error } = await signOut();
+    if (error) {
+      toast.error(error);
+    } else {
+      redirect("/auth/sign-in");
+    }
+  }
 
   return (
     <SidebarMenu>
@@ -72,7 +84,7 @@ export function NavUser({ user }: { user: User }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSignOut}>
               <LogOutIcon />
               Log out
             </DropdownMenuItem>
