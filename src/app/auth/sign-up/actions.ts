@@ -1,7 +1,7 @@
 "use server";
 
 import z from "zod";
-import { SignInState } from "@/app/types/auth";
+import { SignInState } from "@/types/auth";
 import { SignUpForm, signUpFormSchema } from "@/validations/auth-validation";
 import { auth } from "@/lib/auth";
 import { APIError } from "better-auth";
