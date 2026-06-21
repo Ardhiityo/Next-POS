@@ -13,7 +13,6 @@ import { CoffeeIcon } from "lucide-react";
 import { NavUser } from "./nav-user";
 import Link from "next/link";
 import { NavMenu } from "./nav-menu";
-import { SIDEBAR_MENU_LIST } from "@/constants/sidebar-constant";
 
 export function AppSidebar() {
   return (
@@ -34,7 +33,7 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMenu items={SIDEBAR_MENU_LIST.admin} />
+        <NavMenu />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

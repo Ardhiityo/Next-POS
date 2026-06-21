@@ -6,4 +6,11 @@ export type SignInState = {
 };
 
 // Type user yang sudah include role dan semua additionalFields
-export type AuthUser = typeof auth.$Infer.Session.user;
+export type AuthUser = {
+  id: string;
+  email: string;
+  emailVerified: boolean;
+  name: string;
+  image?: string | null | undefined;
+  role: Role;
+};

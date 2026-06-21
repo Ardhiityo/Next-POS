@@ -6,23 +6,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { SIDEBAR_MENU_LIST } from "@/constants/sidebar-constant";
+import { Role } from "@/generated/prisma/enums";
 import { cn } from "@/lib/utils";
-import { type LucideIcon } from "lucide-react";
+import { useAuthStore } from "@/stores/auth-store";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type NavMenuProps = {
-  title: string;
-  url: string;
-  icon: LucideIcon;
-}[];
-
-export function NavMenu({ items }: { items: NavMenuProps }) {
+export function NavMenu() {
   const path = usePathname();
+  const user = useAuthStore((state) => state.user);
+
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {items.map((item) => (
+        {SIDEBAR_MENU_LIST[user.role as Role].map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton
               asChild
@@ -30,7 +28,7 @@ export function NavMenu({ items }: { items: NavMenuProps }) {
               className={cn(
                 "py-6 my-1",
                 path === item.url &&
-                  "bg-slate-400 text-white font-semibold  hover:bg-slate-400 hover:text-white hover:font-semibold",
+                  "bg-slate-500 text-white font-semibold  hover:bg-slate-500 hover:text-white hover:font-semibold",
               )}
             >
               <Link href={item.url}>

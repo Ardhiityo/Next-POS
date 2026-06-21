@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 
 export const SIDEBAR_MENU_LIST = {
-  admin: [
+  ADMIN: [
     {
       title: "Dashboard",
       url: "/admin",
@@ -15,23 +15,30 @@ export const SIDEBAR_MENU_LIST = {
     },
     {
       title: "Order",
-      url: "/order",
+      url: "/orders",
       icon: ListOrderedIcon,
     },
     {
       title: "Menu",
-      url: "/admin/menu",
+      url: "/admin/menus",
       icon: MenuIcon,
     },
     {
       title: "Table",
-      url: "/admin/table",
+      url: "/admin/tables",
       icon: Table2Icon,
     },
     {
       title: "User",
-      url: "/admin/user",
+      url: "/admin/users",
       icon: UserIcon,
+    },
+  ],
+  USER: [
+    {
+      title: "Order",
+      url: "/orders",
+      icon: ListOrderedIcon,
     },
   ],
 };
