@@ -21,13 +21,13 @@ export function TableList({
   isPending,
 }: TableListProps<string>) {
   return (
-    <Card className="mx-auto p-0">
+    <Card className="p-0">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-muted">
           <TableRow>
             {headers.map((item, index) => (
               <TableHead
-                className="font-semibold py-4 px-24"
+                className="font-semibold py-3 px-16"
                 key={`header-${index}`}
               >
                 {item}
@@ -62,7 +62,7 @@ export function TableList({
                   {row.map((column, columnIndex) => (
                     <TableCell
                       key={`column-${columnIndex}`}
-                      className="p-4 px-24"
+                      className="px-16 py-3"
                     >
                       {column}
                     </TableCell>

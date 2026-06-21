@@ -1,5 +1,6 @@
 "use client";
 
+import DropwdownAction from "@/components/common/dropdown-action";
 import { TableList } from "@/components/common/table-list";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { HEADER_TABLE_USER } from "@/constants/user-constant";
 import { AuthUser } from "@/types/auth";
 import { useQuery } from "@tanstack/react-query";
+import { PencilIcon, Trash2Icon } from "lucide-react";
 import { useMemo } from "react";
 
 const UserManagement = () => {
@@ -31,7 +33,38 @@ const UserManagement = () => {
 
   const filteredUsers = useMemo(() => {
     return users.map((user: AuthUser, index: number) => {
-      return [index + 1, user.name, user.email, user.role];
+      return [
+        index + 1,
+        user.name,
+        user.email,
+        user.role,
+        <DropwdownAction
+          menus={[
+            {
+              label: (
+                <div className="flex gap-1 items-center">
+                  <PencilIcon />
+                  Edit
+                </div>
+              ),
+              variant: "default",
+              action: () => {},
+              type: "button",
+            },
+            {
+              label: (
+                <div className="flex gap-1 items-center">
+                  <Trash2Icon />
+                  Delete
+                </div>
+              ),
+              variant: "destructive",
+              action: () => {},
+              type: "button",
+            },
+          ]}
+        />,
+      ];
     });
   }, [users]);
 
@@ -42,7 +75,7 @@ const UserManagement = () => {
         <Dialog>
           <form>
             <DialogTrigger asChild>
-              <Button variant="outline">Add User</Button>
+              <Button variant="outline">Create</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-sm">
               <DialogHeader>

@@ -1,1 +1,1 @@
-export const HEADER_TABLE_USER = ["No", "Name", "Email", "Role"];
+export const HEADER_TABLE_USER = ["No", "Name", "Email", "Role", "Action"];
