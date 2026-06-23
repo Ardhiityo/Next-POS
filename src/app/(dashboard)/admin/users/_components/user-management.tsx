@@ -1,7 +1,7 @@
 "use client";
 
+import { DataTable } from "@/components/common/data-table";
 import DropwdownAction from "@/components/common/dropdown-action";
-import { TableList } from "@/components/common/table-list";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,22 +17,31 @@ import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HEADER_TABLE_USER } from "@/constants/user-constant";
+import { useDataTable } from "@/hooks/use-data-table";
 import { AuthUser } from "@/types/auth";
 import { useQuery } from "@tanstack/react-query";
 import { PencilIcon, Trash2Icon } from "lucide-react";
 import { useMemo } from "react";
 
 const UserManagement = () => {
-  const { data: users = [], isPending } = useQuery({
-    queryKey: ["users"],
+  const { currentLimit, currentPage, setCurrentPage, handleChangeLimit } =
+    useDataTable();
+
+  const { data: users, isPending } = useQuery({
+    queryKey: ["users", currentPage, currentLimit],
     queryFn: async () => {
-      const response = await fetch("/api/users");
-      return await response.json();
+      const params = new URLSearchParams({
+        take: String(currentLimit),
+        page: String(currentPage),
+      });
+      const response = await fetch(`/api/users?${params.toString()}`);
+      const data = await response.json();
+      return data;
     },
   });
 
   const filteredUsers = useMemo(() => {
-    return users.map((user: AuthUser, index: number) => {
+    return users?.data.map((user: AuthUser, index: number) => {
       return [
         index + 1,
         user.name,
@@ -66,6 +75,10 @@ const UserManagement = () => {
         />,
       ];
     });
+  }, [users]);
+
+  const totalPages = useMemo(() => {
+    return users?.paging?.total_page ?? 1;
   }, [users]);
 
   return (
@@ -110,10 +123,15 @@ const UserManagement = () => {
         </Dialog>
       </div>
       <div>
-        <TableList
+        <DataTable
           headers={HEADER_TABLE_USER}
           data={filteredUsers}
           isPending={isPending}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          handleChangeLimit={handleChangeLimit}
+          currentLimit={currentLimit}
+          totalPages={totalPages}
         />
       </div>
     </section>
