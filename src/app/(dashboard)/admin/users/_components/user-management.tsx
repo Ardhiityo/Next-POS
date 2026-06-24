@@ -24,15 +24,22 @@ import { PencilIcon, Trash2Icon } from "lucide-react";
 import { useMemo } from "react";
 
 const UserManagement = () => {
-  const { currentLimit, currentPage, setCurrentPage, handleChangeLimit } =
-    useDataTable();
+  const {
+    currentLimit,
+    currentPage,
+    currentSearch,
+    handleSearch,
+    setCurrentPage,
+    handleChangeLimit,
+  } = useDataTable();
 
   const { data: users, isPending } = useQuery({
-    queryKey: ["users", currentPage, currentLimit],
+    queryKey: ["users", currentPage, currentLimit, currentSearch],
     queryFn: async () => {
       const params = new URLSearchParams({
         take: String(currentLimit),
         page: String(currentPage),
+        search: currentSearch,
       });
       const response = await fetch(`/api/users?${params.toString()}`);
       const data = await response.json();
@@ -84,7 +91,10 @@ const UserManagement = () => {
   return (
     <section className="flex flex-col gap-8">
       <div className="flex gap-3 w-1/4 self-end">
-        <Input placeholder="Search..." />
+        <Input
+          placeholder="Search..."
+          onChange={(e) => handleSearch(e.target.value)}
+        />
         <Dialog>
           <form>
             <DialogTrigger asChild>

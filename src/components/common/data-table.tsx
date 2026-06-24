@@ -87,15 +87,13 @@ export function DataTable(props: TableListProps<string>) {
           </TableBody>
         </Table>
       </Card>
-      {totalPages > 1 && (
-        <PaginationDataTable
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          handleChangeLimit={handleChangeLimit}
-          currentLimit={currentLimit}
-          totalPages={totalPages}
-        />
-      )}
+      <PaginationDataTable
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        handleChangeLimit={handleChangeLimit}
+        currentLimit={currentLimit}
+        totalPages={totalPages}
+      />
     </section>
   );
 }

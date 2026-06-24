@@ -57,62 +57,70 @@ const PaginationDataTable = (props: PaginationDataTableProps) => {
           </SelectContent>
         </Select>
       </Field>
-      <div>
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={() =>
-                  setCurrentPage(currentPage > 1 ? currentPage - 1 : totalPages)
-                }
-              />
-            </PaginationItem>
-            {Array.from({ length: totalPages }, (_, index) => {
-              const page = index + 1;
+      {totalPages > 1 && (
+        <div>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={() =>
+                    setCurrentPage(
+                      currentPage > 1 ? currentPage - 1 : totalPages,
+                    )
+                  }
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, index) => {
+                const page = index + 1;
 
-              if (page === 1 || page === totalPages || page === currentPage) {
-                return (
-                  <PaginationLink
-                    key={`current-page-${index}`}
-                    isActive={page === currentPage}
-                    onClick={() => currentPage != page && setCurrentPage(page)}
-                  >
-                    {page}
-                  </PaginationLink>
-                );
-              } else if (Math.abs(page - currentPage) <= 1) {
-                return (
-                  <PaginationLink
-                    key={`middle-page-${index}`}
-                    isActive={page === currentPage}
-                    onClick={() => setCurrentPage(page)}
-                  >
-                    {page}
-                  </PaginationLink>
-                );
-              } else if (
-                (page === currentPage - 2 && page > 1) ||
-                (page === currentPage + 2 && page < totalPages)
-              ) {
-                return (
-                  <PaginationLink key={`ellipsis-page-${index}`}>
-                    <PaginationEllipsis />
-                  </PaginationLink>
-                );
-              }
-            })}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={() =>
-                  setCurrentPage(currentPage < totalPages ? currentPage + 1 : 1)
+                if (page === 1 || page === totalPages || page === currentPage) {
+                  return (
+                    <PaginationLink
+                      key={`current-page-${index}`}
+                      isActive={page === currentPage}
+                      onClick={() =>
+                        currentPage != page && setCurrentPage(page)
+                      }
+                    >
+                      {page}
+                    </PaginationLink>
+                  );
+                } else if (Math.abs(page - currentPage) <= 1) {
+                  return (
+                    <PaginationLink
+                      key={`middle-page-${index}`}
+                      isActive={page === currentPage}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </PaginationLink>
+                  );
+                } else if (
+                  (page === currentPage - 2 && page > 1) ||
+                  (page === currentPage + 2 && page < totalPages)
+                ) {
+                  return (
+                    <PaginationLink key={`ellipsis-page-${index}`}>
+                      <PaginationEllipsis />
+                    </PaginationLink>
+                  );
                 }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+              })}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={() =>
+                    setCurrentPage(
+                      currentPage < totalPages ? currentPage + 1 : 1,
+                    )
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 };
