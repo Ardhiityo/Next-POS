@@ -22,7 +22,7 @@ export async function getUserAction(params: GetUserParams) {
         limit: take,
         offset: skip,
         sortBy: "name",
-        sortDirection: "desc",
+        sortDirection: "asc",
         ...(search && {
           filterField: "name",
           filterValue: search,

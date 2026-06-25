@@ -26,3 +26,14 @@ export const INITIAL_CREATE_USER_FORM = {
   password: "",
   role: Role.USER,
 };
+
+export const ROLE_LIST = [
+  {
+    label: "User",
+    value: Role.USER,
+  },
+  {
+    label: "Admin",
+    value: Role.ADMIN,
+  },
+];

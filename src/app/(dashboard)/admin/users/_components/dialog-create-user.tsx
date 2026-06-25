@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { INITIAL_CREATE_USER_FORM } from "@/constants/auth-constant";
+import { INITIAL_CREATE_USER_FORM, ROLE_LIST } from "@/constants/auth-constant";
 import {
   CreateUserForm,
   createUserFormSchema,
@@ -20,11 +20,18 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2Icon } from "lucide-react";
+import FormSelect from "@/components/common/form-select";
 
 const DialogCreateUser = ({ refetch }: { refetch: () => void }) => {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      reset();
+    }
+  }, [open]);
 
   const { control, handleSubmit, reset } = useForm<CreateUserForm>({
     resolver: zodResolver(createUserFormSchema),
@@ -43,7 +50,6 @@ const DialogCreateUser = ({ refetch }: { refetch: () => void }) => {
         toast.success("User created successfully");
         refetch();
       }
-      reset();
       setOpen(false);
     },
   });
@@ -61,7 +67,7 @@ const DialogCreateUser = ({ refetch }: { refetch: () => void }) => {
           <DialogHeader>
             <DialogTitle>Create user</DialogTitle>
             <DialogDescription>
-              Make new user here. Click save when you&apos;re done.
+              Make new user here. Click submit when you&apos;re done.
             </DialogDescription>
           </DialogHeader>
           <FormInput
@@ -77,6 +83,12 @@ const DialogCreateUser = ({ refetch }: { refetch: () => void }) => {
             type="email"
             control={control}
             placeholder="Email"
+          />
+          <FormSelect
+            name="role"
+            label="Role"
+            control={control}
+            items={ROLE_LIST}
           />
           <FormInput
             name="password"
