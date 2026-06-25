@@ -1,6 +1,5 @@
 "use client";
 
-import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -9,9 +8,6 @@ import { INITIAL_SIGNIN_FORM } from "@/constants/auth-constant";
 import { Field } from "@/components/ui/field";
 import FormInput from "@/components/common/form-input";
 import { Loader2Icon } from "lucide-react";
-import { signInAction } from "../actions";
-import { redirect } from "next/navigation";
-import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -21,32 +17,35 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import { signInAction } from "@/actions/auth/sign-in";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
+  const { push } = useRouter();
+
   const { control, handleSubmit, reset, setError } = useForm<SignInForm>({
     resolver: zodResolver(signInFormSchema),
     defaultValues: INITIAL_SIGNIN_FORM,
   });
-  const [isPending, setIsPending] = useState(false);
 
-  async function onSubmit(data: z.infer<typeof signInFormSchema>) {
-    setIsPending(true);
-    const { success, errors } = await signInAction(data);
-    setIsPending(false);
-    if (success) {
-      redirect("/");
-    } else if (typeof errors === "object") {
-      Object.entries(errors).forEach(([field, messages]) => {
-        setError(field as keyof SignInForm, {
-          message: messages?.[0],
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["sign-in"],
+    mutationFn: async (data: SignInForm) => {
+      const { errors, success } = await signInAction(data);
+      if (success) {
+        push("/");
+      } else if (typeof errors === "object") {
+        Object.entries(errors).forEach(([field, messages]) => {
+          setError(field as keyof SignInForm, {
+            message: messages?.[0],
+          });
         });
-      });
-    } else if (errors === "Internal Server Error") {
-      toast.error(errors);
-    } else {
-      setError("email", { message: errors });
-    }
-  }
+      } else {
+        toast.error(errors);
+      }
+    },
+  });
 
   return (
     <Card className="w-full sm:max-w-md">
@@ -57,7 +56,7 @@ export default function SignIn() {
       <CardContent>
         <form
           id="sign-in"
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit((data) => mutate(data))}
           className="space-y-4"
         >
           <FormInput

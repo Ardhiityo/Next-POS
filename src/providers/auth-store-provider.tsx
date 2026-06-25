@@ -1,17 +1,21 @@
 "use client";
 
 import { useAuthStore } from "@/stores/auth-store";
-import { AuthUser } from "@/types/auth";
-import React from "react";
+import { UserWithRole } from "better-auth/plugins";
+import React, { useEffect } from "react";
 
 type AuthStoreProviderProps = {
   children: React.ReactNode;
-  user: AuthUser;
+  user: UserWithRole | null;
 };
 
-const AuthStoreProvider = ({ children, user }: AuthStoreProviderProps) => {
+const AuthStoreProvider = ({ user, children }: AuthStoreProviderProps) => {
   const setUser = useAuthStore((state) => state.setUser);
-  setUser(user);
+
+  useEffect(() => {
+    setUser(user);
+  }, [user, setUser]);
+
   return <>{children}</>;
 };
 

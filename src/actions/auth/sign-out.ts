@@ -2,15 +2,17 @@
 
 import { auth } from "@/lib/auth";
 import { APIError } from "better-auth";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 
-export async function signOut() {
+export async function signOutAction() {
   try {
     const { success } = await auth.api.signOut({
       headers: await headers(),
     });
 
     if (success) {
+      const cookiesStore = await cookies();
+      cookiesStore.delete("user");
       return { error: null };
     } else {
       throw Error;

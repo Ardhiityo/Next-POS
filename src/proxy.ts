@@ -7,7 +7,6 @@ const publicRoutes = ["/", "/auth/sign-in", "/auth/sign-up"];
 export async function proxy(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
   const pathName = request.nextUrl.pathname;
-
   const inOnAuthRoutes = pathName.startsWith("/auth");
 
   if (inOnAuthRoutes && sessionCookie) {

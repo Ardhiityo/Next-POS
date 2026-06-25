@@ -1,8 +1,8 @@
 import { USER_HEADER_LIST } from "@/constants/user-constant";
-import { AuthUser } from "./auth";
+import { UserWithRole } from "better-auth/plugins";
 
 export type UserHeaderList = {
-  key: keyof AuthUser;
+  key: keyof UserWithRole;
   label: string;
 }[];
 

@@ -1,12 +1,12 @@
 "use server";
 
 import z from "zod";
-import { SignInState } from "@/types/auth";
-import { SignUpForm, signUpFormSchema } from "@/validations/auth-validation";
 import { auth } from "@/lib/auth";
 import { APIError } from "better-auth";
+import { SignInState } from "@/types/auth";
+import { SignUpForm, signUpFormSchema } from "@/validations/auth-validation";
 
-const signUpAction = async (form: SignUpForm): Promise<SignInState> => {
+export async function signUpAction(form: SignUpForm): Promise<SignInState> {
   const validated = signUpFormSchema.safeParse(form);
 
   if (!validated.success) {
@@ -39,6 +39,4 @@ const signUpAction = async (form: SignUpForm): Promise<SignInState> => {
       errors: "Internal Server Error",
     };
   }
-};
-
-export { signUpAction };
+}

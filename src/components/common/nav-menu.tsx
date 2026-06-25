@@ -20,7 +20,7 @@ export function NavMenu() {
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {SIDEBAR_MENU_LIST[user.role as Role].map((item) => (
+        {SIDEBAR_MENU_LIST[user?.role as Role]?.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton
               asChild

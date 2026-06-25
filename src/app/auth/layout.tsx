@@ -1,6 +1,11 @@
 import { DarkModeToggle } from "@/components/ui/darkmode-toggle";
+import { authIsRequired } from "@/lib/auth-utils";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+type LayoutProps = {
+  children: React.ReactNode;
+};
+
+const Layout = async function Layout({ children }: LayoutProps) {
   return (
     <>
       <section className="relative w-full min-h-screen flex flex-col mx-auto justify-center items-center">
@@ -11,4 +16,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </section>
     </>
   );
-}
+};
+
+export default Layout;

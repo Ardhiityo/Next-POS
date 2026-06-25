@@ -10,7 +10,7 @@ import { Dispatch, ReactNode, SetStateAction } from "react";
 import { Card } from "../ui/card";
 import PaginationDataTable from "./pagination-data-table";
 
-type TableListProps<T> = {
+type TableListProps = {
   headers: string[];
   data: ReactNode[][];
   isPending: boolean;
@@ -21,7 +21,7 @@ type TableListProps<T> = {
   totalPages: number;
 };
 
-export function DataTable(props: TableListProps<string>) {
+export function DataTable(props: TableListProps) {
   const {
     headers,
     data,

@@ -1,13 +1,14 @@
 "use server";
 
 import z from "zod";
+import { auth } from "@/lib/auth";
+import { APIError } from "better-auth";
+import { cookies, headers } from "next/headers";
 import { SignInState } from "@/types/auth";
 import { SignInForm } from "@/validations/auth-validation";
 import { signInFormSchema } from "@/validations/auth-validation";
-import { auth } from "@/lib/auth";
-import { APIError } from "better-auth";
 
-const signInAction = async (form: SignInForm): Promise<SignInState> => {
+export async function signInAction(form: SignInForm): Promise<SignInState> {
   const validated = signInFormSchema.safeParse(form);
 
   if (!validated.success) {
@@ -18,10 +19,17 @@ const signInAction = async (form: SignInForm): Promise<SignInState> => {
   }
 
   try {
-    await auth.api.signInEmail({
+    const response = await auth.api.signInEmail({
       body: {
         ...validated.data,
       },
+    });
+    const cookiesStore = await cookies();
+    cookiesStore.set("user", JSON.stringify(response.user), {
+      httpOnly: true,
+      path: "/",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 365,
     });
     return {
       success: true,
@@ -32,12 +40,15 @@ const signInAction = async (form: SignInForm): Promise<SignInState> => {
         success: false,
         errors: error.message,
       };
+    } else if (error instanceof Error) {
+      return {
+        success: false,
+        errors: error.message,
+      };
     }
     return {
       success: false,
       errors: "Internal Server Error",
     };
   }
-};
-
-export { signInAction };
+}

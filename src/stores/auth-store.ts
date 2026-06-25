@@ -1,18 +1,17 @@
 import { INITIAL_STATE_USER } from "@/constants/auth-constant";
-import { AuthUser } from "@/types/auth";
+import { UserWithRole } from "better-auth/plugins";
 import { create } from "zustand";
 
-type State = {
-  user: AuthUser;
+type AuthState = {
+  user: UserWithRole | null;
+  setUser: (user: UserWithRole | null) => void;
+  clearUser: () => void;
 };
 
-type Action = {
-  setUser: (user: AuthUser) => void;
-};
-
-const useAuthStore = create<State & Action>()((set) => ({
-  user: INITIAL_STATE_USER as AuthUser,
-  setUser: (user) => set(() => ({ user })),
+const useAuthStore = create<AuthState>()((set) => ({
+  user: INITIAL_STATE_USER as UserWithRole,
+  setUser: (user: UserWithRole | null) => set(() => ({ user })),
+  clearUser: () => set({ user: null }),
 }));
 
 export { useAuthStore };
