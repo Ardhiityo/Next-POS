@@ -23,6 +23,9 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { Loader2Icon } from "lucide-react";
 import FormSelect from "@/components/common/form-select";
+import FormImage from "@/components/common/form-image";
+import { uploadFileAction } from "@/actions/storage/upload-file";
+import { deleteFileAction } from "@/actions/storage/delete-file";
 
 const DialogCreateUser = ({ refetch }: { refetch: () => void }) => {
   const [open, setOpen] = useState(false);
@@ -41,16 +44,44 @@ const DialogCreateUser = ({ refetch }: { refetch: () => void }) => {
   const { mutate, isPending } = useMutation({
     mutationKey: ["create-user"],
     mutationFn: async (createUserForm: CreateUserForm) => {
-      const { error } = await authClient.admin.createUser(createUserForm);
-      if (error) {
-        toast.error(
-          error.message || error.statusText || "Something went wrong",
-        );
-      } else {
-        toast.success("User created successfully");
-        refetch();
+      const {
+        publicUrl,
+        filePath,
+        error: errorUpload,
+      } = await uploadFileAction("images", "users", createUserForm.image);
+
+      if (errorUpload) {
+        throw new Error(errorUpload);
       }
+
+      const { error } = await authClient.admin.createUser({
+        name: createUserForm.name,
+        email: createUserForm.email,
+        role: createUserForm.role,
+        password: createUserForm.password,
+        data: {
+          image: publicUrl,
+        },
+      });
+
+      if (error) {
+        const { error: errorDelete } = await deleteFileAction(
+          "images",
+          filePath,
+        );
+        if (errorDelete) {
+          throw new Error(errorDelete);
+        }
+        throw new Error(error.message);
+      }
+    },
+    onSuccess: () => {
+      toast.success("User created successfully");
+      refetch();
       setOpen(false);
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
@@ -90,6 +121,7 @@ const DialogCreateUser = ({ refetch }: { refetch: () => void }) => {
             control={control}
             items={ROLE_LIST}
           />
+          <FormImage name="image" label="Image" control={control} />
           <FormInput
             name="password"
             label="Password"

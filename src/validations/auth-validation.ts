@@ -31,6 +31,9 @@ export const createUserFormSchema = z.object({
   email: z.email(),
   password: z.string().min(8, "Password field must be at least 8 characters."),
   role: z.enum([Role.ADMIN, Role.USER]),
+  image: z.instanceof(File, {
+    message: "Image field is required",
+  }),
 });
 
 export type CreateUserForm = z.infer<typeof createUserFormSchema>;

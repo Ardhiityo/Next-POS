@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import ReactQueryProvider from "@/providers/react-query-provider";
 import AuthStoreProvider from "@/providers/auth-store-provider";
 import { cookies } from "next/headers";
+import AppToaster from "@/components/common/app-toaster";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -43,7 +44,7 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <TooltipProvider>{children}</TooltipProvider>
-              <Toaster position="top-center" />
+              <AppToaster />
             </ThemeProvider>
           </AuthStoreProvider>
         </ReactQueryProvider>
