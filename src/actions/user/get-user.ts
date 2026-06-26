@@ -21,8 +21,8 @@ export async function getUserAction(params: GetUserParams) {
       query: {
         limit: take,
         offset: skip,
-        sortBy: "name",
-        sortDirection: "asc",
+        sortBy: "createdAt",
+        sortDirection: "desc",
         ...(search && {
           filterField: "name",
           filterValue: search,
