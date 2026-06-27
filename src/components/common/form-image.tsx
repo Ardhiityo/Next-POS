@@ -9,39 +9,25 @@ import {
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { ImageIcon } from "lucide-react";
 
 type FormImageProps<T extends FieldValues> = {
   name: Path<T>;
   label: string;
   control: Control<T>;
+  imagePreview?: string;
+  setImagePreview?: (image: SetStateAction<string | undefined>) => void;
+  onChangeImagePreview: (image: File | undefined) => void;
 };
 
 const FormImage = <T extends FieldValues>({
   name,
   label,
   control,
+  imagePreview,
+  onChangeImagePreview,
 }: FormImageProps<T>) => {
-  const [imagePreview, setImagePreview] = useState<string | undefined>(
-    undefined,
-  );
-  const [file, setFile] = useState<File>();
-
-  useEffect(() => {
-    if (!file) {
-      setImagePreview(undefined);
-      return;
-    }
-
-    const objectUrl = URL.createObjectURL(file);
-    setImagePreview(objectUrl);
-
-    return () => {
-      URL.revokeObjectURL(objectUrl);
-    };
-  }, [file]);
-
   return (
     <FieldGroup>
       <Controller
@@ -66,7 +52,7 @@ const FormImage = <T extends FieldValues>({
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   field.onChange(file);
-                  setFile(file);
+                  onChangeImagePreview(file);
                 }}
                 aria-invalid={fieldState.invalid}
               />

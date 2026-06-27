@@ -37,3 +37,16 @@ export const createUserFormSchema = z.object({
 });
 
 export type CreateUserForm = z.infer<typeof createUserFormSchema>;
+
+export const updateUserFormSchema = z.object({
+  name: z.string().min(3),
+  role: z.enum([Role.ADMIN, Role.USER]),
+  image: z.union([
+    z.instanceof(File, {
+      message: "Image field is required",
+    }),
+    z.string(),
+  ]),
+});
+
+export type UpdateUserForm = z.infer<typeof updateUserFormSchema>;

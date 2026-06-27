@@ -4,18 +4,13 @@ import { CreateUserForm } from "@/validations/auth-validation";
 import { uploadFileAction } from "../storage/upload-file";
 import { auth } from "@/lib/auth";
 import { deleteFileAction } from "../storage/delete-file";
-import { APIError } from "better-auth";
 
-export async function createUserAction(form: CreateUserForm) {
-  const {
-    publicUrl,
-    filePath,
-    error: errorUpload,
-  } = await uploadFileAction("images", "users", form.image);
-
-  if (errorUpload) {
-    return { error: errorUpload };
-  }
+export async function createUserAction(form: CreateUserForm): Promise<void> {
+  const { publicUrl, filePath } = await uploadFileAction(
+    "images",
+    "users",
+    form.image,
+  );
 
   try {
     await auth.api.createUser({
@@ -29,23 +24,8 @@ export async function createUserAction(form: CreateUserForm) {
         },
       },
     });
-    return { error: null };
   } catch (error) {
-    try {
-      await deleteFileAction("images", filePath);
-      if (error instanceof APIError) {
-        return { error: error.message };
-      } else if (error instanceof Error) {
-        return { error: error.message };
-      } else {
-        return { error: "Internal Server Error" };
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        return { error: error.message };
-      } else {
-        return { error: "Internal Server Error" };
-      }
-    }
+    await deleteFileAction("images", filePath);
+    throw error;
   }
 }

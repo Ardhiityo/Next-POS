@@ -10,25 +10,34 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { ROLE_LIST } from "@/constants/auth-constant";
-import { CreateUserForm } from "@/validations/auth-validation";
 import { Loader2Icon } from "lucide-react";
 import { SetStateAction } from "react";
-import { Control, FieldValues } from "react-hook-form";
+import { Control, FieldValues, Path } from "react-hook-form";
 
-type FormUserProps = {
+type FormUserProps<T extends FieldValues> = {
+  type: "create" | "update";
   open: boolean;
   setOpen: (event: SetStateAction<boolean>) => void;
   onSubmit: () => void;
   isPending: boolean;
-  control: Control<CreateUserForm>;
-  type: "create" | "update";
+  control: Control<T>;
+  imagePreview?: string;
+  onChangeImagePreview: (image: File | undefined) => void;
 };
 
-const FormUser = (props: FormUserProps) => {
-  const { open, setOpen, onSubmit, isPending, control } = props;
+const FormUser = <T extends FieldValues>(props: FormUserProps<T>) => {
+  const {
+    open,
+    setOpen,
+    onSubmit,
+    isPending,
+    control,
+    type,
+    imagePreview,
+    onChangeImagePreview,
+  } = props;
 
   const title = props.type === "create" ? "Create user" : "Update user";
   const description =
@@ -38,48 +47,59 @@ const FormUser = (props: FormUserProps) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <form onSubmit={onSubmit} id="create-user-form">
-        <DialogTrigger asChild>
-          <Button variant="outline">Create</Button>
-        </DialogTrigger>
+      <form onSubmit={onSubmit} id={`form-${type}-user`}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
           <FormInput
-            name="name"
+            name={"name" as Path<T>}
             label="Name"
             type="name"
             control={control}
             placeholder="Name"
           />
-          <FormInput
-            name="email"
-            label="Email"
-            type="email"
-            control={control}
-            placeholder="Email"
-          />
+          {type === "create" && (
+            <FormInput
+              name={"email" as Path<T>}
+              label="Email"
+              type="email"
+              control={control}
+              placeholder="Email"
+            />
+          )}
           <FormSelect
-            name="role"
+            name={"role" as Path<T>}
             label="Role"
             control={control}
             items={ROLE_LIST}
           />
-          <FormImage name="image" label="Image" control={control} />
-          <FormInput
-            name="password"
-            label="Password"
-            type="password"
+          <FormImage
+            name={"image" as Path<T>}
+            label="Image"
             control={control}
-            placeholder="Password"
+            imagePreview={imagePreview}
+            onChangeImagePreview={onChangeImagePreview}
           />
+          {type === "create" && (
+            <FormInput
+              name={"password" as Path<T>}
+              label="Password"
+              type="password"
+              control={control}
+              placeholder="Password"
+            />
+          )}
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" form="create-user-form" disabled={isPending}>
+            <Button
+              type="submit"
+              form={`form-${type}-user`}
+              disabled={isPending}
+            >
               {isPending ? <Loader2Icon className="animate-spin" /> : "Submit"}
             </Button>
           </DialogFooter>

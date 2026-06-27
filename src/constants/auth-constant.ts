@@ -1,4 +1,5 @@
 import { Role } from "@/generated/prisma/enums";
+import { UserWithRole } from "better-auth/plugins";
 
 export const INITIAL_SIGNIN_FORM = {
   email: "",
@@ -25,6 +26,14 @@ export const INITIAL_CREATE_USER_FORM = {
   email: "",
   password: "",
   role: Role.USER,
+};
+
+export const INITIAL_UPDATE_USER_FORM = (user?: UserWithRole) => {
+  return {
+    name: user?.name,
+    role: (user?.role as Role) ?? Role.USER,
+    image: user?.image ?? "",
+  };
 };
 
 export const ROLE_LIST = [

@@ -8,8 +8,8 @@ export async function deleteFileAction(bucket: string, filePath: string) {
   const { error } = await supabase.storage.from(bucket).remove([filePath]);
 
   if (error) {
-    return { error: error.message };
+    throw new Error(
+      error instanceof Error ? error.message : "Internal Server Error",
+    );
   }
-
-  return { error: null };
 }

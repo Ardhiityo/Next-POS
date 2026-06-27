@@ -18,12 +18,14 @@ export async function uploadFileAction(
     .upload(filePath, file);
 
   if (error) {
-    return { publicUrl: null, filePath, error: error.message };
+    throw new Error(
+      error instanceof Error ? error.message : "Internal Server Error",
+    );
   }
 
   const {
     data: { publicUrl },
   } = supabase.storage.from(bucket).getPublicUrl(filePath);
 
-  return { publicUrl, filePath: data.path, error: null };
+  return { publicUrl, filePath: data.path };
 }

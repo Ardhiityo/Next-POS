@@ -7,11 +7,13 @@ import { HEADER_TABLE_USER } from "@/constants/user-constant";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useQuery } from "@tanstack/react-query";
 import { PencilIcon, Trash2Icon } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DialogCreateUser from "./dialog-create-user";
 import { getUserAction } from "@/actions/user/get-user";
 import { UserWithRole } from "better-auth/plugins";
 import { toast } from "sonner";
+import DialogUpdateUser from "./dialog-update-user";
+import { Button } from "@/components/ui/button";
 
 const UserManagement = () => {
   const {
@@ -27,23 +29,30 @@ const UserManagement = () => {
     data: users,
     isPending,
     refetch,
+    error,
   } = useQuery({
     queryKey: ["users", currentPage, currentLimit, currentSearch],
     queryFn: async () => {
-      const response = await getUserAction({
+      return await getUserAction({
         take: currentLimit,
         page: currentPage,
         search: currentSearch,
       });
-      if (response?.error) {
-        toast.error(response.error);
-      }
-      return response;
     },
   });
 
+  useEffect(() => {
+    if (error) toast.error(error.message);
+  }, [error]);
+
+  const [selectedAction, setSelectedAction] = useState<null | {
+    type: "create" | "update";
+    user: UserWithRole | null;
+  }>(null);
+
   const filteredUsers = useMemo(() => {
-    return (users?.data || []).map((user: UserWithRole, index: number) => {
+    if (!users || !("data" in users)) return [];
+    return users.data.map((user: UserWithRole, index: number) => {
       return [
         index + 1,
         user.name,
@@ -59,7 +68,12 @@ const UserManagement = () => {
                 </div>
               ),
               variant: "default",
-              action: () => {},
+              action: () => {
+                setSelectedAction({
+                  type: "update",
+                  user,
+                });
+              },
               type: "button",
             },
             {
@@ -80,7 +94,8 @@ const UserManagement = () => {
   }, [users]);
 
   const totalPages = useMemo(() => {
-    return users?.paging?.total_page ?? 1;
+    if (!users || !("paging" in users)) return 1;
+    return users.paging.total_page;
   }, [users]);
 
   return (
@@ -90,20 +105,34 @@ const UserManagement = () => {
           placeholder="Search..."
           onChange={(e) => handleSearch(e.target.value)}
         />
-        <DialogCreateUser refetch={refetch} />
+        <Button
+          variant="outline"
+          onClick={() => setSelectedAction({ type: "create", user: null })}
+        >
+          Create
+        </Button>
       </div>
-      <div>
-        <DataTable
-          headers={HEADER_TABLE_USER}
-          data={filteredUsers}
-          isPending={isPending}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          handleChangeLimit={handleChangeLimit}
-          currentLimit={currentLimit}
-          totalPages={totalPages}
-        />
-      </div>
+      <DataTable
+        headers={HEADER_TABLE_USER}
+        data={filteredUsers}
+        isPending={isPending}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        handleChangeLimit={handleChangeLimit}
+        currentLimit={currentLimit}
+        totalPages={totalPages}
+      />
+      <DialogCreateUser
+        refetch={refetch}
+        open={!!selectedAction && selectedAction.type === "create"}
+        setOpen={() => setSelectedAction(null)}
+      />
+      <DialogUpdateUser
+        user={selectedAction?.user}
+        refetch={refetch}
+        open={!!selectedAction && selectedAction.type === "update"}
+        setOpen={() => setSelectedAction(null)}
+      />
     </section>
   );
 };

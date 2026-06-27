@@ -4,21 +4,21 @@ import {
   createUserFormSchema,
 } from "@/validations/auth-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import FormUser from "./form-user";
 import { createUserAction } from "@/actions/user/create-user";
 
-const DialogCreateUser = ({ refetch }: { refetch: () => void }) => {
-  const [open, setOpen] = useState(false);
+type DialogCreateUserProps = {
+  refetch: () => void;
+  open: boolean;
+  setOpen: (event: SetStateAction<boolean>) => void;
+};
 
-  useEffect(() => {
-    if (open) {
-      reset();
-    }
-  }, [open]);
+const DialogCreateUser = (props: DialogCreateUserProps) => {
+  const { open, setOpen, refetch } = props;
 
   const { control, handleSubmit, reset } = useForm<CreateUserForm>({
     resolver: zodResolver(createUserFormSchema),
@@ -28,10 +28,7 @@ const DialogCreateUser = ({ refetch }: { refetch: () => void }) => {
   const { mutate, isPending } = useMutation({
     mutationKey: ["create-user"],
     mutationFn: async (createUserForm: CreateUserForm) => {
-      const { error } = await createUserAction(createUserForm);
-      if (error) {
-        throw new Error(error);
-      }
+      return await createUserAction(createUserForm);
     },
     onSuccess: () => {
       toast.success("User created successfully");
@@ -47,6 +44,29 @@ const DialogCreateUser = ({ refetch }: { refetch: () => void }) => {
     mutate(data);
   });
 
+  const [imagePreview, setImagePreview] = useState<string | undefined>();
+  const [file, setFile] = useState<File | undefined>();
+
+  const onChangeImagePreview = (image: File | undefined) => {
+    setFile(image);
+  };
+
+  useEffect(() => {
+    if (!open) {
+      reset();
+      setFile(undefined);
+      setImagePreview(undefined);
+    }
+
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setImagePreview(objectUrl);
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    }
+  }, [file, open]);
+
   return (
     <FormUser
       open={open}
@@ -55,6 +75,8 @@ const DialogCreateUser = ({ refetch }: { refetch: () => void }) => {
       control={control}
       type="create"
       isPending={isPending}
+      onChangeImagePreview={onChangeImagePreview}
+      imagePreview={imagePreview}
     />
   );
 };
