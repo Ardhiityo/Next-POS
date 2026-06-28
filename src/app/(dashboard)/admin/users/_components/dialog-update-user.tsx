@@ -11,7 +11,6 @@ import FormUser from "./form-user";
 import { updateUserAction } from "@/actions/user/update-user";
 import { UserWithRole } from "better-auth/plugins";
 import { Role } from "@/generated/prisma/enums";
-import { get } from "http";
 
 type DialogUpdateUserProps = {
   user?: UserWithRole | null;
@@ -44,10 +43,6 @@ const DialogUpdateUser = (props: DialogUpdateUserProps) => {
     onError: (error) => {
       toast.error(error.message);
     },
-  });
-
-  const onSubmit = handleSubmit((data: UpdateUserForm) => {
-    mutate(data);
   });
 
   const [imagePreview, setImagePreview] = useState<string | undefined>();
@@ -86,7 +81,7 @@ const DialogUpdateUser = (props: DialogUpdateUserProps) => {
     <FormUser
       open={open}
       setOpen={setOpen}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit((data: UpdateUserForm) => mutate(data))}
       control={control}
       type="update"
       isPending={isPending}

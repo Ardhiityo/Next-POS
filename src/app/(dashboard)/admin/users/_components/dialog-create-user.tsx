@@ -27,9 +27,7 @@ const DialogCreateUser = (props: DialogCreateUserProps) => {
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["create-user"],
-    mutationFn: async (createUserForm: CreateUserForm) => {
-      return await createUserAction(createUserForm);
-    },
+    mutationFn: createUserAction,
     onSuccess: () => {
       toast.success("User created successfully");
       refetch();
@@ -38,10 +36,6 @@ const DialogCreateUser = (props: DialogCreateUserProps) => {
     onError: (error) => {
       toast.error(error.message);
     },
-  });
-
-  const onSubmit = handleSubmit((data: CreateUserForm) => {
-    mutate(data);
   });
 
   const [imagePreview, setImagePreview] = useState<string | undefined>();
@@ -71,7 +65,7 @@ const DialogCreateUser = (props: DialogCreateUserProps) => {
     <FormUser
       open={open}
       setOpen={setOpen}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit((data: CreateUserForm) => mutate(data))}
       control={control}
       type="create"
       isPending={isPending}

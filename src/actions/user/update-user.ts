@@ -32,9 +32,9 @@ export async function updateUserAction(
     imagePath = filePath;
 
     // delete old image
-    const path = user?.image?.split("/").pop();
+    const path = user?.image?.split("/images/").pop();
     if (path) {
-      await deleteFileAction("images", `users/${path}`);
+      await deleteFileAction("images", path);
     }
   } else if (typeof form.image === "string") {
     imageUrl = form.image;

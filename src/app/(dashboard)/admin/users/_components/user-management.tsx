@@ -1,19 +1,20 @@
 "use client";
 
 import { DataTable } from "@/components/common/data-table";
-import DropwdownAction from "@/components/common/dropdown-action";
 import { Input } from "@/components/ui/input";
 import { HEADER_TABLE_USER } from "@/constants/user-constant";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useQuery } from "@tanstack/react-query";
 import { PencilIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import DialogCreateUser from "./dialog-create-user";
 import { getUserAction } from "@/actions/user/get-user";
 import { UserWithRole } from "better-auth/plugins";
 import { toast } from "sonner";
-import DialogUpdateUser from "./dialog-update-user";
 import { Button } from "@/components/ui/button";
+import DialogCreateUser from "./dialog-create-user";
+import DialogUpdateUser from "./dialog-update-user";
+import DialogDeleteUser from "./dialog-delete-user";
+import DropwdownAction from "@/components/common/dropdown-action";
 
 const UserManagement = () => {
   const {
@@ -46,15 +47,15 @@ const UserManagement = () => {
   }, [error]);
 
   const [selectedAction, setSelectedAction] = useState<null | {
-    type: "create" | "update";
+    type: "create" | "update" | "delete";
     user: UserWithRole | null;
   }>(null);
 
   const filteredUsers = useMemo(() => {
-    if (!users || !("data" in users)) return [];
+    if (!users) return [];
     return users.data.map((user: UserWithRole, index: number) => {
       return [
-        index + 1,
+        currentLimit * (currentPage - 1) + index + 1,
         user.name,
         user.email,
         user.role,
@@ -84,7 +85,12 @@ const UserManagement = () => {
                 </div>
               ),
               variant: "destructive",
-              action: () => {},
+              action: () => {
+                setSelectedAction({
+                  type: "delete",
+                  user,
+                });
+              },
               type: "button",
             },
           ]}
@@ -94,7 +100,7 @@ const UserManagement = () => {
   }, [users]);
 
   const totalPages = useMemo(() => {
-    if (!users || !("paging" in users)) return 1;
+    if (!users) return 1;
     return users.paging.total_page;
   }, [users]);
 
@@ -131,6 +137,12 @@ const UserManagement = () => {
         user={selectedAction?.user}
         refetch={refetch}
         open={!!selectedAction && selectedAction.type === "update"}
+        setOpen={() => setSelectedAction(null)}
+      />
+      <DialogDeleteUser
+        user={selectedAction?.user}
+        refetch={refetch}
+        open={!!selectedAction && selectedAction.type === "delete"}
         setOpen={() => setSelectedAction(null)}
       />
     </section>

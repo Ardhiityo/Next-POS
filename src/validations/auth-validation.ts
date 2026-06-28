@@ -50,3 +50,10 @@ export const updateUserFormSchema = z.object({
 });
 
 export type UpdateUserForm = z.infer<typeof updateUserFormSchema>;
+
+export const deleteUserFormSchema = z.object({
+  userId: z.string().min(3),
+  image: z.string().nullable(),
+});
+
+export type DeleteUserForm = z.infer<typeof deleteUserFormSchema>;

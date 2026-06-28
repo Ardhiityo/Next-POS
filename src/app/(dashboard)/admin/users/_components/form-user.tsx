@@ -13,14 +13,14 @@ import {
 } from "@/components/ui/dialog";
 import { ROLE_LIST } from "@/constants/auth-constant";
 import { Loader2Icon } from "lucide-react";
-import { SetStateAction } from "react";
+import { BaseSyntheticEvent, SetStateAction } from "react";
 import { Control, FieldValues, Path } from "react-hook-form";
 
 type FormUserProps<T extends FieldValues> = {
   type: "create" | "update";
   open: boolean;
   setOpen: (event: SetStateAction<boolean>) => void;
-  onSubmit: () => void;
+  onSubmit: (event: BaseSyntheticEvent) => void;
   isPending: boolean;
   control: Control<T>;
   imagePreview?: string;
