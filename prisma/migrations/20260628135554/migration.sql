@@ -71,7 +71,7 @@ CREATE TABLE "menu" (
     "description" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     "discount" INTEGER NOT NULL,
-    "image" TEXT,
+    "image" TEXT NOT NULL,
     "category" TEXT NOT NULL,
     "isAvailable" BOOLEAN NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

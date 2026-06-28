@@ -2,21 +2,23 @@
 
 import { DataTable } from "@/components/common/data-table";
 import { Input } from "@/components/ui/input";
-import { HEADER_TABLE_USER } from "@/constants/user-constant";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { getUserAction } from "@/actions/user/get-user";
-import { UserWithRole } from "better-auth/plugins";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import DialogCreateUser from "./dialog-create-user";
 import DialogUpdateUser from "./dialog-update-user";
 import DialogDeleteUser from "./dialog-delete-user";
 import DropwdownAction from "@/components/common/dropdown-action";
-import ActionLabel from "./action-label";
+import { Menu } from "@/generated/prisma/client";
+import { HEADER_TABLE_MENU } from "@/constants/menu-constants";
+import { getMenuAction } from "@/actions/menu/get-menu";
+import ActionLabel from "../../users/_components/action-label";
+import { cn, priceToIDR } from "@/lib/utils";
+import Image from "next/image";
 
-const UserManagement = () => {
+const MenuManagement = () => {
   const {
     currentLimit,
     currentPage,
@@ -27,14 +29,14 @@ const UserManagement = () => {
   } = useDataTable();
 
   const {
-    data: users,
+    data: menus,
     isPending,
     refetch,
     error,
   } = useQuery({
-    queryKey: ["users", currentPage, currentLimit, currentSearch],
+    queryKey: ["menus", currentPage, currentLimit, currentSearch],
     queryFn: async () => {
-      return await getUserAction({
+      return await getMenuAction({
         take: currentLimit,
         page: currentPage,
         search: currentSearch,
@@ -48,17 +50,41 @@ const UserManagement = () => {
 
   const [selectedAction, setSelectedAction] = useState<null | {
     type: "create" | "update" | "delete";
-    user: UserWithRole | null;
+    menu: Menu | null;
   }>(null);
 
-  const filteredUsers = useMemo(() => {
-    if (!users) return [];
-    return users.data.map((user: UserWithRole, index: number) => {
+  const filteredMenus = useMemo(() => {
+    if (!menus) return [];
+    return menus.data.map((menu: Menu, index: number) => {
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        user.name,
-        user.email,
-        user.role,
+        <div className="flex gap-2 items-center">
+          <Image
+            src={menu.image}
+            alt={menu.name}
+            width={500}
+            height={500}
+            className="size-14 rounded-lg"
+          />
+          {menu.name}
+        </div>,
+        menu.category,
+        <div>
+          <p>Base {priceToIDR(menu.price)}</p>
+          <p>Discount {menu.discount}%</p>
+          <p>
+            After discount{" "}
+            {priceToIDR(menu.price - (menu.price * menu.discount) / 100)}
+          </p>
+        </div>,
+        <div
+          className={cn(
+            "text-center py-1 w-fit px-2 rounded-lg",
+            menu.isAvailable ? "bg-green-600" : "bg-red-600",
+          )}
+        >
+          {menu.isAvailable ? "Available" : "Not available"}
+        </div>,
         <DropwdownAction
           menus={[
             {
@@ -67,7 +93,7 @@ const UserManagement = () => {
               action: () => {
                 setSelectedAction({
                   type: "update",
-                  user,
+                  menu,
                 });
               },
               type: "button",
@@ -78,7 +104,7 @@ const UserManagement = () => {
               action: () => {
                 setSelectedAction({
                   type: "delete",
-                  user,
+                  menu,
                 });
               },
               type: "button",
@@ -87,30 +113,30 @@ const UserManagement = () => {
         />,
       ];
     });
-  }, [users]);
+  }, [menus]);
 
   const totalPages = useMemo(() => {
-    if (!users) return 1;
-    return users.paging.total_page;
-  }, [users]);
+    if (!menus) return 1;
+    return menus.paging.total_page;
+  }, [menus]);
 
   return (
     <section className="flex flex-col gap-8">
       <div className="flex gap-3 w-1/4 self-end">
         <Input
-          placeholder="Search name"
+          placeholder="Search name/category"
           onChange={(e) => handleSearch(e.target.value)}
         />
         <Button
           variant="outline"
-          onClick={() => setSelectedAction({ type: "create", user: null })}
+          onClick={() => setSelectedAction({ type: "create", menu: null })}
         >
           Create
         </Button>
       </div>
       <DataTable
-        headers={HEADER_TABLE_USER}
-        data={filteredUsers}
+        headers={HEADER_TABLE_MENU}
+        data={filteredMenus}
         isPending={isPending}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
@@ -118,25 +144,25 @@ const UserManagement = () => {
         currentLimit={currentLimit}
         totalPages={totalPages}
       />
-      <DialogCreateUser
+      {/* <DialogCreateUser
         refetch={refetch}
         open={!!selectedAction && selectedAction.type === "create"}
         setOpen={() => setSelectedAction(null)}
       />
       <DialogUpdateUser
-        user={selectedAction?.user}
+        menu={selectedAction?.menu}
         refetch={refetch}
         open={!!selectedAction && selectedAction.type === "update"}
         setOpen={() => setSelectedAction(null)}
       />
       <DialogDeleteUser
-        user={selectedAction?.user}
+        menu={selectedAction?.menu}
         refetch={refetch}
         open={!!selectedAction && selectedAction.type === "delete"}
         setOpen={() => setSelectedAction(null)}
-      />
+      /> */}
     </section>
   );
 };
 
-export default UserManagement;
+export default MenuManagement;
