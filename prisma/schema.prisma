@@ -14,7 +14,8 @@ datasource db {
 
 enum Role {
   ADMIN
-  USER
+  CASHIER
+  KITCHEN
 }
 
 model User {
@@ -25,30 +26,30 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  role          Role      @default(USER)
+  role          Role      @default(CASHIER)
+  banned        Boolean?  @default(false)
+  banReason     String?
+  banExpires    DateTime?
 
-  banned     Boolean?  @default(false)
-  banReason  String?
-  banExpires DateTime?
+  sessions Session[]
+  accounts Account[]
 
   @@unique([email])
   @@map("user")
 }
 
 model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id             String   @id
+  expiresAt      DateTime
+  token          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
   impersonatedBy String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@index([userId])
@@ -57,10 +58,6 @@ model Session {
 
 model Account {
   id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -70,6 +67,11 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+
+  accountId  String
+  providerId String
+  userId     String
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -85,4 +87,18 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Menu {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Int
+  discount    Int
+  image       String?
+  category    String
+  isAvailable Boolean
+  createdAt   DateTime @default(now())
+
+  @@map("menu")
 }

@@ -13,7 +13,7 @@ export const auth = betterAuth({
   plugins: [
     admin({
       roles: { ADMIN, USER },
-      defaultRole: Role.USER,
+      defaultRole: Role.CASHIER,
     }),
     nextCookies(),
   ],

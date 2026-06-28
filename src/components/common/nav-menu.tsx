@@ -6,8 +6,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { SIDEBAR_MENU_LIST } from "@/constants/sidebar-constant";
-import { Role } from "@/generated/prisma/enums";
+import {
+  SIDEBAR_MENU_LIST,
+  SIDEBAR_MENU_LIST_KEY,
+} from "@/constants/sidebar-constant";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import Link from "next/link";
@@ -20,7 +22,7 @@ export function NavMenu() {
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {SIDEBAR_MENU_LIST[user?.role as Role]?.map((item) => (
+        {SIDEBAR_MENU_LIST[user?.role as SIDEBAR_MENU_LIST_KEY]?.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton
               asChild

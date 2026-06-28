@@ -34,7 +34,7 @@ export const SIDEBAR_MENU_LIST = {
       icon: UserIcon,
     },
   ],
-  USER: [
+  CASHIER: [
     {
       title: "Order",
       url: "/orders",
@@ -42,3 +42,5 @@ export const SIDEBAR_MENU_LIST = {
     },
   ],
 };
+
+export type SIDEBAR_MENU_LIST_KEY = keyof typeof SIDEBAR_MENU_LIST;

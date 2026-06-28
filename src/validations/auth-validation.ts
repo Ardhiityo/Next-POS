@@ -30,7 +30,7 @@ export const createUserFormSchema = z.object({
   name: z.string().min(3),
   email: z.email(),
   password: z.string().min(8, "Password field must be at least 8 characters."),
-  role: z.enum([Role.ADMIN, Role.USER]),
+  role: z.enum([Role.ADMIN, Role.CASHIER, Role.KITCHEN]),
   image: z.instanceof(File, {
     message: "Image field is required",
   }),
@@ -40,7 +40,7 @@ export type CreateUserForm = z.infer<typeof createUserFormSchema>;
 
 export const updateUserFormSchema = z.object({
   name: z.string().min(3),
-  role: z.enum([Role.ADMIN, Role.USER]),
+  role: z.enum([Role.ADMIN, Role.CASHIER, Role.KITCHEN]),
   image: z.union([
     z.instanceof(File, {
       message: "Image field is required",

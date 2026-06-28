@@ -17,7 +17,7 @@ export const INITIAL_STATE_USER = {
   id: "",
   name: "",
   email: "",
-  role: Role.USER,
+  role: Role.CASHIER,
   image: "",
 };
 
@@ -25,24 +25,28 @@ export const INITIAL_CREATE_USER_FORM = {
   name: "",
   email: "",
   password: "",
-  role: Role.USER,
+  role: Role.CASHIER,
 };
 
 export const INITIAL_UPDATE_USER_FORM = (user?: UserWithRole) => {
   return {
     name: user?.name,
-    role: (user?.role as Role) ?? Role.USER,
+    role: (user?.role as Role) ?? Role.CASHIER,
     image: user?.image ?? "",
   };
 };
 
 export const ROLE_LIST = [
   {
-    label: "User",
-    value: Role.USER,
-  },
-  {
     label: "Admin",
     value: Role.ADMIN,
+  },
+  {
+    label: "Cashier",
+    value: Role.CASHIER,
+  },
+  {
+    label: "Kitchen",
+    value: Role.KITCHEN,
   },
 ];
