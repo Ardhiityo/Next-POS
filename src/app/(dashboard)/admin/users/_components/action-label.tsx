@@ -1,3 +1,5 @@
+"use client";
+
 import { PencilIcon, Trash2Icon } from "lucide-react";
 
 type ActionLabelProps = {

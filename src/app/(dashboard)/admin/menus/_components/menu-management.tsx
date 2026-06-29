@@ -7,9 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import DialogCreateUser from "./dialog-create-user";
-import DialogUpdateUser from "./dialog-update-user";
-import DialogDeleteUser from "./dialog-delete-user";
 import DropwdownAction from "@/components/common/dropdown-action";
 import { Menu } from "@/generated/prisma/client";
 import { HEADER_TABLE_MENU } from "@/constants/menu-constants";
@@ -17,6 +14,7 @@ import { getMenuAction } from "@/actions/menu/get-menu";
 import ActionLabel from "../../users/_components/action-label";
 import { cn, priceToIDR } from "@/lib/utils";
 import Image from "next/image";
+import DialogCreateMenu from "./dialog-create-menu";
 
 const MenuManagement = () => {
   const {
@@ -65,6 +63,7 @@ const MenuManagement = () => {
             width={500}
             height={500}
             className="size-14 rounded-lg"
+            loading="eager"
           />
           {menu.name}
         </div>,
@@ -144,11 +143,12 @@ const MenuManagement = () => {
         currentLimit={currentLimit}
         totalPages={totalPages}
       />
-      {/* <DialogCreateUser
+      <DialogCreateMenu
         refetch={refetch}
         open={!!selectedAction && selectedAction.type === "create"}
         setOpen={() => setSelectedAction(null)}
       />
+      {/*
       <DialogUpdateUser
         menu={selectedAction?.menu}
         refetch={refetch}
@@ -160,7 +160,7 @@ const MenuManagement = () => {
         refetch={refetch}
         open={!!selectedAction && selectedAction.type === "delete"}
         setOpen={() => setSelectedAction(null)}
-      /> */}
+      />*/}
     </section>
   );
 };

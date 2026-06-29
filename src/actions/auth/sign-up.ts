@@ -1,19 +1,15 @@
 "use server";
 
-import z from "zod";
 import { auth } from "@/lib/auth";
-import { APIError } from "better-auth";
-import { SignInState } from "@/types/auth";
 import { SignUpForm, signUpFormSchema } from "@/validations/auth-validation";
+import { ActionResponse } from "@/types/general";
+import { validationError } from "@/lib/utils";
 
-export async function signUpAction(form: SignUpForm): Promise<SignInState> {
+export async function signUpAction(form: SignUpForm): Promise<ActionResponse> {
   const validated = signUpFormSchema.safeParse(form);
 
   if (!validated.success) {
-    return {
-      success: false,
-      errors: z.flattenError(validated.error).fieldErrors,
-    };
+    return validationError(validated.error);
   }
 
   try {
@@ -28,15 +24,19 @@ export async function signUpAction(form: SignUpForm): Promise<SignInState> {
       success: true,
     };
   } catch (error) {
-    if (error instanceof APIError) {
+    if (error instanceof Error) {
       return {
         success: false,
-        errors: error.message,
+        error: {
+          message: error.message,
+        },
       };
     }
     return {
       success: false,
-      errors: "Internal Server Error",
+      error: {
+        message: "Internal Server Error",
+      },
     };
   }
 }

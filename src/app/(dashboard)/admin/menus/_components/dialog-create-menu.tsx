@@ -1,37 +1,46 @@
-import { INITIAL_CREATE_USER_FORM } from "@/constants/auth-constant";
-import {
-  CreateUserForm,
-  createUserFormSchema,
-} from "@/validations/auth-validation";
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { SetStateAction, useEffect, useState } from "react";
-import FormUser from "./form-user";
-import { createUserAction } from "@/actions/user/create-user";
+import {
+  CreateMenuForm,
+  createMenuFormSchema,
+} from "@/validations/menu-validation";
+import { INITIAL_CREATE_MENU_FORM } from "@/constants/menu-constants";
+import { createMenuAction } from "@/actions/menu/create-menu";
+import FormMenu from "./form-menu";
+import { applyFieldErrors } from "@/lib/utils";
 
-type DialogCreateUserProps = {
+type DialogCreateMenuProps = {
   refetch: () => void;
   open: boolean;
   setOpen: (event: SetStateAction<boolean>) => void;
 };
 
-const DialogCreateUser = (props: DialogCreateUserProps) => {
+const DialogCreateMenu = (props: DialogCreateMenuProps) => {
   const { open, setOpen, refetch } = props;
 
-  const { control, handleSubmit, reset } = useForm<CreateUserForm>({
-    resolver: zodResolver(createUserFormSchema),
-    defaultValues: INITIAL_CREATE_USER_FORM,
+  const { control, handleSubmit, reset, setError } = useForm({
+    resolver: zodResolver(createMenuFormSchema),
+    defaultValues: INITIAL_CREATE_MENU_FORM,
   });
 
   const { mutate, isPending } = useMutation({
-    mutationKey: ["create-user"],
-    mutationFn: createUserAction,
-    onSuccess: () => {
-      toast.success("User created successfully");
-      refetch();
-      setOpen(false);
+    mutationKey: ["create-menu"],
+    mutationFn: async (data: CreateMenuForm) => {
+      const response = await createMenuAction(data);
+      if (!response.success && response.error.fieldErrors) {
+        applyFieldErrors(response.error.fieldErrors, setError);
+      } else if (!response.success && response.error.message) {
+        toast.error(response.error.message);
+      } else if (response.success) {
+        toast.success("Menu created successfully");
+        setOpen(false);
+        refetch();
+      }
     },
     onError: (error) => {
       toast.error(error.message);
@@ -62,10 +71,10 @@ const DialogCreateUser = (props: DialogCreateUserProps) => {
   }, [file, open]);
 
   return (
-    <FormUser
+    <FormMenu
       open={open}
       setOpen={setOpen}
-      onSubmit={handleSubmit((data: CreateUserForm) => mutate(data))}
+      onSubmit={handleSubmit((data: CreateMenuForm) => mutate(data))}
       control={control}
       type="create"
       isPending={isPending}
@@ -75,4 +84,4 @@ const DialogCreateUser = (props: DialogCreateUserProps) => {
   );
 };
 
-export default DialogCreateUser;
+export default DialogCreateMenu;

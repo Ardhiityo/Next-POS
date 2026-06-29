@@ -12,4 +12,6 @@ const ac = createAccessControl(statement);
 
 export const ADMIN = ac.newRole({ ...adminAc.statements });
 
-export const USER = ac.newRole({});
+export const CASHIER = ac.newRole({});
+
+export const KITCHEN = ac.newRole({});

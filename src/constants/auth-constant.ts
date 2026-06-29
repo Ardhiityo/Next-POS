@@ -18,7 +18,6 @@ export const INITIAL_STATE_USER = {
   name: "",
   email: "",
   role: Role.CASHIER,
-  image: "",
 };
 
 export const INITIAL_CREATE_USER_FORM = {
@@ -26,6 +25,7 @@ export const INITIAL_CREATE_USER_FORM = {
   email: "",
   password: "",
   role: Role.CASHIER,
+  image: "",
 };
 
 export const INITIAL_UPDATE_USER_FORM = (user?: UserWithRole) => {

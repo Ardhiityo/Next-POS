@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { Role } from "@/generated/prisma/enums";
 import { admin } from "better-auth/plugins";
-import { ADMIN, USER } from "./permissions";
+import { ADMIN, CASHIER, KITCHEN } from "./permissions";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -12,7 +12,7 @@ export const auth = betterAuth({
   }),
   plugins: [
     admin({
-      roles: { ADMIN, USER },
+      roles: { ADMIN, CASHIER, KITCHEN },
       defaultRole: Role.CASHIER,
     }),
     nextCookies(),
@@ -24,7 +24,7 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       role: {
-        type: ["ADMIN", "USER"] as Role[],
+        type: ["ADMIN", "CASHIER", "KITCHEN"] as Role[],
         input: false,
       },
     },

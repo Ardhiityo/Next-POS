@@ -8,11 +8,12 @@ import {
 } from "@/components/ui/field";
 import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 
 type FormInputProps<T extends FieldValues> = {
   name: Path<T>;
   label: string;
-  type: string;
+  type?: "text" | "email" | "password" | "textarea";
   control: Control<T>;
   placeholder: string;
 };
@@ -32,14 +33,24 @@ const FormInput = <T extends FieldValues>({
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel htmlFor={label}>{label}</FieldLabel>
-            <Input
-              {...field}
-              id={label}
-              type={type}
-              aria-invalid={fieldState.invalid}
-              placeholder={placeholder}
-              autoComplete="off"
-            />
+            {type === "text" || type === "email" || type === "password" ? (
+              <Input
+                {...field}
+                id={label}
+                type={type}
+                aria-invalid={fieldState.invalid}
+                placeholder={placeholder}
+                autoComplete="off"
+              />
+            ) : (
+              <Textarea
+                {...field}
+                id={label}
+                aria-invalid={fieldState.invalid}
+                placeholder={placeholder}
+                className="resize-none"
+              />
+            )}
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
         )}

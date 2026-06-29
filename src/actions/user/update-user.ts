@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { deleteFileAction } from "../storage/delete-file";
 import { headers } from "next/headers";
 import { UserWithRole } from "better-auth/plugins";
+import { ActionResponse } from "@/types/general";
 
 type UpdateUserParams = {
   user: UserWithRole;
@@ -14,7 +15,7 @@ type UpdateUserParams = {
 
 export async function updateUserAction(
   params: UpdateUserParams,
-): Promise<void> {
+): Promise<ActionResponse> {
   const { user, form } = params;
 
   let imageUrl: string = "";
@@ -22,14 +23,19 @@ export async function updateUserAction(
 
   if (form.image instanceof File) {
     // upload new image
-    const { publicUrl, filePath } = await uploadFileAction(
-      "images",
-      "users",
-      form.image,
-    );
+    const response = await uploadFileAction("images", "users", form.image);
 
-    imageUrl = publicUrl;
-    imagePath = filePath;
+    if (!response.success) {
+      return {
+        success: false,
+        error: {
+          message: response.error.message,
+        },
+      };
+    }
+
+    imageUrl = response.data.publicUrl;
+    imagePath = response.data.filePath;
 
     // delete old image
     const path = user?.image?.split("/images/").pop();
@@ -52,12 +58,27 @@ export async function updateUserAction(
       },
       headers: await headers(),
     });
+
+    return {
+      success: true,
+      data: null,
+    };
   } catch (error) {
-    try {
-      await deleteFileAction("images", imagePath);
-      throw error;
-    } catch (error) {
-      throw error;
+    const response = await deleteFileAction("images", imagePath);
+    if (!response.success) {
+      return {
+        success: false,
+        error: {
+          message: response.error.message,
+        },
+      };
     }
+    return {
+      success: false,
+      error: {
+        message:
+          error instanceof Error ? error.message : "Failed to update user",
+      },
+    };
   }
 }

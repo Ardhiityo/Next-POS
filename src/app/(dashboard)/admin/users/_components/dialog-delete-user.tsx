@@ -1,3 +1,5 @@
+"use client";
+
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { SetStateAction, useEffect } from "react";
@@ -23,12 +25,14 @@ const DialogDeleteUser = (props: DialogDeleteUserProps) => {
     mutationKey: ["delete-user"],
     mutationFn: async (data: DeleteUserForm) => {
       if (!data) throw new Error("User not found");
-      return deleteUserAction(data);
-    },
-    onSuccess: () => {
-      toast.success("User deleted successfully");
-      refetch();
-      setOpen(false);
+      const response = await deleteUserAction(data);
+      if (!response.success) {
+        toast.error(response.error.message);
+      } else if (response.success) {
+        toast.success("User deleted successfully");
+        setOpen(false);
+        refetch();
+      }
     },
     onError: (error) => {
       toast.error(error.message);

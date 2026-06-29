@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { signUpAction } from "@/actions/auth/sign-up";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
+import { applyFieldErrors } from "@/lib/utils";
 
 export default function SignUp() {
   const { control, handleSubmit, reset, setError } = useForm<SignUpForm>({
@@ -32,17 +33,13 @@ export default function SignUp() {
   const { mutate, isPending } = useMutation({
     mutationKey: ["sign-up"],
     mutationFn: async (data: SignUpForm) => {
-      const { errors, success } = await signUpAction(data);
-      if (success) {
+      const response = await signUpAction(data);
+      if (!response.success && response.error.fieldErrors) {
+        applyFieldErrors(response.error.fieldErrors, setError);
+      } else if (!response.success && response.error.message) {
+        toast.error(response.error.message);
+      } else if (response.success) {
         push("/auth/sign-in");
-      } else if (typeof errors === "object") {
-        Object.entries(errors).forEach(([field, messages]) => {
-          setError(field as keyof SignUpForm, {
-            message: messages?.[0],
-          });
-        });
-      } else {
-        toast.error(errors);
       }
     },
   });

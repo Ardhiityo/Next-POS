@@ -1,3 +1,5 @@
+"use client";
+
 import {
   UpdateUserForm,
   updateUserFormSchema,
@@ -7,7 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { SetStateAction, useEffect, useState } from "react";
-import FormUser from "./form-user";
+import FormUser from "./form-menu";
 import { updateUserAction } from "@/actions/user/update-user";
 import { UserWithRole } from "better-auth/plugins";
 import { Role } from "@/generated/prisma/enums";

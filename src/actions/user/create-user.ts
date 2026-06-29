@@ -4,13 +4,25 @@ import { CreateUserForm } from "@/validations/auth-validation";
 import { uploadFileAction } from "../storage/upload-file";
 import { auth } from "@/lib/auth";
 import { deleteFileAction } from "../storage/delete-file";
+import { ActionResponse } from "@/types/general";
 
-export async function createUserAction(form: CreateUserForm): Promise<void> {
-  const { publicUrl, filePath } = await uploadFileAction(
+export async function createUserAction(
+  form: CreateUserForm,
+): Promise<ActionResponse> {
+  const responseUploadFileAction = await uploadFileAction(
     "images",
     "users",
     form.image,
   );
+
+  if (!responseUploadFileAction.success) {
+    return {
+      success: false,
+      error: {
+        message: responseUploadFileAction.error.message,
+      },
+    };
+  }
 
   try {
     await auth.api.createUser({
@@ -20,12 +32,44 @@ export async function createUserAction(form: CreateUserForm): Promise<void> {
         role: form.role,
         password: form.password,
         data: {
-          image: publicUrl,
+          image: responseUploadFileAction.data?.publicUrl,
         },
       },
     });
+
+    return {
+      success: true,
+      data: null,
+    };
   } catch (error) {
-    await deleteFileAction("images", filePath);
-    throw error;
+    try {
+      const responseDeleteFileAction = await deleteFileAction(
+        "images",
+        responseUploadFileAction.data.filePath,
+      );
+      if (!responseDeleteFileAction.success) {
+        return {
+          success: false,
+          error: {
+            message: responseDeleteFileAction.error.message,
+          },
+        };
+      }
+      return {
+        success: false,
+        error: {
+          message:
+            error instanceof Error ? error.message : "Failed to create user",
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          message:
+            error instanceof Error ? error.message : "Failed to delete image",
+        },
+      };
+    }
   }
 }

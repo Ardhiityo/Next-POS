@@ -26,15 +26,25 @@ export const signUpFormSchema = z
 
 export type SignUpForm = z.infer<typeof signUpFormSchema>;
 
-export const createUserFormSchema = z.object({
-  name: z.string().min(3),
-  email: z.email(),
-  password: z.string().min(8, "Password field must be at least 8 characters."),
-  role: z.enum([Role.ADMIN, Role.CASHIER, Role.KITCHEN]),
-  image: z.instanceof(File, {
-    message: "Image field is required",
-  }),
-});
+export const createUserFormSchema = z
+  .object({
+    name: z.string().min(3),
+    email: z.email(),
+    password: z
+      .string()
+      .min(8, "Password field must be at least 8 characters."),
+    role: z.enum([Role.ADMIN, Role.CASHIER, Role.KITCHEN]),
+    image: z.union([
+      z.instanceof(File, {
+        message: "Image field is required",
+      }),
+      z.string(),
+    ]),
+  })
+  .refine((data) => data.image instanceof File, {
+    message: "Image is required",
+    path: ["image"],
+  });
 
 export type CreateUserForm = z.infer<typeof createUserFormSchema>;
 

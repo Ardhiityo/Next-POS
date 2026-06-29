@@ -1,3 +1,5 @@
+"use client";
+
 import { INITIAL_CREATE_USER_FORM } from "@/constants/auth-constant";
 import {
   CreateUserForm,
@@ -10,6 +12,7 @@ import { toast } from "sonner";
 import { SetStateAction, useEffect, useState } from "react";
 import FormUser from "./form-user";
 import { createUserAction } from "@/actions/user/create-user";
+import { applyFieldErrors } from "@/lib/utils";
 
 type DialogCreateUserProps = {
   refetch: () => void;
@@ -20,18 +23,24 @@ type DialogCreateUserProps = {
 const DialogCreateUser = (props: DialogCreateUserProps) => {
   const { open, setOpen, refetch } = props;
 
-  const { control, handleSubmit, reset } = useForm<CreateUserForm>({
+  const { control, handleSubmit, reset, setError } = useForm({
     resolver: zodResolver(createUserFormSchema),
     defaultValues: INITIAL_CREATE_USER_FORM,
   });
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["create-user"],
-    mutationFn: createUserAction,
-    onSuccess: () => {
-      toast.success("User created successfully");
-      refetch();
-      setOpen(false);
+    mutationFn: async (data: CreateUserForm) => {
+      const response = await createUserAction(data);
+      if (!response.success && response.error.fieldErrors) {
+        applyFieldErrors(response.error.fieldErrors, setError);
+      } else if (!response.success && response.error.message) {
+        toast.error(response.error.message);
+      } else if (response.success) {
+        toast.success("User created successfully");
+        setOpen(false);
+        refetch();
+      }
     },
     onError: (error) => {
       toast.error(error.message);

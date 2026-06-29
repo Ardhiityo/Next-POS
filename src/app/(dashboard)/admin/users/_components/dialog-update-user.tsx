@@ -1,16 +1,19 @@
+"use client";
+
 import {
   UpdateUserForm,
   updateUserFormSchema,
 } from "@/validations/auth-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { SetStateAction, useEffect, useState } from "react";
 import FormUser from "./form-user";
 import { updateUserAction } from "@/actions/user/update-user";
 import { UserWithRole } from "better-auth/plugins";
 import { Role } from "@/generated/prisma/enums";
+import { applyFieldErrors } from "@/lib/utils";
 
 type DialogUpdateUserProps = {
   user?: UserWithRole | null;
@@ -22,23 +25,28 @@ type DialogUpdateUserProps = {
 const DialogUpdateUser = (props: DialogUpdateUserProps) => {
   const { user, open, setOpen, refetch } = props;
 
-  const { control, handleSubmit, reset, setValue } = useForm<UpdateUserForm>({
-    resolver: zodResolver(updateUserFormSchema),
-  });
+  const { control, handleSubmit, reset, setValue, setError } =
+    useForm<UpdateUserForm>({
+      resolver: zodResolver(updateUserFormSchema),
+    });
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["update-user"],
     mutationFn: async (updateUserForm: UpdateUserForm) => {
       if (!user) throw new Error("User not found");
-      return await updateUserAction({
+      const response = await updateUserAction({
         user,
         form: updateUserForm,
       });
-    },
-    onSuccess: () => {
-      toast.success("User updated successfully");
-      refetch();
-      setOpen(false);
+      if (!response.success && response.error.fieldErrors) {
+        applyFieldErrors(response.error.fieldErrors, setError);
+      } else if (!response.success && response.error.message) {
+        toast.error(response.error.message);
+      } else if (response.success) {
+        toast.success("User created successfully");
+        setOpen(false);
+        refetch();
+      }
     },
     onError: (error) => {
       toast.error(error.message);

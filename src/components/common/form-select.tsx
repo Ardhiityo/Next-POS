@@ -23,7 +23,7 @@ type FormSelectProps<T extends FieldValues> = {
   label: string;
   disabled?: boolean;
   control: Control<T>;
-  items: { label: string; value: Role }[];
+  items: { label: string; value: Role | string }[];
 };
 
 const FormSelect = <T extends FieldValues>({

@@ -1,3 +1,5 @@
+"use client";
+
 import FormImage from "@/components/common/form-image";
 import FormInput from "@/components/common/form-input";
 import FormSelect from "@/components/common/form-select";
@@ -39,15 +41,15 @@ const FormUser = <T extends FieldValues>(props: FormUserProps<T>) => {
     onChangeImagePreview,
   } = props;
 
-  const title = props.type === "create" ? "Create user" : "Update user";
+  const title = type === "create" ? "Create user" : "Update user";
   const description =
-    props.type === "create"
+    type === "create"
       ? "Make new user here. Click submit when you're done."
       : "Change user here. Click submit when you're done.";
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <form onSubmit={onSubmit} id={`form-${type}-user`}>
+      <form onSubmit={onSubmit} id="form-user">
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
@@ -56,7 +58,7 @@ const FormUser = <T extends FieldValues>(props: FormUserProps<T>) => {
           <FormInput
             name={"name" as Path<T>}
             label="Name"
-            type="name"
+            type="text"
             control={control}
             placeholder="Name"
           />
@@ -95,11 +97,7 @@ const FormUser = <T extends FieldValues>(props: FormUserProps<T>) => {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button
-              type="submit"
-              form={`form-${type}-user`}
-              disabled={isPending}
-            >
+            <Button type="submit" form="form-user" disabled={isPending}>
               {isPending ? <Loader2Icon className="animate-spin" /> : "Submit"}
             </Button>
           </DialogFooter>

@@ -1,12 +1,13 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { ActionResponse } from "@/types/general";
 
 export async function uploadFileAction(
   bucket: string,
   path: string,
   file: File,
-) {
+): Promise<ActionResponse<{ publicUrl: string; filePath: string }>> {
   const supabase = await createClient();
 
   const fileExt = file.name.split(".").pop();
@@ -18,14 +19,23 @@ export async function uploadFileAction(
     .upload(filePath, file);
 
   if (error) {
-    throw new Error(
-      error instanceof Error ? error.message : "Internal Server Error",
-    );
+    return {
+      success: false,
+      error: {
+        message: error.message,
+      },
+    };
   }
 
   const {
     data: { publicUrl },
   } = supabase.storage.from(bucket).getPublicUrl(filePath);
 
-  return { publicUrl, filePath: data.path };
+  return {
+    success: true,
+    data: {
+      publicUrl,
+      filePath: data.path,
+    },
+  };
 }

@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { signInAction } from "@/actions/auth/sign-in";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { applyFieldErrors } from "@/lib/utils";
 
 export default function SignIn() {
   const { push } = useRouter();
@@ -32,17 +33,13 @@ export default function SignIn() {
   const { mutate, isPending } = useMutation({
     mutationKey: ["sign-in"],
     mutationFn: async (data: SignInForm) => {
-      const { errors, success } = await signInAction(data);
-      if (success) {
-        push("/");
-      } else if (typeof errors === "object") {
-        Object.entries(errors).forEach(([field, messages]) => {
-          setError(field as keyof SignInForm, {
-            message: messages?.[0],
-          });
-        });
-      } else {
-        toast.error(errors);
+      const response = await signInAction(data);
+      if (!response.success && response.error.fieldErrors) {
+        applyFieldErrors(response.error.fieldErrors, setError);
+      } else if (!response.success && response.error.message) {
+        toast.error(response.error.message);
+      } else if (response.success) {
+        push("/admin");
       }
     },
   });

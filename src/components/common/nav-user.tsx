@@ -18,28 +18,41 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuthStore } from "@/stores/auth-store";
-import { EllipsisVerticalIcon, LogOutIcon, UserCircleIcon } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import {
+  EllipsisVerticalIcon,
+  Loader2Icon,
+  LogOutIcon,
+  UserCircleIcon,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const user = useAuthStore((state) => state.user);
   const { push } = useRouter();
+  const [open, setOpen] = useState(false);
 
-  async function handleSignOut() {
-    const { error } = await signOutAction();
-    if (error) {
-      toast.error(error);
-    } else {
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["sign-out"],
+    mutationFn: async () => {
+      const response = await signOutAction();
+      if (!response.success && response.error.message) {
+        toast.error(response.error.message);
+      } else if (response.success) {
+        toast.success("Signed out successfully");
+      }
+      setOpen(false);
       push("/auth/sign-in");
-    }
-  }
+    },
+  });
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
@@ -90,9 +103,18 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                mutate();
+              }}
+            >
               <LogOutIcon />
-              Log out
+              {isPending ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                "Sign out"
+              )}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
