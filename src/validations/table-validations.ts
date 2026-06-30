@@ -17,3 +17,9 @@ export const updateTableFormSchema = z.object({
 });
 
 export type UpdateTableForm = z.infer<typeof updateTableFormSchema>;
+
+export const deleteTableFormSchema = z.object({
+  tableId: z.string().min(3),
+});
+
+export type DeleteTableForm = z.infer<typeof deleteTableFormSchema>;

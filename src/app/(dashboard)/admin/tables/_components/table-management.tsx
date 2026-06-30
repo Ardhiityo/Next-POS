@@ -15,6 +15,7 @@ import { HEADER_TABLE_TABLE } from "@/constants/table-constants";
 import { cn } from "@/lib/utils";
 import DialogCreateTable from "./dialog-create-table";
 import DialogUpdateTable from "./dialog-update-table";
+import DialogDeleteTable from "./dialog-delete-table";
 
 const TableManagement = () => {
   const {
@@ -141,6 +142,12 @@ const TableManagement = () => {
         refetch={refetch}
         table={selectedAction?.table}
         open={!!selectedAction && selectedAction.type === "update"}
+        setOpen={() => setSelectedAction(null)}
+      />
+      <DialogDeleteTable
+        refetch={refetch}
+        table={selectedAction?.table}
+        open={!!selectedAction && selectedAction.type === "delete"}
         setOpen={() => setSelectedAction(null)}
       />
     </section>
