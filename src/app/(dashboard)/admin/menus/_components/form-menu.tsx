@@ -13,7 +13,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MENU_AVAILABILITIES } from "@/constants/menu-constants";
+import {
+  MENU_AVAILABILITIES,
+  MENU_CATEGORIES,
+} from "@/constants/menu-constants";
 import { Loader2Icon } from "lucide-react";
 import { BaseSyntheticEvent, SetStateAction } from "react";
 import { Control, FieldValues, Path } from "react-hook-form";
@@ -49,7 +52,7 @@ const FormMenu = <T extends FieldValues>(props: FormMenuProps<T>) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <form onSubmit={onSubmit} id="form-menu">
+      <form onSubmit={onSubmit} id={`form-menu-${type}`}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
@@ -63,12 +66,11 @@ const FormMenu = <T extends FieldValues>(props: FormMenuProps<T>) => {
               control={control}
               placeholder="Name"
             />
-            <FormInput
+            <FormSelect
               name={"category" as Path<T>}
               label="Category"
-              type="text"
               control={control}
-              placeholder="Category"
+              items={MENU_CATEGORIES}
             />
             <FormInput
               name={"description" as Path<T>}
@@ -86,7 +88,7 @@ const FormMenu = <T extends FieldValues>(props: FormMenuProps<T>) => {
             />
             <FormInput
               name={"discount" as Path<T>}
-              label="Discount"
+              label="Discount %"
               type="text"
               control={control}
               placeholder="Discount"
@@ -109,7 +111,11 @@ const FormMenu = <T extends FieldValues>(props: FormMenuProps<T>) => {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" form="form-menu" disabled={isPending}>
+            <Button
+              type="submit"
+              form={`form-menu-${type}`}
+              disabled={isPending}
+            >
               {isPending ? <Loader2Icon className="animate-spin" /> : "Submit"}
             </Button>
           </DialogFooter>

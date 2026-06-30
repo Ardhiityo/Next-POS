@@ -27,3 +27,18 @@ export const MENU_AVAILABILITIES = [
     value: "false",
   },
 ];
+
+export const MENU_CATEGORIES = [
+  {
+    label: "Beverages",
+    value: "beverages",
+  },
+  {
+    label: "Desserts",
+    value: "desserts",
+  },
+  {
+    label: "Mains",
+    value: "mains",
+  },
+];

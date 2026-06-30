@@ -30,8 +30,8 @@ const DialogCreateUser = (props: DialogCreateUserProps) => {
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["create-user"],
-    mutationFn: async (data: CreateUserForm) => {
-      const response = await createUserAction(data);
+    mutationFn: async (form: CreateUserForm) => {
+      const response = await createUserAction(form);
       if (!response.success && response.error.fieldErrors) {
         applyFieldErrors(response.error.fieldErrors, setError);
       } else if (!response.success && response.error.message) {
@@ -41,7 +41,9 @@ const DialogCreateUser = (props: DialogCreateUserProps) => {
         setOpen(false);
         refetch();
       }
+      return response;
     },
+
     onError: (error) => {
       toast.error(error.message);
     },

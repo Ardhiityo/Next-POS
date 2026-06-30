@@ -56,7 +56,10 @@ const FormSelect = <T extends FieldValues>({
                 <SelectGroup>
                   <SelectLabel>{label}</SelectLabel>
                   {items.map((item, index) => (
-                    <SelectItem key={`select-item-${index}`} value={item.value}>
+                    <SelectItem
+                      key={`select-item-${index}-${item.value}-${item.label}`}
+                      value={item.value}
+                    >
                       {item.label}
                     </SelectItem>
                   ))}

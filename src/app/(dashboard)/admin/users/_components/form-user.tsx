@@ -49,7 +49,7 @@ const FormUser = <T extends FieldValues>(props: FormUserProps<T>) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <form onSubmit={onSubmit} id="form-user">
+      <form onSubmit={onSubmit} id={`form-user-${type}`}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
@@ -97,7 +97,11 @@ const FormUser = <T extends FieldValues>(props: FormUserProps<T>) => {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" form="form-user" disabled={isPending}>
+            <Button
+              type="submit"
+              form={`form-user-${type}`}
+              disabled={isPending}
+            >
               {isPending ? <Loader2Icon className="animate-spin" /> : "Submit"}
             </Button>
           </DialogFooter>

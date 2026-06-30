@@ -9,6 +9,15 @@ import { ActionResponse } from "@/types/general";
 export async function createUserAction(
   form: CreateUserForm,
 ): Promise<ActionResponse> {
+  if (typeof form.image === "string") {
+    return {
+      success: false,
+      error: {
+        message: "Image is required",
+      },
+    };
+  }
+
   const responseUploadFileAction = await uploadFileAction(
     "images",
     "users",

@@ -23,9 +23,9 @@ const DialogDeleteUser = (props: DialogDeleteUserProps) => {
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["delete-user"],
-    mutationFn: async (data: DeleteUserForm) => {
-      if (!data) throw new Error("User not found");
-      const response = await deleteUserAction(data);
+    mutationFn: async (form: DeleteUserForm) => {
+      if (!form) throw new Error("User not found");
+      const response = await deleteUserAction(form);
       if (!response.success) {
         toast.error(response.error.message);
       } else if (response.success) {
@@ -33,6 +33,7 @@ const DialogDeleteUser = (props: DialogDeleteUserProps) => {
         setOpen(false);
         refetch();
       }
+      return response;
     },
     onError: (error) => {
       toast.error(error.message);

@@ -32,11 +32,11 @@ const DialogUpdateUser = (props: DialogUpdateUserProps) => {
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["update-user"],
-    mutationFn: async (updateUserForm: UpdateUserForm) => {
+    mutationFn: async (form: UpdateUserForm) => {
       if (!user) throw new Error("User not found");
       const response = await updateUserAction({
         user,
-        form: updateUserForm,
+        form,
       });
       if (!response.success && response.error.fieldErrors) {
         applyFieldErrors(response.error.fieldErrors, setError);
@@ -47,6 +47,7 @@ const DialogUpdateUser = (props: DialogUpdateUserProps) => {
         setOpen(false);
         refetch();
       }
+      return response;
     },
     onError: (error) => {
       toast.error(error.message);

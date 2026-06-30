@@ -22,5 +22,6 @@ export async function deleteFileAction(
 
   return {
     success: true,
+    data: null,
   };
 }

@@ -1,46 +1,51 @@
 "use client";
 
-import {
-  UpdateUserForm,
-  updateUserFormSchema,
-} from "@/validations/auth-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { SetStateAction, useEffect, useState } from "react";
-import FormUser from "./form-menu";
-import { updateUserAction } from "@/actions/user/update-user";
-import { UserWithRole } from "better-auth/plugins";
-import { Role } from "@/generated/prisma/enums";
+import { Menu } from "@/generated/prisma/client";
+import {
+  UpdateMenuForm,
+  updateMenuFormSchema,
+} from "@/validations/menu-validation";
+import { updateMenuAction } from "@/actions/menu/update-menu";
+import { applyFieldErrors } from "@/lib/utils";
+import FormMenu from "./form-menu";
 
-type DialogUpdateUserProps = {
-  user?: UserWithRole | null;
+type DialogUpdateMenuProps = {
+  menu?: Menu | null;
   refetch: () => void;
   open: boolean;
   setOpen: (event: SetStateAction<boolean>) => void;
 };
 
-const DialogUpdateUser = (props: DialogUpdateUserProps) => {
-  const { user, open, setOpen, refetch } = props;
+const DialogUpdateMenu = (props: DialogUpdateMenuProps) => {
+  const { menu, open, setOpen, refetch } = props;
 
-  const { control, handleSubmit, reset, setValue } = useForm<UpdateUserForm>({
-    resolver: zodResolver(updateUserFormSchema),
+  const { control, handleSubmit, reset, setValue, setError } = useForm({
+    resolver: zodResolver(updateMenuFormSchema),
   });
 
   const { mutate, isPending } = useMutation({
-    mutationKey: ["update-user"],
-    mutationFn: async (updateUserForm: UpdateUserForm) => {
-      if (!user) throw new Error("User not found");
-      return await updateUserAction({
-        user,
-        form: updateUserForm,
+    mutationKey: ["update-menu"],
+    mutationFn: async (form: UpdateMenuForm) => {
+      if (!menu) throw new Error("Menu not found");
+      const response = await updateMenuAction({
+        menu,
+        form,
       });
-    },
-    onSuccess: () => {
-      toast.success("User updated successfully");
-      refetch();
-      setOpen(false);
+      if (!response.success && response.error.fieldErrors) {
+        applyFieldErrors(response.error.fieldErrors, setError);
+      } else if (!response.success && response.error.message) {
+        toast.error(response.error.message);
+      } else if (response.success) {
+        toast.success("Menu updated successfully");
+        setOpen(false);
+        refetch();
+      }
+      return response;
     },
     onError: (error) => {
       toast.error(error.message);
@@ -51,11 +56,15 @@ const DialogUpdateUser = (props: DialogUpdateUserProps) => {
   const [file, setFile] = useState<File | undefined>();
 
   useEffect(() => {
-    if (user) {
-      setValue("name", user.name);
-      setValue("role", user?.role as Role);
-      setValue("image", user?.image ?? "");
-      setImagePreview(user?.image ?? undefined);
+    if (menu) {
+      setValue("name", menu.name);
+      setValue("description", menu.description);
+      setValue("price", menu.price);
+      setValue("discount", menu.discount);
+      setValue("category", menu.category);
+      setValue("isAvailable", String(menu.isAvailable));
+      setValue("image", menu?.image ?? "");
+      setImagePreview(menu?.image ?? undefined);
     }
 
     if (!open) {
@@ -63,7 +72,7 @@ const DialogUpdateUser = (props: DialogUpdateUserProps) => {
       setFile(undefined);
       setImagePreview(undefined);
     }
-  }, [user, open]);
+  }, [menu, open]);
 
   useEffect(() => {
     if (file) {
@@ -80,10 +89,10 @@ const DialogUpdateUser = (props: DialogUpdateUserProps) => {
   };
 
   return (
-    <FormUser
+    <FormMenu
       open={open}
       setOpen={setOpen}
-      onSubmit={handleSubmit((data: UpdateUserForm) => mutate(data))}
+      onSubmit={handleSubmit((data: UpdateMenuForm) => mutate(data))}
       control={control}
       type="update"
       isPending={isPending}
@@ -93,4 +102,4 @@ const DialogUpdateUser = (props: DialogUpdateUserProps) => {
   );
 };
 
-export default DialogUpdateUser;
+export default DialogUpdateMenu;

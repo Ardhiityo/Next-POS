@@ -7,7 +7,7 @@ export const createMenuFormSchema = z
     price: z.coerce.number().min(1),
     discount: z.coerce.number().min(0).max(100),
     category: z.string().min(3),
-    isAvailable: z.coerce.boolean(),
+    isAvailable: z.string(),
     image: z.union([
       z.instanceof(File, {
         message: "Image field is required",
@@ -21,3 +21,20 @@ export const createMenuFormSchema = z
   });
 
 export type CreateMenuForm = z.infer<typeof createMenuFormSchema>;
+
+export const updateMenuFormSchema = z.object({
+  name: z.string().min(3),
+  description: z.string().min(3),
+  price: z.coerce.number().min(1),
+  discount: z.coerce.number().min(0).max(100),
+  category: z.string().min(3),
+  isAvailable: z.string(),
+  image: z.union([
+    z.string(),
+    z.instanceof(File, {
+      message: "Image field is required",
+    }),
+  ]),
+});
+
+export type UpdateMenuForm = z.infer<typeof updateMenuFormSchema>;

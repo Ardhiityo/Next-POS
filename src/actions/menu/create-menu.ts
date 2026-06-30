@@ -22,7 +22,16 @@ export async function createMenuAction(
   let imageUrl = "";
   let imagePath = "";
 
-  const response = await uploadFileAction("images", "users", form.image);
+  if (typeof form.image === "string") {
+    return {
+      success: false,
+      error: {
+        message: "Image is required",
+      },
+    };
+  }
+
+  const response = await uploadFileAction("images", "menus", form.image);
 
   if (!response.success) {
     return {
@@ -40,6 +49,7 @@ export async function createMenuAction(
     await prisma.menu.create({
       data: {
         ...form,
+        isAvailable: form.isAvailable === "true" ? true : false,
         image: imageUrl,
       },
     });

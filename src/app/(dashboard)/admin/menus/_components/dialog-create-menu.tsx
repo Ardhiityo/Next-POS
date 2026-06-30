@@ -30,8 +30,8 @@ const DialogCreateMenu = (props: DialogCreateMenuProps) => {
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["create-menu"],
-    mutationFn: async (data: CreateMenuForm) => {
-      const response = await createMenuAction(data);
+    mutationFn: async (form: CreateMenuForm) => {
+      const response = await createMenuAction(form);
       if (!response.success && response.error.fieldErrors) {
         applyFieldErrors(response.error.fieldErrors, setError);
       } else if (!response.success && response.error.message) {
@@ -41,6 +41,7 @@ const DialogCreateMenu = (props: DialogCreateMenuProps) => {
         setOpen(false);
         refetch();
       }
+      return response;
     },
     onError: (error) => {
       toast.error(error.message);
