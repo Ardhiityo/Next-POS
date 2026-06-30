@@ -102,3 +102,14 @@ model Menu {
 
   @@map("menu")
 }
+
+model Table {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  capacity    Int
+  status      String
+  createdAt   DateTime @default(now())
+
+  @@map("table")
+}
