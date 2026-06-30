@@ -15,7 +15,8 @@ import ActionLabel from "../../users/_components/action-label";
 import { cn, priceToIDR } from "@/lib/utils";
 import Image from "next/image";
 import DialogCreateMenu from "./dialog-create-menu";
-import DialogUpdateMenu from "./dialog-update-user";
+import DialogUpdateMenu from "./dialog-update-menu";
+import DialogDeleteMenu from "./dialog-delete-menu";
 
 const MenuManagement = () => {
   const {
@@ -155,13 +156,12 @@ const MenuManagement = () => {
         open={!!selectedAction && selectedAction.type === "update"}
         setOpen={() => setSelectedAction(null)}
       />
-      {/*
-      <DialogDeleteUser
+      <DialogDeleteMenu
         menu={selectedAction?.menu}
         refetch={refetch}
         open={!!selectedAction && selectedAction.type === "delete"}
         setOpen={() => setSelectedAction(null)}
-      />*/}
+      />
     </section>
   );
 };

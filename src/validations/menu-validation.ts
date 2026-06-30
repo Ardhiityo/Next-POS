@@ -38,3 +38,10 @@ export const updateMenuFormSchema = z.object({
 });
 
 export type UpdateMenuForm = z.infer<typeof updateMenuFormSchema>;
+
+export const deleteMenuFormSchema = z.object({
+  menuId: z.string().min(3),
+  image: z.string().nullable(),
+});
+
+export type DeleteMenuForm = z.infer<typeof deleteMenuFormSchema>;
