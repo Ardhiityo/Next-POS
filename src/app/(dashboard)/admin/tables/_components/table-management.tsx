@@ -1,0 +1,134 @@
+"use client";
+
+import { DataTable } from "@/components/common/data-table";
+import { Input } from "@/components/ui/input";
+import { useDataTable } from "@/hooks/use-data-table";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import DropwdownAction from "@/components/common/dropdown-action";
+import { Table } from "@/generated/prisma/client";
+import ActionLabel from "../../users/_components/action-label";
+import { getTableAction } from "@/actions/table/get-menu";
+import { HEADER_TABLE_TABLE } from "@/constants/table-constants";
+import { cn } from "@/lib/utils";
+
+const TableManagement = () => {
+  const {
+    currentLimit,
+    currentPage,
+    currentSearch,
+    handleSearch,
+    setCurrentPage,
+    handleChangeLimit,
+  } = useDataTable();
+
+  const {
+    data: tables,
+    isPending,
+    refetch,
+    error,
+  } = useQuery({
+    queryKey: ["tables", currentPage, currentLimit, currentSearch],
+    queryFn: async () => {
+      return await getTableAction({
+        take: currentLimit,
+        page: currentPage,
+        search: currentSearch,
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (error) toast.error(error.message);
+  }, [error]);
+
+  const [selectedAction, setSelectedAction] = useState<null | {
+    type: "create" | "update" | "delete";
+    table: Table | null;
+  }>(null);
+
+  const filteredTables = useMemo(() => {
+    if (!tables) return [];
+    return tables.data.map((table: Table, index: number) => {
+      return [
+        currentLimit * (currentPage - 1) + index + 1,
+        <div>
+          <h4 className="font-bold">{table.name}</h4>
+          <p>{table.description}</p>
+        </div>,
+        table.capacity,
+        <div
+          className={cn("text-white px-2 py-1 rounded-lg w-fit text-center", {
+            "bg-green-600": table.status === "available",
+            "bg-red-600": table.status === "unavailable",
+            "bg-yellow-600": table.status === "reserved",
+          })}
+        >
+          {table.status}
+        </div>,
+        <DropwdownAction
+          menus={[
+            {
+              label: <ActionLabel type="edit" />,
+              variant: "default",
+              action: () => {
+                setSelectedAction({
+                  type: "update",
+                  table,
+                });
+              },
+              type: "button",
+            },
+            {
+              label: <ActionLabel type="delete" />,
+              variant: "destructive",
+              action: () => {
+                setSelectedAction({
+                  type: "delete",
+                  table,
+                });
+              },
+              type: "button",
+            },
+          ]}
+        />,
+      ];
+    });
+  }, [tables]);
+
+  const totalPages = useMemo(() => {
+    if (!tables) return 1;
+    return tables.paging.total_page;
+  }, [tables]);
+
+  return (
+    <section className="flex flex-col gap-8">
+      <div className="flex gap-3 w-1/4 self-end">
+        <Input
+          placeholder="Search name/status"
+          onChange={(e) => handleSearch(e.target.value)}
+        />
+        <Button
+          variant="outline"
+          onClick={() => setSelectedAction({ type: "create", table: null })}
+        >
+          Create
+        </Button>
+      </div>
+      <DataTable
+        headers={HEADER_TABLE_TABLE}
+        data={filteredTables}
+        isPending={isPending}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        handleChangeLimit={handleChangeLimit}
+        currentLimit={currentLimit}
+        totalPages={totalPages}
+      />
+    </section>
+  );
+};
+
+export default TableManagement;
