@@ -10,10 +10,11 @@ import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
 import { Table } from "@/generated/prisma/client";
 import ActionLabel from "../../users/_components/action-label";
-import { getTableAction } from "@/actions/table/get-menu";
+import { getTableAction } from "@/actions/table/get-table";
 import { HEADER_TABLE_TABLE } from "@/constants/table-constants";
 import { cn } from "@/lib/utils";
 import DialogCreateTable from "./dialog-create-table";
+import DialogUpdateTable from "./dialog-update-table";
 
 const TableManagement = () => {
   const {
@@ -134,6 +135,12 @@ const TableManagement = () => {
       <DialogCreateTable
         refetch={refetch}
         open={!!selectedAction && selectedAction.type === "create"}
+        setOpen={() => setSelectedAction(null)}
+      />
+      <DialogUpdateTable
+        refetch={refetch}
+        table={selectedAction?.table}
+        open={!!selectedAction && selectedAction.type === "update"}
         setOpen={() => setSelectedAction(null)}
       />
     </section>

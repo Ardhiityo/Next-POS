@@ -48,28 +48,11 @@ const DialogCreateTable = (props: DialogCreateTableProps) => {
     },
   });
 
-  const [imagePreview, setImagePreview] = useState<string | undefined>();
-  const [file, setFile] = useState<File | undefined>();
-
-  const onChangeImagePreview = (image: File | undefined) => {
-    setFile(image);
-  };
-
   useEffect(() => {
     if (!open) {
       reset();
-      setFile(undefined);
-      setImagePreview(undefined);
     }
-
-    if (file) {
-      const objectUrl = URL.createObjectURL(file);
-      setImagePreview(objectUrl);
-      return () => {
-        URL.revokeObjectURL(objectUrl);
-      };
-    }
-  }, [file, open]);
+  }, [open]);
 
   return (
     <FormMenu
