@@ -5,39 +5,39 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { SetStateAction, useEffect, useState } from "react";
-import {
-  CreateMenuForm,
-  createMenuFormSchema,
-} from "@/validations/menu-validation";
-import { INITIAL_CREATE_MENU_FORM } from "@/constants/menu-constants";
-import { createMenuAction } from "@/actions/menu/create-menu";
-import FormMenu from "./form-menu";
+import FormMenu from "./form-table";
 import { applyFieldErrors } from "@/lib/utils";
+import {
+  CreateTableForm,
+  createTableFormSchema,
+} from "@/validations/table-validations";
+import { INITIAL_CREATE_TABLE_FORM } from "@/constants/table-constants";
+import { createTableAction } from "@/actions/table/create-table";
 
-type DialogCreateMenuProps = {
+type DialogCreateTableProps = {
   refetch: () => void;
   open: boolean;
   setOpen: (event: SetStateAction<boolean>) => void;
 };
 
-const DialogCreateMenu = (props: DialogCreateMenuProps) => {
+const DialogCreateTable = (props: DialogCreateTableProps) => {
   const { open, setOpen, refetch } = props;
 
   const { control, handleSubmit, reset, setError } = useForm({
-    resolver: zodResolver(createMenuFormSchema),
-    defaultValues: INITIAL_CREATE_MENU_FORM,
+    resolver: zodResolver(createTableFormSchema),
+    defaultValues: INITIAL_CREATE_TABLE_FORM,
   });
 
   const { mutate, isPending } = useMutation({
-    mutationKey: ["create-menu"],
-    mutationFn: async (form: CreateMenuForm) => {
-      const response = await createMenuAction(form);
+    mutationKey: ["create-table"],
+    mutationFn: async (form: CreateTableForm) => {
+      const response = await createTableAction(form);
       if (!response.success && response.error.fieldErrors) {
         applyFieldErrors(response.error.fieldErrors, setError);
       } else if (!response.success && response.error.message) {
         toast.error(response.error.message);
       } else if (response.success) {
-        toast.success("Menu created successfully");
+        toast.success("Table created successfully");
         setOpen(false);
         refetch();
       }
@@ -75,14 +75,12 @@ const DialogCreateMenu = (props: DialogCreateMenuProps) => {
     <FormMenu
       open={open}
       setOpen={setOpen}
-      onSubmit={handleSubmit((data: CreateMenuForm) => mutate(data))}
+      onSubmit={handleSubmit((data: CreateTableForm) => mutate(data))}
       control={control}
       type="create"
       isPending={isPending}
-      onChangeImagePreview={onChangeImagePreview}
-      imagePreview={imagePreview}
     />
   );
 };
 
-export default DialogCreateMenu;
+export default DialogCreateTable;

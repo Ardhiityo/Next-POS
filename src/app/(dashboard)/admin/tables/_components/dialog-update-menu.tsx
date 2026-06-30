@@ -12,7 +12,7 @@ import {
 } from "@/validations/menu-validation";
 import { updateMenuAction } from "@/actions/menu/update-menu";
 import { applyFieldErrors } from "@/lib/utils";
-import FormMenu from "./form-menu";
+import FormMenu from "./form-table";
 
 type DialogUpdateMenuProps = {
   menu?: Menu | null;

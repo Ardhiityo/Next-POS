@@ -13,6 +13,7 @@ import ActionLabel from "../../users/_components/action-label";
 import { getTableAction } from "@/actions/table/get-menu";
 import { HEADER_TABLE_TABLE } from "@/constants/table-constants";
 import { cn } from "@/lib/utils";
+import DialogCreateTable from "./dialog-create-table";
 
 const TableManagement = () => {
   const {
@@ -60,11 +61,14 @@ const TableManagement = () => {
         </div>,
         table.capacity,
         <div
-          className={cn("text-white px-2 py-1 rounded-lg w-fit text-center", {
-            "bg-green-600": table.status === "available",
-            "bg-red-600": table.status === "unavailable",
-            "bg-yellow-600": table.status === "reserved",
-          })}
+          className={cn(
+            "text-white px-2 py-1 rounded-lg w-fit text-center capitalize",
+            {
+              "bg-green-600": table.status === "available",
+              "bg-red-600": table.status === "unavailable",
+              "bg-yellow-600": table.status === "reserved",
+            },
+          )}
         >
           {table.status}
         </div>,
@@ -126,6 +130,11 @@ const TableManagement = () => {
         handleChangeLimit={handleChangeLimit}
         currentLimit={currentLimit}
         totalPages={totalPages}
+      />
+      <DialogCreateTable
+        refetch={refetch}
+        open={!!selectedAction && selectedAction.type === "create"}
+        setOpen={() => setSelectedAction(null)}
       />
     </section>
   );

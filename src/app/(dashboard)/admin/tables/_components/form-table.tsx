@@ -1,6 +1,5 @@
 "use client";
 
-import FormImage from "@/components/common/form-image";
 import FormInput from "@/components/common/form-input";
 import FormSelect from "@/components/common/form-select";
 import { Button } from "@/components/ui/button";
@@ -13,46 +12,32 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  MENU_AVAILABILITIES,
-  MENU_CATEGORIES,
-} from "@/constants/menu-constants";
+import { TABLE_STATUSES } from "@/constants/table-constants";
 import { Loader2Icon } from "lucide-react";
 import { BaseSyntheticEvent, SetStateAction } from "react";
 import { Control, FieldValues, Path } from "react-hook-form";
 
-type FormMenuProps<T extends FieldValues> = {
+type FormTableProps<T extends FieldValues> = {
   type: "create" | "update";
   open: boolean;
   setOpen: (event: SetStateAction<boolean>) => void;
   onSubmit: (event: BaseSyntheticEvent) => void;
   isPending: boolean;
   control: Control<T>;
-  imagePreview?: string;
-  onChangeImagePreview: (image: File | undefined) => void;
 };
 
-const FormMenu = <T extends FieldValues>(props: FormMenuProps<T>) => {
-  const {
-    open,
-    setOpen,
-    onSubmit,
-    isPending,
-    control,
-    type,
-    imagePreview,
-    onChangeImagePreview,
-  } = props;
+const FormTable = <T extends FieldValues>(props: FormTableProps<T>) => {
+  const { open, setOpen, onSubmit, isPending, control, type } = props;
 
-  const title = type === "create" ? "Create menu" : "Update menu";
+  const title = type === "create" ? "Create table" : "Update table";
   const description =
     type === "create"
-      ? "Make new menu here. Click submit when you're done."
-      : "Change menu here. Click submit when you're done.";
+      ? "Make new table here. Click submit when you're done."
+      : "Change table here. Click submit when you're done.";
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <form onSubmit={onSubmit} id={`form-menu-${type}`}>
+      <form onSubmit={onSubmit} id={`form-table-${type}`}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
@@ -66,12 +51,6 @@ const FormMenu = <T extends FieldValues>(props: FormMenuProps<T>) => {
               control={control}
               placeholder="Name"
             />
-            <FormSelect
-              name={"category" as Path<T>}
-              label="Category"
-              control={control}
-              items={MENU_CATEGORIES}
-            />
             <FormInput
               name={"description" as Path<T>}
               label="Description"
@@ -80,31 +59,17 @@ const FormMenu = <T extends FieldValues>(props: FormMenuProps<T>) => {
               placeholder="description"
             />
             <FormInput
-              name={"price" as Path<T>}
-              label="Price"
+              name={"capacity" as Path<T>}
+              label="Capacity"
               type="text"
               control={control}
-              placeholder="Price"
-            />
-            <FormInput
-              name={"discount" as Path<T>}
-              label="Discount %"
-              type="text"
-              control={control}
-              placeholder="Discount"
-            />
-            <FormImage
-              name={"image" as Path<T>}
-              label="Image"
-              control={control}
-              imagePreview={imagePreview}
-              onChangeImagePreview={onChangeImagePreview}
+              placeholder="capacity"
             />
             <FormSelect
-              name={"isAvailable" as Path<T>}
-              label="Availability"
+              name={"status" as Path<T>}
+              label="Status"
               control={control}
-              items={MENU_AVAILABILITIES}
+              items={TABLE_STATUSES}
             />
           </div>
           <DialogFooter>
@@ -113,7 +78,7 @@ const FormMenu = <T extends FieldValues>(props: FormMenuProps<T>) => {
             </DialogClose>
             <Button
               type="submit"
-              form={`form-menu-${type}`}
+              form={`form-table-${type}`}
               disabled={isPending}
             >
               {isPending ? <Loader2Icon className="animate-spin" /> : "Submit"}
@@ -125,4 +90,4 @@ const FormMenu = <T extends FieldValues>(props: FormMenuProps<T>) => {
   );
 };
 
-export default FormMenu;
+export default FormTable;
