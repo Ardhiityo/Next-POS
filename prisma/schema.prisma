@@ -90,7 +90,7 @@ model Verification {
 }
 
 model Menu {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   name        String
   description String
   price       Int
@@ -98,7 +98,8 @@ model Menu {
   image       String
   category    String
   isAvailable Boolean
-  createdAt   DateTime @default(now())
+  createdAt   DateTime    @default(now())
+  orderMenus  OrderMenu[]
 
   @@map("menu")
 }
@@ -111,5 +112,36 @@ model Table {
   status      String
   createdAt   DateTime @default(now())
 
+  orders Order[]
+
   @@map("table")
+}
+
+model Order {
+  id           String @id @default(cuid())
+  orderId      String @default(cuid())
+  customerName String
+  status       String
+  paymentUrl   String
+
+  tableId    String?
+  table      Table?      @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  orderMenus OrderMenu[]
+
+  @@index([tableId])
+  @@map("order")
+}
+
+model OrderMenu {
+  id         String @id @default(cuid())
+  status     String
+  paymentUrl String
+  quantity   Int
+  notes      String
+
+  orderId String?
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  menuId String?
+  menu   Menu?   @relation(fields: [menuId], references: [id], onDelete: SetNull)
 }
