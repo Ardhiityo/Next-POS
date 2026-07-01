@@ -8,17 +8,14 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
-import { Menu } from "@/generated/prisma/client";
-import { HEADER_TABLE_MENU } from "@/constants/menu-constants";
-import { getMenuAction } from "@/actions/menu/get-menu";
-import ActionLabel from "../../users/_components/action-label";
-import { cn, priceToIDR } from "@/lib/utils";
-import Image from "next/image";
-import DialogCreateMenu from "./dialog-create-menu";
-import DialogUpdateMenu from "./dialog-update-menu";
-import DialogDeleteMenu from "./dialog-delete-menu";
+import { Order } from "@/generated/prisma/client";
+import ActionLabel from "@/app/(dashboard)/admin/users/_components/action-label";
+import { cn } from "@/lib/utils";
+import { HEADER_TABLE_ORDER } from "@/constants/order-constants";
+import { getOrderAction } from "@/actions/order/get-order";
+import { OrderWithTable } from "@/types/order";
 
-const MenuManagement = () => {
+const OrderManagement = () => {
   const {
     currentLimit,
     currentPage,
@@ -29,14 +26,14 @@ const MenuManagement = () => {
   } = useDataTable();
 
   const {
-    data: menus,
+    data: orders,
     isPending,
     refetch,
     error,
   } = useQuery({
-    queryKey: ["menus", currentPage, currentLimit, currentSearch],
+    queryKey: ["orders", currentPage, currentLimit, currentSearch],
     queryFn: async () => {
-      return await getMenuAction({
+      return await getOrderAction({
         take: currentLimit,
         page: currentPage,
         search: currentSearch,
@@ -50,41 +47,26 @@ const MenuManagement = () => {
 
   const [selectedAction, setSelectedAction] = useState<null | {
     type: "create" | "update" | "delete";
-    menu: Menu | null;
+    order: Order | null;
   }>(null);
 
-  const filteredMenus = useMemo(() => {
-    if (!menus) return [];
-    return menus.data.map((menu: Menu, index: number) => {
+  const filteredOrders = useMemo(() => {
+    if (!orders) return [];
+    return orders.data.map((order: OrderWithTable, index: number) => {
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        <div className="flex gap-2 items-center">
-          <Image
-            src={menu.image}
-            alt={menu.name}
-            width={500}
-            height={500}
-            className="size-14 rounded-lg"
-            loading="eager"
-          />
-          {menu.name}
-        </div>,
-        menu.category,
-        <div>
-          <p>Base {priceToIDR(menu.price)}</p>
-          <p>Discount {menu.discount}%</p>
-          <p>
-            After discount{" "}
-            {priceToIDR(menu.price - (menu.price * menu.discount) / 100)}
-          </p>
-        </div>,
+        order.orderId,
+        order.customerName,
+        order.table?.name,
         <div
-          className={cn(
-            "text-center text-white py-1 w-fit px-2 rounded-lg",
-            menu.isAvailable ? "bg-green-600" : "bg-red-600",
-          )}
+          className={cn("text-center text-white py-1 w-fit px-2 rounded-lg", {
+            "bg-green-600": order.status === "settled",
+            "bg-yellow-600": order.status === "processed",
+            "bg-slate-600": order.status === "reserved",
+            "bg-red-600": order.status === "cancelled",
+          })}
         >
-          {menu.isAvailable ? "Available" : "Not available"}
+          {order.status}
         </div>,
         <DropwdownAction
           menus={[
@@ -94,7 +76,7 @@ const MenuManagement = () => {
               action: () => {
                 setSelectedAction({
                   type: "update",
-                  menu,
+                  order,
                 });
               },
               type: "button",
@@ -102,10 +84,11 @@ const MenuManagement = () => {
             {
               label: <ActionLabel type="delete" />,
               variant: "destructive",
+
               action: () => {
                 setSelectedAction({
                   type: "delete",
-                  menu,
+                  order,
                 });
               },
               type: "button",
@@ -114,30 +97,30 @@ const MenuManagement = () => {
         />,
       ];
     });
-  }, [menus]);
+  }, [orders]);
 
   const totalPages = useMemo(() => {
-    if (!menus) return 1;
-    return menus.paging.total_page;
-  }, [menus]);
+    if (!orders) return 1;
+    return orders.paging.total_page;
+  }, [orders]);
 
   return (
     <section className="flex flex-col gap-8">
       <div className="flex gap-3 w-1/4 self-end">
         <Input
-          placeholder="Search name/category"
+          placeholder="Search order id/customer name"
           onChange={(e) => handleSearch(e.target.value)}
         />
         <Button
           variant="outline"
-          onClick={() => setSelectedAction({ type: "create", menu: null })}
+          onClick={() => setSelectedAction({ type: "create", order: null })}
         >
           Create
         </Button>
       </div>
       <DataTable
-        headers={HEADER_TABLE_MENU}
-        data={filteredMenus}
+        headers={HEADER_TABLE_ORDER}
+        data={filteredOrders}
         isPending={isPending}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
@@ -145,7 +128,7 @@ const MenuManagement = () => {
         currentLimit={currentLimit}
         totalPages={totalPages}
       />
-      <DialogCreateMenu
+      {/* <DialogCreateMenu
         refetch={refetch}
         open={!!selectedAction && selectedAction.type === "create"}
         setOpen={() => setSelectedAction(null)}
@@ -161,9 +144,9 @@ const MenuManagement = () => {
         refetch={refetch}
         open={!!selectedAction && selectedAction.type === "delete"}
         setOpen={() => setSelectedAction(null)}
-      />
+      /> */}
     </section>
   );
 };
 
-export default MenuManagement;
+export default OrderManagement;
