@@ -4,7 +4,7 @@ import { INITIAL_CREATE_USER_FORM } from "@/constants/auth-constant";
 import {
   CreateUserForm,
   createUserFormSchema,
-} from "@/validations/auth-validation";
+} from "@/validations/auth-validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";

@@ -3,7 +3,7 @@
 import {
   UpdateUserForm,
   updateUserFormSchema,
-} from "@/validations/auth-validation";
+} from "@/validations/auth-validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";

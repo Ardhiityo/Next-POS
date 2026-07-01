@@ -6,8 +6,8 @@ import { SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import DialogDelete from "@/components/common/dialog-delete";
 import { Menu } from "@/generated/prisma/client";
-import { DeleteMenuForm } from "@/validations/menu-validation";
 import { deleteMenuAction } from "@/actions/menu/delete-menu";
+import { DeleteMenuForm } from "@/validations/menu-validations";
 
 type DialogDeleteMenuProps = {
   menu?: Menu | null;

@@ -4,12 +4,12 @@ import { uploadFileAction } from "../storage/upload-file";
 import { deleteFileAction } from "../storage/delete-file";
 import { ActionResponse } from "@/types/general";
 import { Menu } from "@/generated/prisma/client";
+import prisma from "@/lib/prisma";
+import { validationError } from "@/lib/utils";
 import {
   UpdateMenuForm,
   updateMenuFormSchema,
-} from "@/validations/menu-validation";
-import prisma from "@/lib/prisma";
-import { validationError } from "@/lib/utils";
+} from "@/validations/menu-validations";
 
 type UpdateMenuParams = {
   menu: Menu;

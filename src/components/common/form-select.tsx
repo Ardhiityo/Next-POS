@@ -21,15 +21,13 @@ import { Role } from "@/generated/prisma/enums";
 type FormSelectProps<T extends FieldValues> = {
   name: Path<T>;
   label: string;
-  disabled?: boolean;
   control: Control<T>;
-  items: { label: string; value: Role | string }[];
+  items: { label: string; value: Role | string; disabled?: boolean }[];
 };
 
 const FormSelect = <T extends FieldValues>({
   name,
   label,
-  disabled = false,
   control,
   items,
 }: FormSelectProps<T>) => {
@@ -41,24 +39,21 @@ const FormSelect = <T extends FieldValues>({
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel htmlFor={label}>{label}</FieldLabel>
-            <Select
-              disabled={disabled}
-              value={field.value}
-              onValueChange={field.onChange}
-            >
+            <Select value={field.value} onValueChange={field.onChange}>
               <SelectTrigger
                 className="w-full"
                 aria-invalid={fieldState.invalid}
               >
                 <SelectValue placeholder={`Select a ${label}`} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent position="popper">
                 <SelectGroup>
                   <SelectLabel>{label}</SelectLabel>
-                  {items.map((item, index) => (
+                  {items.map((item) => (
                     <SelectItem
-                      key={`select-item-${index}-${item.value}-${item.label}`}
+                      key={`select-item-${item.value}`}
                       value={item.value}
+                      disabled={item.disabled}
                     >
                       {item.label}
                     </SelectItem>

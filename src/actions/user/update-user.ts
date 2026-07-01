@@ -1,6 +1,6 @@
 "use server";
 
-import { UpdateUserForm } from "@/validations/auth-validation";
+import { UpdateUserForm } from "@/validations/auth-validations";
 import { uploadFileAction } from "../storage/upload-file";
 import { auth } from "@/lib/auth";
 import { deleteFileAction } from "../storage/delete-file";

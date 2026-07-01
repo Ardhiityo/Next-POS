@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { SignUpForm, signUpFormSchema } from "@/validations/auth-validation";
+import { SignUpForm, signUpFormSchema } from "@/validations/auth-validations";
 import { INITIAL_SIGNUP_FORM } from "@/constants/auth-constant";
 import { Field } from "@/components/ui/field";
 import FormInput from "@/components/common/form-input";

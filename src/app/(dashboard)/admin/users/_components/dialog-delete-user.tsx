@@ -7,7 +7,7 @@ import { UserWithRole } from "better-auth/plugins";
 import { deleteUserAction } from "@/actions/user/delete-user";
 import { useForm } from "react-hook-form";
 import DialogDelete from "@/components/common/dialog-delete";
-import { DeleteUserForm } from "@/validations/auth-validation";
+import { DeleteUserForm } from "@/validations/auth-validations";
 
 type DialogDeleteUserProps = {
   user?: UserWithRole | null;

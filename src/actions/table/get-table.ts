@@ -1,6 +1,6 @@
 "use server";
 
-import { Menu, Prisma, Table } from "@/generated/prisma/client";
+import { Prisma, Table } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
 
 type GetTableParams = {

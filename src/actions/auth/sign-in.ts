@@ -2,8 +2,8 @@
 
 import { auth } from "@/lib/auth";
 import { cookies } from "next/headers";
-import { SignInForm } from "@/validations/auth-validation";
-import { signInFormSchema } from "@/validations/auth-validation";
+import { SignInForm } from "@/validations/auth-validations";
+import { signInFormSchema } from "@/validations/auth-validations";
 import { ActionResponse } from "@/types/general";
 import { validationError } from "@/lib/utils";
 

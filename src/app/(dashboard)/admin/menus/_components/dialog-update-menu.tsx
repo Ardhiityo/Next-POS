@@ -6,13 +6,13 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { SetStateAction, useEffect, useState } from "react";
 import { Menu } from "@/generated/prisma/client";
-import {
-  UpdateMenuForm,
-  updateMenuFormSchema,
-} from "@/validations/menu-validation";
 import { updateMenuAction } from "@/actions/menu/update-menu";
 import { applyFieldErrors } from "@/lib/utils";
 import FormMenu from "./form-menu";
+import {
+  UpdateMenuForm,
+  updateMenuFormSchema,
+} from "@/validations/menu-validations";
 
 type DialogUpdateMenuProps = {
   menu?: Menu | null;

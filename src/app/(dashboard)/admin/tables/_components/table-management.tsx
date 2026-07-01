@@ -68,7 +68,7 @@ const TableManagement = () => {
             {
               "bg-green-600": table.status === "available",
               "bg-red-600": table.status === "unavailable",
-              "bg-yellow-600": table.status === "reserved",
+              "bg-sky-600": table.status === "reserved",
             },
           )}
         >

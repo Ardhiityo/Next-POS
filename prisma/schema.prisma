@@ -123,7 +123,7 @@ model Order {
   orderId      String   @default(cuid())
   customerName String
   status       String
-  paymentUrl   String
+  paymentUrl   String?
   createdAt    DateTime @default(now())
 
   tableId    String?
@@ -147,4 +147,7 @@ model OrderMenu {
 
   menuId String?
   menu   Menu?   @relation(fields: [menuId], references: [id], onDelete: SetNull)
+
+  @@index([orderId, menuId])
+  @@map("order_menu")
 }

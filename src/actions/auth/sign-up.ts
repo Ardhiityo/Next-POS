@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { SignUpForm, signUpFormSchema } from "@/validations/auth-validation";
+import { SignUpForm, signUpFormSchema } from "@/validations/auth-validations";
 import { ActionResponse } from "@/types/general";
 import { validationError } from "@/lib/utils";
 

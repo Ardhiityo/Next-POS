@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { HEADER_TABLE_ORDER } from "@/constants/order-constants";
 import { getOrderAction } from "@/actions/order/get-order";
 import { OrderWithTable } from "@/types/order";
+import DialogCreateOrder from "./dialog-create-order";
 
 const OrderManagement = () => {
   const {
@@ -59,12 +60,15 @@ const OrderManagement = () => {
         order.customerName,
         order.table?.name,
         <div
-          className={cn("text-center text-white py-1 w-fit px-2 rounded-lg", {
-            "bg-green-600": order.status === "settled",
-            "bg-yellow-600": order.status === "processed",
-            "bg-slate-600": order.status === "reserved",
-            "bg-red-600": order.status === "cancelled",
-          })}
+          className={cn(
+            "text-center text-white capitalize py-1 w-fit px-2 rounded-lg",
+            {
+              "bg-green-600": order.status === "settled",
+              "bg-yellow-600": order.status === "processed",
+              "bg-sky-600": order.status === "reserved",
+              "bg-red-600": order.status === "cancelled",
+            },
+          )}
         >
           {order.status}
         </div>,
@@ -128,11 +132,12 @@ const OrderManagement = () => {
         currentLimit={currentLimit}
         totalPages={totalPages}
       />
-      {/* <DialogCreateMenu
+      <DialogCreateOrder
         refetch={refetch}
         open={!!selectedAction && selectedAction.type === "create"}
         setOpen={() => setSelectedAction(null)}
       />
+      {/*
       <DialogUpdateMenu
         menu={selectedAction?.menu}
         refetch={refetch}
