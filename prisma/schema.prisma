@@ -135,12 +135,11 @@ model Order {
 }
 
 model OrderMenu {
-  id         String   @id @default(cuid())
-  status     String
-  paymentUrl String
-  quantity   Int
-  notes      String
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  status    String
+  quantity  Int
+  notes     String?
+  createdAt DateTime @default(now())
 
   orderId String?
   order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)

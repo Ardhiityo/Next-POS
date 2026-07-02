@@ -40,7 +40,7 @@ export function DataTable(props: TableListProps) {
             <TableRow>
               {headers.map((item, index) => (
                 <TableHead
-                  className="font-semibold py-3 px-16"
+                  className="font-semibold py-3 px-10"
                   key={`header-${index}`}
                 >
                   {item}
@@ -75,7 +75,7 @@ export function DataTable(props: TableListProps) {
                     {row.map((column, columnIndex) => (
                       <TableCell
                         key={`column-${columnIndex}`}
-                        className="px-16 py-3"
+                        className="px-10 py-3"
                       >
                         {column}
                       </TableCell>
