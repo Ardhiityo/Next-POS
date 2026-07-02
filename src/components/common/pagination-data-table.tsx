@@ -25,6 +25,7 @@ type PaginationDataTableProps = {
   handleChangeLimit: (value: string) => void;
   currentLimit: number;
   totalPages: number;
+  hideRowsPerPage?: boolean;
 };
 
 const PaginationDataTable = (props: PaginationDataTableProps) => {
@@ -34,29 +35,35 @@ const PaginationDataTable = (props: PaginationDataTableProps) => {
     handleChangeLimit,
     currentLimit,
     totalPages,
+    hideRowsPerPage,
   } = props;
   return (
     <div className="flex justify-between">
-      <Field orientation="horizontal" className="w-fit">
-        <FieldLabel htmlFor="select-rows-per-page">Rows per page</FieldLabel>
-        <Select
-          defaultValue={String(currentLimit)}
-          onValueChange={handleChangeLimit}
-        >
-          <SelectTrigger className="w-20" id="select-rows-per-page">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent align="start">
-            <SelectGroup>
-              {LIMIT_LIST.map((limit: number, index) => (
-                <SelectItem value={String(limit)} key={`row-perpage-${index}`}>
-                  {limit}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </Field>
+      {!hideRowsPerPage && (
+        <Field orientation="horizontal" className="w-fit">
+          <FieldLabel htmlFor="select-rows-per-page">Rows per page</FieldLabel>
+          <Select
+            defaultValue={String(currentLimit)}
+            onValueChange={handleChangeLimit}
+          >
+            <SelectTrigger className="w-20" id="select-rows-per-page">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent align="start">
+              <SelectGroup>
+                {LIMIT_LIST.map((limit: number, index) => (
+                  <SelectItem
+                    value={String(limit)}
+                    key={`row-perpage-${index}`}
+                  >
+                    {limit}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </Field>
+      )}
       {totalPages > 1 && (
         <div>
           <Pagination>

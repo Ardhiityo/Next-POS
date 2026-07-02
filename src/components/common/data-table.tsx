@@ -19,6 +19,7 @@ type TableListProps = {
   handleChangeLimit: (value: string) => void;
   currentLimit: number;
   totalPages: number;
+  hideRowsPerPage?: boolean;
 };
 
 export function DataTable(props: TableListProps) {
@@ -31,6 +32,7 @@ export function DataTable(props: TableListProps) {
     handleChangeLimit,
     currentLimit,
     totalPages,
+    hideRowsPerPage = false,
   } = props;
   return (
     <section className="flex flex-col gap-4">
@@ -93,6 +95,7 @@ export function DataTable(props: TableListProps) {
         handleChangeLimit={handleChangeLimit}
         currentLimit={currentLimit}
         totalPages={totalPages}
+        hideRowsPerPage={hideRowsPerPage}
       />
     </section>
   );
