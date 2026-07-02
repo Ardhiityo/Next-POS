@@ -16,7 +16,7 @@ export const INITIAL_CREATE_ORDER_FORM = {
 export const STATUS_ORDER_CREATE = [
   {
     label: "Process",
-    value: "processed",
+    value: "process",
   },
   {
     label: "Reserved",

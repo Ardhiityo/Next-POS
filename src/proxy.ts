@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
+import { authSession } from "./lib/auth-utils";
 
 const publicRoutes = ["/", "/auth/sign-in", "/auth/sign-up"];
 
@@ -10,7 +11,10 @@ export async function proxy(request: NextRequest) {
   const inOnAuthRoutes = pathName.startsWith("/auth");
 
   if (inOnAuthRoutes && sessionCookie) {
-    return NextResponse.redirect(new URL("/", request.url));
+    const session = await authSession();
+    return session
+      ? NextResponse.redirect(new URL("/", request.url))
+      : NextResponse.redirect(new URL("/auth/sign-in", request.url));
   }
 
   const inOnProtectedRoutes = !publicRoutes.includes(pathName);

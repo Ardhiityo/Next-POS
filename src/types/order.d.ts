@@ -1,6 +1,6 @@
 import { Prisma } from "@/generated/prisma/client";
 
-type OrderWithTable = Prisma.OrderGetPayload<{
+export type OrderWithTable = Prisma.OrderGetPayload<{
   include: {
     table: {
       select: {
@@ -9,3 +9,8 @@ type OrderWithTable = Prisma.OrderGetPayload<{
     };
   };
 }>;
+
+export type UpdateOrder = {
+  order: OrderWithTable;
+  status: "process" | "cancelled";
+};

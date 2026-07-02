@@ -3,18 +3,20 @@
 import { DataTable } from "@/components/common/data-table";
 import { Input } from "@/components/ui/input";
 import { useDataTable } from "@/hooks/use-data-table";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
 import { Order } from "@/generated/prisma/client";
-import ActionLabel from "@/app/(dashboard)/admin/users/_components/action-label";
 import { cn } from "@/lib/utils";
 import { HEADER_TABLE_ORDER } from "@/constants/order-constants";
 import { getOrderAction } from "@/actions/order/get-order";
-import { OrderWithTable } from "@/types/order";
+import { OrderWithTable, UpdateOrder } from "@/types/order";
 import DialogCreateOrder from "./dialog-create-order";
+import { CircleXIcon, RocketIcon, ScrollTextIcon } from "lucide-react";
+import { updateOrderAction } from "@/actions/order/update-order";
+import { useRouter } from "next/navigation";
 
 const OrderManagement = () => {
   const {
@@ -25,6 +27,8 @@ const OrderManagement = () => {
     setCurrentPage,
     handleChangeLimit,
   } = useDataTable();
+
+  const { push } = useRouter();
 
   const {
     data: orders,
@@ -47,9 +51,22 @@ const OrderManagement = () => {
   }, [error]);
 
   const [selectedAction, setSelectedAction] = useState<null | {
-    type: "create" | "update" | "delete";
+    type: "create";
     order: Order | null;
   }>(null);
+
+  const { mutate } = useMutation({
+    mutationKey: ["update-order"],
+    mutationFn: async ({ order, status }: UpdateOrder) => {
+      const response = await updateOrderAction({ order, status });
+      if (!response.success && response.error.message) {
+        toast.error(response.error.message);
+      } else if (response.success) {
+        toast.success("Order updated successfully");
+        refetch();
+      }
+    },
+  });
 
   const filteredOrders = useMemo(() => {
     if (!orders) return [];
@@ -64,7 +81,7 @@ const OrderManagement = () => {
             "text-center text-white capitalize py-1 w-fit px-2 rounded-lg",
             {
               "bg-green-600": order.status === "settled",
-              "bg-yellow-600": order.status === "processed",
+              "bg-yellow-600": order.status === "process",
               "bg-sky-600": order.status === "reserved",
               "bg-red-600": order.status === "cancelled",
             },
@@ -73,31 +90,52 @@ const OrderManagement = () => {
           {order.status}
         </div>,
         <DropwdownAction
-          menus={[
-            {
-              label: <ActionLabel type="edit" />,
-              variant: "default",
-              action: () => {
-                setSelectedAction({
-                  type: "update",
-                  order,
-                });
-              },
-              type: "button",
-            },
-            {
-              label: <ActionLabel type="delete" />,
-              variant: "destructive",
-
-              action: () => {
-                setSelectedAction({
-                  type: "delete",
-                  order,
-                });
-              },
-              type: "button",
-            },
-          ]}
+          menus={
+            order.status === "reserved"
+              ? [
+                  {
+                    label: (
+                      <div className="flex gap-1 items-center">
+                        <RocketIcon />
+                        Process
+                      </div>
+                    ),
+                    variant: "default",
+                    action: () => {
+                      mutate({ order, status: "process" });
+                    },
+                    type: "button",
+                  },
+                  {
+                    label: (
+                      <div className="flex gap-1 items-center">
+                        <CircleXIcon />
+                        Cancel
+                      </div>
+                    ),
+                    variant: "destructive",
+                    action: () => {
+                      mutate({ order, status: "cancelled" });
+                    },
+                    type: "button",
+                  },
+                ]
+              : [
+                  {
+                    label: (
+                      <div className="flex gap-1 items-center">
+                        <ScrollTextIcon />
+                        Details
+                      </div>
+                    ),
+                    variant: "default",
+                    action: () => {
+                      push(`/orders/${order.orderId}`);
+                    },
+                    type: "button",
+                  },
+                ]
+          }
         />,
       ];
     });
