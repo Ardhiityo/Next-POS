@@ -6,6 +6,7 @@ export function useDataTable() {
   const [currentLimit, setLimit] = useState(DEFAULT_LIMIT);
   const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE);
   const [currentSearch, setCurrentSearch] = useState("");
+  const [currentFilter, setCurrentFilter] = useState("");
   const debounce = useDebounce();
 
   function handleChangeLimit(value: string) {
@@ -24,8 +25,10 @@ export function useDataTable() {
     currentLimit,
     currentSearch,
     currentPage,
+    currentFilter,
     setLimit,
     setCurrentPage,
+    setCurrentFilter,
     handleChangeLimit,
     handleSearch,
   };

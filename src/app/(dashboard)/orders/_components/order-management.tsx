@@ -175,19 +175,6 @@ const OrderManagement = () => {
         open={!!selectedAction && selectedAction.type === "create"}
         setOpen={() => setSelectedAction(null)}
       />
-      {/*
-      <DialogUpdateMenu
-        menu={selectedAction?.menu}
-        refetch={refetch}
-        open={!!selectedAction && selectedAction.type === "update"}
-        setOpen={() => setSelectedAction(null)}
-      />
-      <DialogDeleteMenu
-        menu={selectedAction?.menu}
-        refetch={refetch}
-        open={!!selectedAction && selectedAction.type === "delete"}
-        setOpen={() => setSelectedAction(null)}
-      /> */}
     </section>
   );
 };

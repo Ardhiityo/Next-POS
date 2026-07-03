@@ -7,6 +7,7 @@ type GetMenuParams = {
   take: number;
   page: number;
   search: string | null;
+  filter?: string;
 };
 
 type GetMenuResponse = {
@@ -25,19 +26,18 @@ export async function getMenuAction(
   const page = params.page;
   const skip = (page - 1) * take;
   const search = params.search ?? null;
+  const filter = params.filter ?? null;
 
   const where: Prisma.MenuWhereInput = {};
+
+  if (filter) {
+    where.category = filter;
+  }
 
   if (search) {
     where.OR = [
       {
         name: {
-          startsWith: search,
-          mode: Prisma.QueryMode.insensitive,
-        },
-      },
-      {
-        category: {
           startsWith: search,
           mode: Prisma.QueryMode.insensitive,
         },

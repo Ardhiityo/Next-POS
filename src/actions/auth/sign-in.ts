@@ -30,6 +30,7 @@ export async function signInAction(form: SignInForm): Promise<ActionResponse> {
 
     return {
       success: true,
+      data: null,
     };
   } catch (error) {
     if (error instanceof Error) {

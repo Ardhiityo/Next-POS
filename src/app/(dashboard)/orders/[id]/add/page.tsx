@@ -1,9 +1,9 @@
 import { Metadata } from "next";
-import OrderDetail from "./_components/order-detail";
+import AddOrderItem from "./_components/add-order-item";
 
 export const metadata: Metadata = {
-  title: "POS | Order Details",
-  description: "Order details here you can manage.",
+  title: "POS | Add Order Item",
+  description: "Add order items here you can manage.",
 };
 
 type PageProps = {
@@ -15,7 +15,7 @@ type PageProps = {
 const Page = async ({ params }: PageProps) => {
   const { id } = await params;
 
-  return <OrderDetail orderId={id} />;
+  return <AddOrderItem orderId={id} />;
 };
 
 export default Page;

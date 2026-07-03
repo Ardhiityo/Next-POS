@@ -14,5 +14,5 @@ export async function signOutAction(): Promise<ActionResponse> {
   const cookiesStore = await cookies();
   cookiesStore.delete("user");
 
-  return { success: true };
+  return { success: true, data: null };
 }

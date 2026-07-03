@@ -37,6 +37,7 @@ export async function getOrderMenuAction(
           price: true,
           discount: true,
           image: true,
+          description: true,
         },
       },
       order: {

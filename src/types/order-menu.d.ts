@@ -8,6 +8,7 @@ export type OrderMenu = Prisma.OrderMenuGetPayload<{
         price: true;
         discount: true;
         image: true;
+        description: true;
       };
     };
     order: {

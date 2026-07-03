@@ -1,7 +1,6 @@
 "use client";
 
 import { DataTable } from "@/components/common/data-table";
-import { Input } from "@/components/ui/input";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
@@ -14,21 +13,21 @@ import { HEADER_TABLE_ORDER_MENU } from "@/constants/order-menu-constants";
 import Image from "next/image";
 import { OrderMenu } from "@/types/order-menu";
 import OrderSummary from "./order-summary";
+import Link from "next/link";
 
-const OrderDetail = ({ id }: { id: string }) => {
+const OrderDetail = ({ orderId }: { orderId: string }) => {
   const { currentLimit, currentPage, setCurrentPage, handleChangeLimit } =
     useDataTable();
 
   const {
     data: orderMenus,
     isPending,
-    refetch,
     error,
   } = useQuery({
-    queryKey: ["order-details", id, currentLimit, currentPage],
+    queryKey: ["order-details", orderId, currentLimit, currentPage],
     queryFn: async () => {
       return await getOrderMenuAction({
-        orderId: id,
+        orderId,
       });
     },
   });
@@ -92,13 +91,8 @@ const OrderDetail = ({ id }: { id: string }) => {
       <section className="flex gap-5">
         <section className="flex flex-col w-2/3 gap-3">
           <div className="flex justify-end">
-            <Button
-              variant="outline"
-              onClick={() =>
-                setSelectedAction({ type: "create", orderMenu: null })
-              }
-            >
-              Add Menu
+            <Button variant="default" asChild>
+              <Link href={`/orders/${orderId}/add`}>Add Menu</Link>
             </Button>
           </div>
           <DataTable

@@ -22,6 +22,7 @@ export async function signUpAction(form: SignUpForm): Promise<ActionResponse> {
     });
     return {
       success: true,
+      data: null,
     };
   } catch (error) {
     if (error instanceof Error) {

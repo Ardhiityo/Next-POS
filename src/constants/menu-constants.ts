@@ -41,4 +41,8 @@ export const MENU_CATEGORIES = [
     label: "Mains",
     value: "mains",
   },
+  {
+    label: "Sides",
+    value: "sides",
+  },
 ];
