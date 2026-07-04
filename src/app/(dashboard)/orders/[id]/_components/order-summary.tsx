@@ -15,7 +15,7 @@ type OrderSummaryProps = {
 export default function OrderSummary({ orderMenu }: OrderSummaryProps) {
   const { subtotal, tax, service, total } = usePricing(orderMenu);
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="flex xl:col-span-1 col-span-3">
       <CardContent className="flex flex-col gap-4">
         <section>
           <h1 className="text-2xl font-extrabold">Customer Information</h1>

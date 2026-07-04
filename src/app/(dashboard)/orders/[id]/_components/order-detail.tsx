@@ -88,8 +88,8 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
   return (
     <>
       <h1 className="text-3xl font-extrabold">Detail Order</h1>
-      <section className="flex gap-5">
-        <section className="flex flex-col w-2/3 gap-3">
+      <section className="grid lg:grid-cols-3 gap-5 order-2">
+        <div className="flex flex-col gap-5 xl:col-span-2 col-span-3">
           <div className="flex justify-end">
             <Button variant="default" asChild>
               <Link href={`/orders/${orderId}/add`}>Add Menu</Link>
@@ -106,7 +106,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
             totalPages={1}
             hideRowsPerPage={true}
           />
-        </section>
+        </div>
         <OrderSummary orderMenu={orderMenus ?? []} />
       </section>
     </>

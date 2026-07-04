@@ -12,7 +12,7 @@ const LoadingCardMenu = () => {
     <>
       {Array.from({ length: 6 }, (_, index) => (
         <Card
-          className="relative w-1/4 max-w-sm pt-0"
+          className="relative lg:max-w-sm pt-0"
           key={`loading-card-menu-${index}`}
         >
           <Skeleton className="relative z-20 aspect-square w-full object-cover" />

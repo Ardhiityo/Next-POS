@@ -21,7 +21,11 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import LoadingCardMenu from "./loading-card-menu";
 
-const CardMenu = () => {
+type CardMenuProps = {
+  handleAddToCart: (menu: Menu) => void;
+};
+
+const CardMenu = ({ handleAddToCart }: CardMenuProps) => {
   const {
     currentLimit,
     currentPage,
@@ -60,7 +64,7 @@ const CardMenu = () => {
   }, [menuError]);
 
   return (
-    <div className="w-2/3 flex flex-col gap-5">
+    <main className="xl:col-span-3 col-span-4 w-full">
       <section className="mt-3 flex flex-col gap-3">
         <p className="text-gray-400">Categories</p>
         <div className="flex flex-wrap gap-2">
@@ -80,48 +84,46 @@ const CardMenu = () => {
             </Button>
           ))}
         </div>
-      </section>
-      <section>
-        <div className="w-1/3">
+        <div className="xl:w-1/3 w-1/2">
           <Input
             placeholder="Search menu..."
             onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
-        <div className="flex flex-wrap items-center gap-8 mt-4">
-          {isPending && <LoadingCardMenu />}
-          {menus?.data.length === 0 && (
-            <div className="h-50 w-full flex justify-center items-center">
-              <p className="text-gray-400">Menu not found</p>
-            </div>
-          )}
-          {menus?.data.map((menu: Menu, index) => (
-            <Card
-              className="relative w-1/4 max-w-sm pt-0"
-              key={`card-menu-${index}-${menu.name}`}
-            >
-              <img
-                src={menu.image}
-                alt={menu?.name}
-                className="relative z-20 aspect-square w-full object-cover"
-              />
-              <CardHeader>
-                <CardTitle className="font-bold">{menu.name}</CardTitle>
-                <CardDescription className="line-clamp-2">
-                  {menu.description}
-                </CardDescription>
-              </CardHeader>
-              <CardFooter className="flex justify-between">
-                <h3 className="text-xl font-bold">
-                  {priceToIDR(menu.price - menu.price * (menu.discount / 100))}
-                </h3>
-                <Button className="w-fit">
-                  <ShoppingCartIcon />
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+      </section>
+      <section className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8 md:grid-cols-2 w-full grid-cols-1 mt-8">
+        {isPending && <LoadingCardMenu />}
+        {menus?.data.length === 0 && (
+          <div className="min-h-56 flex justify-center items-center">
+            <p className="text-gray-400">Menu not found</p>
+          </div>
+        )}
+        {menus?.data.map((menu: Menu, index) => (
+          <Card
+            className="relative lg:max-w-sm pt-0"
+            key={`card-menu-${index}-${menu.name}`}
+          >
+            <img
+              src={menu.image}
+              alt={menu?.name}
+              className="relative z-20 aspect-square w-full object-cover"
+            />
+            <CardHeader>
+              <CardTitle className="font-bold">{menu.name}</CardTitle>
+              <CardDescription className="line-clamp-2">
+                {menu.description}
+              </CardDescription>
+            </CardHeader>
+            <CardFooter className="flex justify-between">
+              <h3 className="text-xl font-bold">
+                {priceToIDR(menu.price - menu.price * (menu.discount / 100))}
+              </h3>
+              <Button className="w-fit" onClick={() => handleAddToCart(menu)}>
+                <ShoppingCartIcon />
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
       </section>
       <section className="mt-6">
         <PaginationDataTable
@@ -133,7 +135,7 @@ const CardMenu = () => {
           hideRowsPerPage={false}
         />
       </section>
-    </div>
+    </main>
   );
 };
 
