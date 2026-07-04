@@ -1,26 +1,37 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { priceToIDR } from "@/lib/utils";
 import { CartMenu } from "@/types/cart";
 import { OrderMenu } from "@/types/order-menu";
+import { Loader2Icon } from "lucide-react";
 import Image from "next/image";
 
 type OrderCartProps = {
   orderMenu: OrderMenu[];
   carts: CartMenu[];
+  isPending: boolean;
   handleToCart: (menuId: string, action: "increase" | "decrease") => void;
   handleChangeNote: (menuId: string, note: string) => void;
+  handleProcessOrder: () => void;
 };
 
 export default function OrderCart(props: OrderCartProps) {
-  const { orderMenu, carts, handleToCart, handleChangeNote } = props;
+  const {
+    orderMenu,
+    carts,
+    isPending,
+    handleToCart,
+    handleChangeNote,
+    handleProcessOrder,
+  } = props;
+
   return (
-    <Card className="w-full xl:col-span-1 col-span-4">
+    <Card className="h-fit w-full xl:col-span-1 col-span-4 self-center">
       <CardContent className="flex flex-col gap-4">
         <section>
           <h1 className="text-xl font-extrabold">Customer Information</h1>
@@ -53,6 +64,11 @@ export default function OrderCart(props: OrderCartProps) {
             <h3 className="text-gray-400">Customer cart information details</h3>
           </section>
           <div className="flex flex-col gap-5">
+            {carts.length < 1 && (
+              <div className="h-20 flex items-center justify-center">
+                <p>Cart is empty, please add menu</p>
+              </div>
+            )}
             {carts.map((cart: CartMenu) => (
               <div
                 className="flex flex-col gap-3"
@@ -109,6 +125,23 @@ export default function OrderCart(props: OrderCartProps) {
           </div>
         </section>
       </CardContent>
+      <CardFooter>
+        {carts.length > 0 && (
+          <Button
+            type="submit"
+            variant={"default"}
+            className="w-full bg-slate-500 text-white font-semibold hover:bg-slate-600"
+            onClick={handleProcessOrder}
+            disabled={isPending}
+          >
+            {isPending ? (
+              <Loader2Icon className="animate-spin" />
+            ) : (
+              "Process Order"
+            )}
+          </Button>
+        )}
+      </CardFooter>
     </Card>
   );
 }

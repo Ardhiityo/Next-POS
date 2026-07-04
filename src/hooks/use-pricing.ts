@@ -6,7 +6,8 @@ export default function usePricing(orderMenu: OrderMenu[]) {
     const discountPercentage = (orderMenu.menu?.discount ?? 0) / 100;
     const discount = productPrice * discountPercentage;
     const productDiscount = productPrice - discount;
-    return orderMenu.quantity * productDiscount + total;
+    const productTotalPrice = orderMenu.quantity * productDiscount;
+    return productTotalPrice + total;
   }, 0);
 
   const tax = subtotal * 0.12; // 12%

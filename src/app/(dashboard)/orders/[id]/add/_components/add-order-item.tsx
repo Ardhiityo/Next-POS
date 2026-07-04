@@ -1,16 +1,21 @@
 "use client";
 
 import CardMenu from "./card-menu";
+import OrderCart from "./order-cart";
+import useDebounce from "@/hooks/use-debouce";
 import { getOrderMenuAction } from "@/actions/order-menu/get-order-menu";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import OrderCart from "./order-cart";
 import { Menu } from "@/generated/prisma/client";
 import { CartMenu } from "@/types/cart";
-import useDebounce from "@/hooks/use-debouce";
+import { addOrderMenuAction } from "@/actions/order-menu/add-order-menu";
+import { useRouter } from "next/navigation";
 
 const AddOrderItem = ({ orderId }: { orderId: string }) => {
+  const debounce = useDebounce();
+  const { push } = useRouter();
+
   const { data: orderMenus, error: orderMenuError } = useQuery({
     queryKey: ["get-order-menus", orderId],
     queryFn: async () => {
@@ -99,8 +104,6 @@ const AddOrderItem = ({ orderId }: { orderId: string }) => {
     }
   };
 
-  const debounce = useDebounce();
-
   const handleChangeNote = (menuId: string, note: string) => {
     debounce(() => {
       setCarts((carts) => {
@@ -117,6 +120,23 @@ const AddOrderItem = ({ orderId }: { orderId: string }) => {
     }, 500);
   };
 
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["add-order-menus", orderId],
+    mutationFn: async () => {
+      const response = await addOrderMenuAction({
+        orderId,
+        carts,
+      });
+      if (response.success) {
+        setCarts([]);
+        push(`/orders/${orderId}`);
+        toast.success("Order menu added successfully");
+      } else if (response.error) {
+        toast.error(response.error.message);
+      }
+    },
+  });
+
   return (
     <section>
       <h1 className="text-3xl font-extrabold">Menu</h1>
@@ -127,6 +147,8 @@ const AddOrderItem = ({ orderId }: { orderId: string }) => {
           carts={carts}
           handleToCart={handleToCart}
           handleChangeNote={handleChangeNote}
+          handleProcessOrder={() => mutate()}
+          isPending={isPending}
         />
       </section>
     </section>
