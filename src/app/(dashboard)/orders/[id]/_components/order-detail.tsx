@@ -2,7 +2,7 @@
 
 import { DataTable } from "@/components/common/data-table";
 import { useDataTable } from "@/hooks/use-data-table";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import Image from "next/image";
 import { OrderMenu } from "@/types/order-menu";
 import OrderSummary from "./order-summary";
 import Link from "next/link";
+import { CheckCheckIcon, CircleCheckBigIcon, RocketIcon } from "lucide-react";
+import { updateStatusOrderMenuAction } from "@/actions/order-menu/update-status-order-menu";
 
 const OrderDetail = ({ orderId }: { orderId: string }) => {
   const { currentLimit, currentPage, setCurrentPage, handleChangeLimit } =
@@ -23,6 +25,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
     data: orderMenus,
     isPending,
     error,
+    refetch,
   } = useQuery({
     queryKey: ["order-details", orderId, currentLimit, currentPage],
     queryFn: async () => {
@@ -36,10 +39,21 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
     if (error) toast.error(error.message);
   }, [error]);
 
-  const [selectedAction, setSelectedAction] = useState<null | {
-    type: "create";
-    orderMenu: OrderMenu | null;
-  }>(null);
+  const { mutate } = useMutation({
+    mutationKey: ["update-status-order-menu"],
+    mutationFn: async (params: {
+      orderMenuId: string;
+      status: "process" | "ready" | "served";
+    }) => {
+      const response = await updateStatusOrderMenuAction(params);
+      if (!response.success && response.error.message) {
+        toast.error(response.error.message);
+      } else if (response.success) {
+        toast.success("Status updated successfully");
+        refetch();
+      }
+    },
+  });
 
   const filteredOrderMenus = useMemo(() => {
     if (!orderMenus || orderMenus.length < 1) return [];
@@ -72,13 +86,48 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
               "bg-red-600": orderMenu.status === "pending",
               "bg-yellow-600": orderMenu.status === "process",
               "bg-blue-600": orderMenu.status === "ready",
-              "bg-green-600": orderMenu.status === "serve",
+              "bg-green-600": orderMenu.status === "served",
             },
           )}
         >
           {orderMenu.status}
         </div>,
-        <DropwdownAction menus={[]} />,
+        <DropwdownAction
+          menus={[
+            {
+              label:
+                orderMenu.status === "pending" ? (
+                  <>
+                    <RocketIcon />
+                    Process
+                  </>
+                ) : orderMenu.status === "process" ? (
+                  <>
+                    <CircleCheckBigIcon />
+                    Ready
+                  </>
+                ) : (
+                  <>
+                    <CheckCheckIcon />
+                    Served
+                  </>
+                ),
+              action: () => {
+                mutate({
+                  orderMenuId: orderMenu.id,
+                  status:
+                    orderMenu.status === "pending"
+                      ? "process"
+                      : orderMenu.status === "process"
+                        ? "ready"
+                        : "served",
+                });
+              },
+              type: "button",
+              variant: "default",
+            },
+          ]}
+        />,
       ];
     });
     if (results[0].length < 1) return [];
