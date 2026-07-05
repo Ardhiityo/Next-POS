@@ -123,7 +123,7 @@ model Order {
   orderId      String   @default(cuid())
   customerName String
   status       String
-  paymentUrl   String?
+  paymentToken String?
   createdAt    DateTime @default(now())
 
   tableId    String?

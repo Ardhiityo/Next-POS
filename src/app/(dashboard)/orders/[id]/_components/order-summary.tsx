@@ -1,19 +1,62 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { generatePaymentToken } from "@/actions/payment/generate-payment-token";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import usePricing from "@/hooks/use-pricing";
 import { priceToIDR } from "@/lib/utils";
 import { OrderMenu } from "@/types/order-menu";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 type OrderSummaryProps = {
   orderMenu: OrderMenu[];
+  orderId: string;
 };
 
-export default function OrderSummary({ orderMenu }: OrderSummaryProps) {
+export default function OrderSummary(props: OrderSummaryProps) {
+  const { orderMenu, orderId } = props;
+
   const { subtotal, tax, service, total } = usePricing(orderMenu);
+
+  const allMenuIsNotServed = orderMenu.some((orderMenu) => {
+    return orderMenu.status != "served";
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["generate-payment-token", orderId],
+    mutationFn: async () => {
+      if (!orderId) throw new Error("Order not found");
+      const response = await generatePaymentToken({ orderId });
+      if (!response.success && response.error.message) {
+        toast.error(response.error.message);
+      } else if (response.success) {
+        window.snap.pay(response.data.paymentToken, {
+          onSuccess: function (result: any) {
+            toast.success(result.status_message);
+          },
+          onPending: function (result: any) {
+            console.log(result);
+            toast.info("Waiting your payment!");
+          },
+          onError: function (result: any) {
+            console.log(result);
+            toast.error("Payment failed!");
+          },
+          onClose: function () {
+            toast.info("You closed the popup without finishing the payment");
+          },
+        });
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   return (
     <Card className="flex h-fit self-center xl:col-span-1 col-span-3">
       <CardContent className="flex flex-col gap-4">
@@ -65,6 +108,15 @@ export default function OrderSummary({ orderMenu }: OrderSummaryProps) {
           <h1 className="text-2xl font-extrabold">{priceToIDR(total)}</h1>
         </section>
       </CardContent>
+      <CardFooter>
+        <Button
+          className="w-full bg-slate-500 text-white font-bold hover:bg-slate-600 py-5"
+          disabled={allMenuIsNotServed || isPending}
+          onClick={() => mutate()}
+        >
+          Pay
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

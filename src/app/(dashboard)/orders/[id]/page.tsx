@@ -14,17 +14,23 @@ type PageProps = {
   }>;
 };
 
+declare global {
+  interface Window {
+    snap: any;
+  }
+}
+
 const Page = async ({ params }: PageProps) => {
   const { id } = await params;
 
   return (
     <>
+      <OrderDetail orderId={id} />;
       <Script
         src={environment.MIDTRANS_SCRIPT_URL}
         data-client-key={environment.MIDTRANS_CLIENT_KEY}
         strategy="lazyOnload"
       />
-      <OrderDetail orderId={id} />;
     </>
   );
 };

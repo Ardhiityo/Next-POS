@@ -159,7 +159,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
             hideRowsPerPage={true}
           />
         </div>
-        <OrderSummary orderMenu={orderMenus ?? []} />
+        <OrderSummary orderMenu={orderMenus ?? []} orderId={orderId} />
       </section>
     </>
   );
