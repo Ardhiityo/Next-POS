@@ -6,45 +6,47 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Order } from "@/generated/prisma/client";
 import usePricing from "@/hooks/use-pricing";
 import { priceToIDR } from "@/lib/utils";
 import { OrderMenu } from "@/types/order-menu";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 type OrderSummaryProps = {
   orderMenu: OrderMenu[];
-  orderId: string;
+  order: Order | undefined;
 };
 
 export default function OrderSummary(props: OrderSummaryProps) {
-  const { orderMenu, orderId } = props;
+  const { orderMenu, order } = props;
+  const { push } = useRouter();
 
   const { subtotal, tax, service, total } = usePricing(orderMenu);
 
-  const allMenuIsNotServed = orderMenu.some((orderMenu) => {
-    return orderMenu.status != "served";
+  const menuIsServed = orderMenu.every((orderMenu) => {
+    return orderMenu.status === "served";
   });
 
   const { mutate, isPending } = useMutation({
-    mutationKey: ["generate-payment-token", orderId],
+    mutationKey: ["generate-payment-token", order?.id],
     mutationFn: async () => {
-      if (!orderId) throw new Error("Order not found");
-      const response = await generatePaymentToken({ orderId });
+      if (!order) throw new Error("Order is not found");
+      const response = await generatePaymentToken({ id: order?.id });
       if (!response.success && response.error.message) {
-        toast.error(response.error.message);
+        throw new Error(response.error.message);
       } else if (response.success) {
         window.snap.pay(response.data.paymentToken, {
           onSuccess: function (result: any) {
-            toast.success(result.status_message);
+            push(`/payment/success?order_id=${result.order_id}`);
           },
           onPending: function (result: any) {
             console.log(result);
             toast.info("Waiting your payment!");
           },
           onError: function (result: any) {
-            console.log(result);
-            toast.error("Payment failed!");
+            push(`/payment/failed?order_id=${result.order_id}`);
           },
           onClose: function () {
             toast.info("You closed the popup without finishing the payment");
@@ -52,7 +54,7 @@ export default function OrderSummary(props: OrderSummaryProps) {
         });
       }
     },
-    onError: (error) => {
+    onError(error) {
       toast.error(error.message);
     },
   });
@@ -111,7 +113,12 @@ export default function OrderSummary(props: OrderSummaryProps) {
       <CardFooter>
         <Button
           className="w-full bg-slate-500 text-white font-bold hover:bg-slate-600 py-5"
-          disabled={allMenuIsNotServed || isPending}
+          disabled={
+            !menuIsServed ||
+            isPending ||
+            order?.status === "settled" ||
+            order?.status === "cancelled"
+          }
           onClick={() => mutate()}
         >
           Pay

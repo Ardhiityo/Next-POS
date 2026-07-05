@@ -3,7 +3,7 @@
 import { DataTable } from "@/components/common/data-table";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
@@ -16,28 +16,48 @@ import OrderSummary from "./order-summary";
 import Link from "next/link";
 import { CheckCheckIcon, CircleCheckBigIcon, RocketIcon } from "lucide-react";
 import { updateStatusOrderMenuAction } from "@/actions/order-menu/update-status-order-menu";
+import { getOrderByOrderId } from "@/actions/order/get-order-by-orderId";
 
 const OrderDetail = ({ orderId }: { orderId: string }) => {
   const { currentLimit, currentPage, setCurrentPage, handleChangeLimit } =
     useDataTable();
 
+  const { data: order, error: errorGetOrderDetail } = useQuery({
+    queryKey: ["get-order-by-id", orderId],
+    queryFn: async () => {
+      const response = await getOrderByOrderId({ orderId });
+      if (!response.success) {
+        throw new Error(response.error.message);
+      }
+      return response.data.order;
+    },
+    enabled: !!orderId,
+  });
+
+  useEffect(() => {
+    if (errorGetOrderDetail) {
+      toast.error(errorGetOrderDetail.message);
+    }
+  }, [errorGetOrderDetail]);
+
   const {
     data: orderMenus,
     isPending,
-    error,
+    error: errorGetOrderMenu,
     refetch,
   } = useQuery({
-    queryKey: ["order-details", orderId, currentLimit, currentPage],
+    queryKey: ["get-order-menu", orderId, currentLimit, currentPage],
     queryFn: async () => {
       return await getOrderMenuAction({
         orderId,
       });
     },
+    enabled: !!orderId,
   });
 
   useEffect(() => {
-    if (error) toast.error(error.message);
-  }, [error]);
+    if (errorGetOrderMenu) toast.error(errorGetOrderMenu.message);
+  }, [errorGetOrderMenu]);
 
   const { mutate } = useMutation({
     mutationKey: ["update-status-order-menu"],
@@ -144,7 +164,11 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
         <div className="flex flex-col gap-5 xl:col-span-2 col-span-3">
           <div className="flex justify-end">
             <Button variant="default" asChild>
-              <Link href={`/orders/${orderId}/add`}>Add Menu</Link>
+              {order?.status == "settled" || order?.status == "cancelled" ? (
+                <Button disabled={true}>Add Menu</Button>
+              ) : (
+                <Link href={`/orders/${orderId}/add`}>Add Menu</Link>
+              )}
             </Button>
           </div>
           <DataTable
@@ -159,7 +183,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
             hideRowsPerPage={true}
           />
         </div>
-        <OrderSummary orderMenu={orderMenus ?? []} orderId={orderId} />
+        <OrderSummary orderMenu={orderMenus ?? []} order={order} />
       </section>
     </>
   );

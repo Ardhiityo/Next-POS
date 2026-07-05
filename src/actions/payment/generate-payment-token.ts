@@ -6,17 +6,17 @@ import { ActionResponse } from "@/types/general";
 import { environment } from "@/configs/environment";
 
 type GeneratePaymentTokenParams = {
-  orderId: string;
+  id: string;
 };
 
 export async function generatePaymentToken(
   params: GeneratePaymentTokenParams,
 ): Promise<ActionResponse<{ paymentToken: string }>> {
-  const { orderId } = params;
+  const { id } = params;
   try {
-    const order = await prisma.order.findFirst({
+    const order = await prisma.order.findUnique({
       where: {
-        orderId,
+        id: id,
       },
       include: {
         orderMenus: {

@@ -5,13 +5,13 @@ import prisma from "@/lib/prisma";
 import { OrderWithTable } from "@/types/order";
 import { revalidatePath } from "next/cache";
 
-type UpdateMenuParams = {
+type UpdateOrderParams = {
   order: OrderWithTable;
   status: "process" | "cancelled";
 };
 
 export async function updateOrderAction(
-  params: UpdateMenuParams,
+  params: UpdateOrderParams,
 ): Promise<ActionResponse> {
   const { order, status } = params;
 
