@@ -92,42 +92,45 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
         >
           {orderMenu.status}
         </div>,
-        <DropwdownAction
-          menus={[
-            {
-              label:
-                orderMenu.status === "pending" ? (
-                  <>
-                    <RocketIcon />
-                    Process
-                  </>
-                ) : orderMenu.status === "process" ? (
-                  <>
-                    <CircleCheckBigIcon />
-                    Ready
-                  </>
-                ) : (
-                  <>
-                    <CheckCheckIcon />
-                    Served
-                  </>
-                ),
-              action: () => {
-                mutate({
-                  orderMenuId: orderMenu.id,
-                  status:
-                    orderMenu.status === "pending"
-                      ? "process"
-                      : orderMenu.status === "process"
-                        ? "ready"
-                        : "served",
-                });
+        orderMenu.status != "served" && (
+          <DropwdownAction
+            menus={[
+              {
+                label:
+                  orderMenu.status === "pending" ? (
+                    <>
+                      <RocketIcon />
+                      Process
+                    </>
+                  ) : orderMenu.status === "process" ? (
+                    <>
+                      <CircleCheckBigIcon />
+                      Ready
+                    </>
+                  ) : (
+                    <>
+                      <CheckCheckIcon />
+                      Served
+                    </>
+                  ),
+                action: () => {
+                  mutate({
+                    orderMenuId: orderMenu.id,
+                    status:
+                      orderMenu.status === "pending"
+                        ? "process"
+                        : orderMenu.status === "process"
+                          ? "ready"
+                          : "served",
+                  });
+                },
+                type: "button",
+                variant: "default",
               },
-              type: "button",
-              variant: "default",
-            },
-          ]}
-        />,
+            ]}
+          />
+        ),
+        ,
       ];
     });
     if (results[0].length < 1) return [];

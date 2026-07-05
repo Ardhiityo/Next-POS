@@ -1,5 +1,7 @@
 import { Metadata } from "next";
 import OrderDetail from "./_components/order-detail";
+import Script from "next/script";
+import { environment } from "@/configs/environment";
 
 export const metadata: Metadata = {
   title: "POS | Order Details",
@@ -15,7 +17,16 @@ type PageProps = {
 const Page = async ({ params }: PageProps) => {
   const { id } = await params;
 
-  return <OrderDetail orderId={id} />;
+  return (
+    <>
+      <Script
+        src={environment.MIDTRANS_SCRIPT_URL}
+        data-client-key={environment.MIDTRANS_CLIENT_KEY}
+        strategy="lazyOnload"
+      />
+      <OrderDetail orderId={id} />;
+    </>
+  );
 };
 
 export default Page;

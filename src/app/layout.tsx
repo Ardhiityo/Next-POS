@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
-import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { cookies } from "next/headers";
+import "./globals.css";
 import ReactQueryProvider from "@/providers/react-query-provider";
 import AuthStoreProvider from "@/providers/auth-store-provider";
-import { cookies } from "next/headers";
 import AppToaster from "@/components/common/app-toaster";
 
 const roboto = Roboto({
