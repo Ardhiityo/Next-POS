@@ -3,4 +3,6 @@ export const environment = {
   MIDTRANS_CLIENT_KEY: process.env.MIDTRANS_CLIENT_KEY || "",
   MIDTRANS_SERVER_KEY: process.env.MIDTRANS_SERVER_KEY || "",
   MIDTRANS_IS_PRODUCTION: false,
+  SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+  SUPABASE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "",
 };

@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import DialogCreateTable from "./dialog-create-table";
 import DialogUpdateTable from "./dialog-update-table";
 import DialogDeleteTable from "./dialog-delete-table";
+import { supabase } from "@/lib/supabase/default";
 
 const TableManagement = () => {
   const {
@@ -47,6 +48,25 @@ const TableManagement = () => {
   useEffect(() => {
     if (error) toast.error(error.message);
   }, [error]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(`table`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "table",
+        },
+        () => refetch(),
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const [selectedAction, setSelectedAction] = useState<null | {
     type: "create" | "update" | "delete";

@@ -17,6 +17,7 @@ import Image from "next/image";
 import DialogCreateMenu from "./dialog-create-menu";
 import DialogUpdateMenu from "./dialog-update-menu";
 import DialogDeleteMenu from "./dialog-delete-menu";
+import { supabase } from "@/lib/supabase/default";
 
 const MenuManagement = () => {
   const {
@@ -47,6 +48,25 @@ const MenuManagement = () => {
   useEffect(() => {
     if (error) toast.error(error.message);
   }, [error]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(`menu`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "menu",
+        },
+        () => refetch(),
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const [selectedAction, setSelectedAction] = useState<null | {
     type: "create" | "update" | "delete";

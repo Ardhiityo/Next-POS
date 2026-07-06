@@ -17,6 +17,7 @@ import DialogCreateOrder from "./dialog-create-order";
 import { CircleXIcon, RocketIcon, ScrollTextIcon } from "lucide-react";
 import { updateOrderAction } from "@/actions/order/update-order";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/default";
 
 const OrderManagement = () => {
   const {
@@ -50,6 +51,25 @@ const OrderManagement = () => {
   useEffect(() => {
     if (error) toast.error(error.message);
   }, [error]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(`order}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "order",
+        },
+        () => refetch(),
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const [selectedAction, setSelectedAction] = useState<null | {
     type: "create";

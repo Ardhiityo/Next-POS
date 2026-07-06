@@ -3,7 +3,7 @@
 import { DataTable } from "@/components/common/data-table";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ReactNode, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
@@ -19,6 +19,8 @@ import { updateStatusOrderMenuAction } from "@/actions/order-menu/update-status-
 import { getOrderByOrderId } from "@/actions/order/get-order-by-orderId";
 import { useAuthStore } from "@/stores/auth-store";
 import { Role } from "@/generated/prisma/enums";
+import { supabase } from "@/lib/supabase/default";
+import { useParams } from "next/navigation";
 
 const OrderDetail = ({ orderId }: { orderId: string }) => {
   const { currentLimit, currentPage, setCurrentPage, handleChangeLimit } =
@@ -64,6 +66,27 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
     enabled: !!orderId,
     refetchOnMount: "always",
   });
+
+  const params = useParams();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(`order-menu`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "order_menu",
+        },
+        () => refetch(),
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [order.id]);
 
   useEffect(() => {
     if (errorGetOrderMenu) toast.error(errorGetOrderMenu.message);
@@ -205,7 +228,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
             {user?.role !== Role.KITCHEN && (
               <Button variant="default" asChild>
                 {order?.status == "settled" || order?.status == "cancelled" ? (
-                  <Button disabled={true}>Add Menu</Button>
+                  <Button disabled>Add Menu</Button>
                 ) : (
                   <Link href={`/orders/${orderId}/add`}>Add Menu</Link>
                 )}
