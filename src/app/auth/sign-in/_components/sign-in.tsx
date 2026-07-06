@@ -39,7 +39,7 @@ export default function SignIn() {
       } else if (!response.success && response.error.message) {
         toast.error(response.error.message);
       } else if (response.success) {
-        push("/admin");
+        push("/");
       }
     },
   });

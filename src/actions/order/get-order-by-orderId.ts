@@ -10,7 +10,9 @@ type GetOrderByOrderIdParams = {
 
 export async function getOrderByOrderId({
   orderId,
-}: GetOrderByOrderIdParams): Promise<ActionResponse<{ order: Order }>> {
+}: GetOrderByOrderIdParams): Promise<
+  ActionResponse<{ id: string; status: string }>
+> {
   try {
     const order = await prisma.order.findFirst({
       where: {
@@ -30,7 +32,8 @@ export async function getOrderByOrderId({
     return {
       success: true,
       data: {
-        order,
+        id: order.id,
+        status: order.status,
       },
     };
   } catch (error) {

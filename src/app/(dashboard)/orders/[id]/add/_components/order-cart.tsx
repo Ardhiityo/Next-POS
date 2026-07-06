@@ -133,6 +133,7 @@ export default function OrderCart(props: OrderCartProps) {
             className="w-full bg-slate-500 text-white font-semibold hover:bg-slate-600"
             onClick={handleProcessOrder}
             disabled={isPending}
+            size={"lg"}
           >
             {isPending ? (
               <Loader2Icon className="animate-spin" />

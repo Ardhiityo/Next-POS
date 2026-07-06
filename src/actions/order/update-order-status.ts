@@ -1,11 +1,8 @@
 "use server";
 
-import midtransClient from "midtrans-client";
 import { ActionResponse } from "@/types/general";
 import prisma from "@/lib/prisma";
 import { environment } from "@/configs/environment";
-import { revalidatePath } from "next/cache";
-
 type UpdateOrderStatusParams = {
   orderId: string;
 };
@@ -45,16 +42,26 @@ export async function updateOrderStatusAction(
       throw new Error("Order status is not successfully");
     }
 
-    await prisma.order.update({
-      where: {
-        id: order.id,
-      },
-      data: {
-        status: "settled",
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.order.update({
+        where: {
+          id: order.id,
+        },
+        data: {
+          status: "settled",
+        },
+      });
+      if (order.tableId) {
+        await tx.table.update({
+          where: {
+            id: order.tableId,
+          },
+          data: {
+            status: "available",
+          },
+        });
+      }
     });
-
-    revalidatePath(`/orders/${order.orderId}`);
 
     return {
       success: true,

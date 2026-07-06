@@ -3,7 +3,6 @@
 import { ActionResponse } from "@/types/general";
 import prisma from "@/lib/prisma";
 import { OrderWithTable } from "@/types/order";
-import { revalidatePath } from "next/cache";
 
 type UpdateOrderParams = {
   order: OrderWithTable;
@@ -42,8 +41,6 @@ export async function updateOrderAction(
         },
       });
     });
-
-    revalidatePath("/admin/tables");
 
     return {
       success: true,

@@ -43,6 +43,7 @@ const FormOrder = <T extends FieldValues>(props: FormOrderProps<T>) => {
     queryFn: async () => {
       return await getAllTableAction();
     },
+    refetchOnMount: "always",
   });
 
   useEffect(() => {

@@ -41,6 +41,13 @@ export const SIDEBAR_MENU_LIST = {
       icon: ListOrderedIcon,
     },
   ],
+  KITCHEN: [
+    {
+      title: "Order",
+      url: "/orders",
+      icon: ListOrderedIcon,
+    },
+  ],
 };
 
 export type SIDEBAR_MENU_LIST_KEY = keyof typeof SIDEBAR_MENU_LIST;

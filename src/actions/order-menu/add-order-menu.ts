@@ -3,7 +3,6 @@
 import prisma from "@/lib/prisma";
 import { CartMenu } from "@/types/cart";
 import { ActionResponse } from "@/types/general";
-import { revalidatePath } from "next/cache";
 
 type AddOrderMenuParams = {
   carts: CartMenu[];
@@ -65,7 +64,7 @@ export async function addOrderMenuAction(
         });
       }
     });
-    revalidatePath(`/dashboard/orders/${orderId}`);
+
     return {
       success: true,
       data: null,

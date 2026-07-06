@@ -44,6 +44,7 @@ const OrderManagement = () => {
         search: currentSearch,
       });
     },
+    refetchOnMount: "always",
   });
 
   useEffect(() => {

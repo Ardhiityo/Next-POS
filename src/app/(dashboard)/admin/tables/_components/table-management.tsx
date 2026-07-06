@@ -41,6 +41,7 @@ const TableManagement = () => {
         search: currentSearch,
       });
     },
+    refetchOnMount: "always",
   });
 
   useEffect(() => {

@@ -6,9 +6,10 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Order } from "@/generated/prisma/client";
+import { Role } from "@/generated/prisma/enums";
 import usePricing from "@/hooks/use-pricing";
 import { priceToIDR } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth-store";
 import { OrderMenu } from "@/types/order-menu";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -16,18 +17,25 @@ import { toast } from "sonner";
 
 type OrderSummaryProps = {
   orderMenu: OrderMenu[];
-  order: Order | undefined;
+  order: {
+    id: string;
+    status: string;
+  };
 };
 
 export default function OrderSummary(props: OrderSummaryProps) {
   const { orderMenu, order } = props;
   const { push } = useRouter();
+  const user = useAuthStore((state) => state.user);
 
   const { subtotal, tax, service, total } = usePricing(orderMenu);
 
-  const menuIsServed = orderMenu.every((orderMenu) => {
-    return orderMenu.status === "served";
-  });
+  const menuIsNotServed =
+    orderMenu.length === 0
+      ? true
+      : orderMenu.some((orderMenu) => {
+          return orderMenu.status != "served";
+        });
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["generate-payment-token", order?.id],
@@ -42,7 +50,6 @@ export default function OrderSummary(props: OrderSummaryProps) {
             push(`/payment/success?order_id=${result.order_id}`);
           },
           onPending: function (result: any) {
-            console.log(result);
             toast.info("Waiting your payment!");
           },
           onError: function (result: any) {
@@ -111,18 +118,20 @@ export default function OrderSummary(props: OrderSummaryProps) {
         </section>
       </CardContent>
       <CardFooter>
-        <Button
-          className="w-full bg-slate-500 text-white font-bold hover:bg-slate-600 py-5"
-          disabled={
-            !menuIsServed ||
-            isPending ||
-            order?.status === "settled" ||
-            order?.status === "cancelled"
-          }
-          onClick={() => mutate()}
-        >
-          Pay
-        </Button>
+        {user?.role != Role.KITCHEN && (
+          <Button
+            className="w-full bg-slate-500 text-white font-bold hover:bg-slate-600 py-5"
+            disabled={
+              menuIsNotServed ||
+              isPending ||
+              order?.status === "settled" ||
+              order?.status === "cancelled"
+            }
+            onClick={() => mutate()}
+          >
+            Pay
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

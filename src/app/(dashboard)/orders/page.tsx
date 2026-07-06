@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import MenuManagement from "./_components/order-management";
+import OrderManagement from "./_components/order-management";
 
 export const metadata: Metadata = {
   title: "POS | Orders Management",
@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 const Page = () => {
-  return <MenuManagement />;
+  return <OrderManagement />;
 };
 
 export default Page;

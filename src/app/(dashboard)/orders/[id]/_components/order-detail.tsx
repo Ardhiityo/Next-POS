@@ -3,7 +3,7 @@
 import { DataTable } from "@/components/common/data-table";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { ReactNode, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
@@ -17,20 +17,29 @@ import Link from "next/link";
 import { CheckCheckIcon, CircleCheckBigIcon, RocketIcon } from "lucide-react";
 import { updateStatusOrderMenuAction } from "@/actions/order-menu/update-status-order-menu";
 import { getOrderByOrderId } from "@/actions/order/get-order-by-orderId";
+import { useAuthStore } from "@/stores/auth-store";
+import { Role } from "@/generated/prisma/enums";
 
 const OrderDetail = ({ orderId }: { orderId: string }) => {
   const { currentLimit, currentPage, setCurrentPage, handleChangeLimit } =
     useDataTable();
 
+  const user = useAuthStore((state) => state.user);
+
   const { data: order, error: errorGetOrderDetail } = useQuery({
-    queryKey: ["get-order-by-id", orderId],
+    queryKey: ["get-order-detail", orderId],
     queryFn: async () => {
       const response = await getOrderByOrderId({ orderId });
       if (!response.success) {
         throw new Error(response.error.message);
       }
-      return response.data.order;
+      return response.data;
     },
+    initialData: {
+      id: orderId,
+      status: "cancelled",
+    },
+    refetchOnMount: "always",
     enabled: !!orderId,
   });
 
@@ -53,6 +62,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
       });
     },
     enabled: !!orderId,
+    refetchOnMount: "always",
   });
 
   useEffect(() => {
@@ -112,7 +122,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
         >
           {orderMenu.status}
         </div>,
-        orderMenu.status != "served" && (
+        orderMenu.status != "served" && user?.role != Role.KITCHEN ? (
           <DropwdownAction
             menus={[
               {
@@ -149,8 +159,37 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
               },
             ]}
           />
-        ),
-        ,
+        ) : orderMenu.status != "served" &&
+          orderMenu.status != "ready" &&
+          user?.role === Role.KITCHEN ? (
+          <DropwdownAction
+            menus={[
+              {
+                label:
+                  orderMenu.status === "pending" ? (
+                    <>
+                      <RocketIcon />
+                      Process
+                    </>
+                  ) : (
+                    <>
+                      <CircleCheckBigIcon />
+                      Ready
+                    </>
+                  ),
+                action: () => {
+                  mutate({
+                    orderMenuId: orderMenu.id,
+                    status:
+                      orderMenu.status === "pending" ? "process" : "ready",
+                  });
+                },
+                type: "button",
+                variant: "default",
+              },
+            ]}
+          />
+        ) : null,
       ];
     });
     if (results[0].length < 1) return [];
@@ -163,13 +202,15 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
       <section className="grid lg:grid-cols-3 gap-5 order-2">
         <div className="flex flex-col gap-5 xl:col-span-2 col-span-3">
           <div className="flex justify-end">
-            <Button variant="default" asChild>
-              {order?.status == "settled" || order?.status == "cancelled" ? (
-                <Button disabled={true}>Add Menu</Button>
-              ) : (
-                <Link href={`/orders/${orderId}/add`}>Add Menu</Link>
-              )}
-            </Button>
+            {user?.role !== Role.KITCHEN && (
+              <Button variant="default" asChild>
+                {order?.status == "settled" || order?.status == "cancelled" ? (
+                  <Button disabled={true}>Add Menu</Button>
+                ) : (
+                  <Link href={`/orders/${orderId}/add`}>Add Menu</Link>
+                )}
+              </Button>
+            )}
           </div>
           <DataTable
             headers={HEADER_TABLE_ORDER_MENU}
