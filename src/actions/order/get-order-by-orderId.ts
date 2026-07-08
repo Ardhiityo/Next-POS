@@ -1,6 +1,5 @@
 "use server";
 
-import { Order } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
 import { ActionResponse } from "@/types/general";
 
@@ -8,15 +7,34 @@ type GetOrderByOrderIdParams = {
   orderId: string;
 };
 
+type GetOrderByOrderIdResponse = {
+  id: string;
+  customerName: string;
+  status: string;
+  table: {
+    name: string;
+  } | null;
+} | null;
+
 export async function getOrderByOrderId({
   orderId,
 }: GetOrderByOrderIdParams): Promise<
-  ActionResponse<{ id: string; status: string }>
+  ActionResponse<GetOrderByOrderIdResponse>
 > {
   try {
     const order = await prisma.order.findFirst({
       where: {
         orderId,
+      },
+      select: {
+        id: true,
+        customerName: true,
+        status: true,
+        table: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
@@ -31,10 +49,7 @@ export async function getOrderByOrderId({
 
     return {
       success: true,
-      data: {
-        id: order.id,
-        status: order.status,
-      },
+      data: order,
     };
   } catch (error) {
     return {

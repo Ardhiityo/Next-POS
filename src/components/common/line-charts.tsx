@@ -25,13 +25,6 @@ const LineCharts = ({ startDate }: { startDate: Date }) => {
     orders?.forEach((item) => {
       const date = item.createdAt.toLocaleDateString("id-ID");
 
-      if (dates.length === 0) {
-        dates.push({
-          date,
-          order: 1,
-        });
-      }
-
       const index = dates.findIndex((item) => item.date === date);
 
       // index != -1 (if date already exist)
@@ -53,8 +46,8 @@ const LineCharts = ({ startDate }: { startDate: Date }) => {
         width: "100%",
         maxWidth: "100%",
         height: "100%",
-        maxHeight: "60vh",
-        aspectRatio: 0,
+        maxHeight: "40vh",
+        aspectRatio: 2,
       }}
       responsive
       data={data}

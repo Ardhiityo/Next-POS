@@ -21,6 +21,7 @@ export async function getOrderByDate(
   try {
     const orders = await prisma.order.findMany({
       where: {
+        status: "settled",
         createdAt: {
           gte: startDate,
         },

@@ -7,7 +7,7 @@ import { OrderWithTable } from "@/types/order";
 type GetOrderParams = {
   take: number;
   page: number;
-  search: string | null;
+  search?: string | null;
 };
 
 type GetOrderResponse = {

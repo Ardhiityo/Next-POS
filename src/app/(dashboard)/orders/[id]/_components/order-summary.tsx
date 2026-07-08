@@ -1,18 +1,18 @@
 "use client";
 
 import { generatePaymentToken } from "@/actions/payment/generate-payment-token";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { useAuthStore } from "@/stores/auth-store";
+import { useMutation } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Role } from "@/generated/prisma/enums";
+import { OrderMenu } from "@/types/order-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Role } from "@/generated/prisma/enums";
 import usePricing from "@/hooks/use-pricing";
-import { priceToIDR } from "@/lib/utils";
-import { useAuthStore } from "@/stores/auth-store";
-import { OrderMenu } from "@/types/order-menu";
-import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { priceToIDR } from "@/lib/utils";
 import { toast } from "sonner";
 
 type OrderSummaryProps = {
@@ -20,7 +20,11 @@ type OrderSummaryProps = {
   order: {
     id: string;
     status: string;
-  };
+    customerName: string;
+    table: {
+      name: string;
+    } | null;
+  } | null;
 };
 
 export default function OrderSummary(props: OrderSummaryProps) {
@@ -81,7 +85,7 @@ export default function OrderSummary(props: OrderSummaryProps) {
                 id="customer_name"
                 type="text"
                 disabled
-                value={orderMenu[0]?.order?.customerName ?? "-"}
+                value={order?.customerName}
               />
             </div>
             <div className="grid gap-2">
@@ -90,7 +94,7 @@ export default function OrderSummary(props: OrderSummaryProps) {
                 id="table_name"
                 type="text"
                 disabled
-                value={orderMenu[0]?.order?.table?.name ?? "-"}
+                value={order?.table?.name}
               />
             </div>
           </div>

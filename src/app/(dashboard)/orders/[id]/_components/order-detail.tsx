@@ -37,12 +37,16 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
       }
       return response.data;
     },
-    initialData: {
-      id: orderId,
-      status: "cancelled",
-    },
     refetchOnMount: "always",
     enabled: !!orderId,
+    initialData: {
+      id: "-",
+      customerName: "-",
+      status: "-",
+      table: {
+        name: "-",
+      },
+    },
   });
 
   useEffect(() => {
@@ -86,7 +90,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [order.id]);
+  }, [order]);
 
   useEffect(() => {
     if (errorGetOrderMenu) toast.error(errorGetOrderMenu.message);
