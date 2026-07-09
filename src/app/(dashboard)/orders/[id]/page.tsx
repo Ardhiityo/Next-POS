@@ -25,7 +25,7 @@ const Page = async ({ params }: PageProps) => {
 
   return (
     <>
-      <OrderDetail orderId={id} />;
+      <OrderDetail orderId={id} />
       <Script
         src={environment.MIDTRANS_SCRIPT_URL}
         data-client-key={environment.MIDTRANS_CLIENT_KEY}

@@ -5,39 +5,34 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/stores/auth-store";
 import { useMutation } from "@tanstack/react-query";
+import { useReactToPrint } from "react-to-print";
 import { Button } from "@/components/ui/button";
 import { Role } from "@/generated/prisma/enums";
-import { OrderMenu } from "@/types/order-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import usePricing from "@/hooks/use-pricing";
 import { useRouter } from "next/navigation";
 import { priceToIDR } from "@/lib/utils";
 import { toast } from "sonner";
+import { OrderWithRelations } from "@/types/order";
+import { useRef } from "react";
+import { OrderMenuWithMenu } from "@/types/order-menu";
 
 type OrderSummaryProps = {
-  orderMenu: OrderMenu[];
-  order: {
-    id: string;
-    status: string;
-    customerName: string;
-    table: {
-      name: string;
-    } | null;
-  } | null;
+  order: OrderWithRelations | undefined;
 };
 
 export default function OrderSummary(props: OrderSummaryProps) {
-  const { orderMenu, order } = props;
+  const { order } = props;
   const { push } = useRouter();
   const user = useAuthStore((state) => state.user);
 
-  const { subtotal, tax, service, total } = usePricing(orderMenu);
+  const { subtotal, tax, service, total } = usePricing(order);
 
   const menuIsNotServed =
-    orderMenu.length === 0
+    order?.orderMenus.length === 0
       ? true
-      : orderMenu.some((orderMenu) => {
+      : order?.orderMenus.some((orderMenu) => {
           return orderMenu.status != "served";
         });
 
@@ -70,73 +65,159 @@ export default function OrderSummary(props: OrderSummaryProps) {
     },
   });
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const reactToPrintFn = useReactToPrint({ contentRef });
+
+  const priceMenu = (orderMenu: OrderMenuWithMenu | null) => {
+    const productPrice = orderMenu?.menu?.price ?? 0;
+    const discountPercentage = (orderMenu?.menu?.discount ?? 0) / 100;
+    const discount = productPrice * discountPercentage;
+    const productDiscount = productPrice - discount;
+    const productTotalPrice = (orderMenu?.quantity ?? 0) * productDiscount;
+    return productTotalPrice;
+  };
+
   return (
-    <Card className="flex h-fit self-center xl:col-span-1 col-span-3">
-      <CardContent className="flex flex-col gap-4">
-        <section>
-          <h1 className="text-2xl font-extrabold">Customer Information</h1>
-          <h3 className="text-gray-400">Customer information order details</h3>
-        </section>
-        <form>
-          <div className="flex flex-col gap-5">
-            <div className="grid gap-2">
-              <Label htmlFor="customer_name">Customer name</Label>
-              <Input
-                id="customer_name"
-                type="text"
-                disabled
-                value={order?.customerName}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="table_name">Table</Label>
-              <Input
-                id="table_name"
-                type="text"
-                disabled
-                value={order?.table?.name}
-              />
-            </div>
-          </div>
-        </form>
-        <Separator />
-        <section className="flex flex-col gap-3">
-          <h1 className="text-2xl font-extrabold">Order Summary</h1>
-          <div className="flex justify-between">
-            <h3>Subtotal</h3>
-            <p>{priceToIDR(subtotal)}</p>
-          </div>
-          <div className="flex justify-between">
-            <h3>Tax (12%)</h3>
-            <p>{priceToIDR(tax)}</p>
-          </div>
-          <div className="flex justify-between">
-            <h3>Service (5%)</h3>
-            <p>{priceToIDR(service)}</p>
-          </div>
-        </section>
-        <Separator />
-        <section className="flex justify-between">
-          <h1 className="text-2xl font-extrabold">Total</h1>
-          <h1 className="text-2xl font-extrabold">{priceToIDR(total)}</h1>
-        </section>
-      </CardContent>
-      <CardFooter>
-        {user?.role != Role.KITCHEN && (
-          <Button
-            className="w-full bg-slate-500 text-white font-bold hover:bg-slate-600 py-5"
-            disabled={
-              menuIsNotServed ||
-              isPending ||
-              order?.status === "settled" ||
-              order?.status === "cancelled"
-            }
-            onClick={() => mutate()}
-          >
-            Pay
+    <section className="flex h-fit self-center xl:col-span-1 col-span-3">
+      <div className="flex flex-col gap-5 w-full">
+        {order?.status === "settled" && (
+          <Button className="self-end" onClick={reactToPrintFn}>
+            Print Receipt
           </Button>
         )}
-      </CardFooter>
-    </Card>
+        <Card>
+          <CardContent className="flex flex-col gap-4">
+            <section>
+              <h1 className="text-2xl font-extrabold">Customer Information</h1>
+              <h3 className="text-gray-400">
+                Customer information order details
+              </h3>
+            </section>
+            <form>
+              <div className="flex flex-col gap-5">
+                <div className="grid gap-2">
+                  <Label htmlFor="customer_name">Customer name</Label>
+                  <Input
+                    id="customer_name"
+                    type="text"
+                    disabled
+                    value={order?.customerName ?? "-"}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="table_name">Table</Label>
+                  <Input
+                    id="table_name"
+                    type="text"
+                    disabled
+                    value={order?.table?.name ?? "-"}
+                  />
+                </div>
+              </div>
+            </form>
+            <Separator />
+            <section className="flex flex-col gap-3">
+              <h1 className="text-2xl font-extrabold">Order Summary</h1>
+              <div className="flex justify-between">
+                <h3>Subtotal</h3>
+                <p>{priceToIDR(subtotal)}</p>
+              </div>
+              <div className="flex justify-between">
+                <h3>Tax (12%)</h3>
+                <p>{priceToIDR(tax)}</p>
+              </div>
+              <div className="flex justify-between">
+                <h3>Service (5%)</h3>
+                <p>{priceToIDR(service)}</p>
+              </div>
+            </section>
+            <Separator />
+            <section className="flex justify-between">
+              <h1 className="text-2xl font-extrabold">Total</h1>
+              <h1 className="text-2xl font-extrabold">{priceToIDR(total)}</h1>
+            </section>
+          </CardContent>
+          <CardFooter>
+            {user?.role != Role.KITCHEN && (
+              <Button
+                className="w-full bg-slate-500 text-white font-bold hover:bg-slate-600 py-5"
+                disabled={
+                  menuIsNotServed ||
+                  isPending ||
+                  order?.status === "settled" ||
+                  order?.status === "cancelled"
+                }
+                onClick={() => mutate()}
+              >
+                Pay
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
+        <div ref={contentRef} className="hidden print:block">
+          <div className="p-10 mx-auto flex flex-col gap-5">
+            <h1 className="text-2xl font-bold text-center">Cafeku.</h1>
+            <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-3">
+                <div className="border-2 border-dashed"></div>
+                <p>
+                  Bill No:{" "}
+                  <span className="font-semibold">{order?.orderId}</span>
+                </p>
+                <p>
+                  Table:{" "}
+                  <span className="font-semibold">{order?.table?.name}</span>
+                </p>
+                <p>
+                  Customer:{" "}
+                  <span className="font-semibold">{order?.customerName}</span>
+                </p>
+                <p>
+                  Date:
+                  <span className="font-semibold">
+                    {order?.createdAt.toLocaleString("id-ID")}
+                  </span>
+                </p>
+              </div>
+              <div className="flex flex-col gap-3">
+                <div className="border-2 border-dashed"></div>
+                <div>
+                  {order?.orderMenus.map((orderMenu) => (
+                    <div
+                      className="flex justify-between"
+                      key={`order-summary-menu-${orderMenu.id}`}
+                    >
+                      <p>
+                        {orderMenu.menu?.name} x{orderMenu.quantity}
+                      </p>
+                      <p>{priceToIDR(priceMenu(orderMenu))}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col gap-3">
+                <div className="border-2 border-dashed"></div>
+                <div className="flex justify-between">
+                  <p>Subtotal</p>
+                  <p>{priceToIDR(subtotal)}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p>Tax</p>
+                  <p>{priceToIDR(tax)}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p>Service</p>
+                  <p>{priceToIDR(service)}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p>Total</p>
+                  <p>{priceToIDR(total)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

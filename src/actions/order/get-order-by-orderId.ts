@@ -2,37 +2,25 @@
 
 import prisma from "@/lib/prisma";
 import { ActionResponse } from "@/types/general";
+import { OrderWithRelations } from "@/types/order";
 
 type GetOrderByOrderIdParams = {
   orderId: string;
 };
 
-type GetOrderByOrderIdResponse = {
-  id: string;
-  customerName: string;
-  status: string;
-  table: {
-    name: string;
-  } | null;
-} | null;
-
 export async function getOrderByOrderId({
   orderId,
-}: GetOrderByOrderIdParams): Promise<
-  ActionResponse<GetOrderByOrderIdResponse>
-> {
+}: GetOrderByOrderIdParams): Promise<ActionResponse<OrderWithRelations>> {
   try {
     const order = await prisma.order.findFirst({
       where: {
         orderId,
       },
-      select: {
-        id: true,
-        customerName: true,
-        status: true,
-        table: {
-          select: {
-            name: true,
+      include: {
+        table: true,
+        orderMenus: {
+          include: {
+            menu: true,
           },
         },
       },

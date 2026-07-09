@@ -3,7 +3,6 @@
 import CardMenu from "./card-menu";
 import OrderCart from "./order-cart";
 import useDebounce from "@/hooks/use-debouce";
-import { getOrderMenuAction } from "@/actions/order-menu/get-order-menu";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -11,18 +10,25 @@ import { Menu } from "@/generated/prisma/client";
 import { CartMenu } from "@/types/cart";
 import { addOrderMenuAction } from "@/actions/order-menu/add-order-menu";
 import { useRouter } from "next/navigation";
+import { getOrderByOrderId } from "@/actions/order/get-order-by-orderId";
 
 const AddOrderItem = ({ orderId }: { orderId: string }) => {
   const debounce = useDebounce();
   const { push } = useRouter();
 
-  const { data: orderMenus, error: orderMenuError } = useQuery({
-    queryKey: ["get-order-menus", orderId],
+  const { data: order, error: orderMenuError } = useQuery({
+    queryKey: ["get-order-detail", orderId],
     queryFn: async () => {
-      return await getOrderMenuAction({
+      const response = await getOrderByOrderId({
         orderId,
       });
+      if (!response.success) {
+        toast.error(response.error.message);
+        return;
+      }
+      return response.data;
     },
+    refetchOnMount: "always",
   });
 
   useEffect(() => {
@@ -143,7 +149,7 @@ const AddOrderItem = ({ orderId }: { orderId: string }) => {
       <section className="grid xl:grid-cols-4 lg:grid-cols-4 grid-cols-1 gap-5">
         <CardMenu handleAddToCart={handleAddToCart} />
         <OrderCart
-          orderMenu={orderMenus ?? []}
+          order={order}
           carts={carts}
           handleToCart={handleToCart}
           handleChangeNote={handleChangeNote}

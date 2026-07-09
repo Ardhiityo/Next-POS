@@ -1,5 +1,11 @@
 import { Prisma } from "@/generated/prisma/client";
 
+export type OrderMenuWithMenu = Prisma.OrderMenuGetPayload<{
+  include: {
+    menu;
+  };
+}>;
+
 export type OrderMenu = Prisma.OrderMenuGetPayload<{
   include: {
     menu: {

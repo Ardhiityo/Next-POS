@@ -7,12 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { priceToIDR } from "@/lib/utils";
 import { CartMenu } from "@/types/cart";
-import { OrderMenu } from "@/types/order-menu";
+import { OrderWithRelations } from "@/types/order";
 import { Loader2Icon } from "lucide-react";
 import Image from "next/image";
 
 type OrderCartProps = {
-  orderMenu: OrderMenu[];
+  order: OrderWithRelations | undefined;
   carts: CartMenu[];
   isPending: boolean;
   handleToCart: (menuId: string, action: "increase" | "decrease") => void;
@@ -22,7 +22,7 @@ type OrderCartProps = {
 
 export default function OrderCart(props: OrderCartProps) {
   const {
-    orderMenu,
+    order,
     carts,
     isPending,
     handleToCart,
@@ -44,7 +44,7 @@ export default function OrderCart(props: OrderCartProps) {
               id="customer_name"
               type="text"
               disabled
-              value={orderMenu[0]?.order?.customerName ?? "-"}
+              value={order?.customerName ?? "-"}
             />
           </div>
           <div className="grid gap-2">
@@ -53,7 +53,7 @@ export default function OrderCart(props: OrderCartProps) {
               id="table_name"
               type="text"
               disabled
-              value={orderMenu[0]?.order?.table?.name ?? "-"}
+              value={order?.table?.name ?? "-"}
             />
           </div>
         </div>

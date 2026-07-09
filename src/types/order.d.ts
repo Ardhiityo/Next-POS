@@ -14,3 +14,14 @@ export type UpdateOrder = {
   order: OrderWithTable;
   status: "process" | "cancelled";
 };
+
+export type OrderWithRelations = Prisma.OrderGetPayload<{
+  include: {
+    table: true;
+    orderMenus: {
+      include: {
+        menu: true;
+      };
+    };
+  };
+}>;

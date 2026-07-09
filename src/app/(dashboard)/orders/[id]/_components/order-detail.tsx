@@ -8,10 +8,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
 import { cn, priceToIDR } from "@/lib/utils";
-import { getOrderMenuAction } from "@/actions/order-menu/get-order-menu";
 import { HEADER_TABLE_ORDER_MENU } from "@/constants/order-menu-constants";
 import Image from "next/image";
-import { OrderMenu } from "@/types/order-menu";
 import OrderSummary from "./order-summary";
 import Link from "next/link";
 import { CheckCheckIcon, CircleCheckBigIcon, RocketIcon } from "lucide-react";
@@ -20,7 +18,6 @@ import { getOrderByOrderId } from "@/actions/order/get-order-by-orderId";
 import { useAuthStore } from "@/stores/auth-store";
 import { Role } from "@/generated/prisma/enums";
 import { supabase } from "@/lib/supabase/default";
-import { useParams } from "next/navigation";
 
 const OrderDetail = ({ orderId }: { orderId: string }) => {
   const { currentLimit, currentPage, setCurrentPage, handleChangeLimit } =
@@ -28,7 +25,12 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
 
   const user = useAuthStore((state) => state.user);
 
-  const { data: order, error: errorGetOrderDetail } = useQuery({
+  const {
+    data: order,
+    error: errorGetOrderDetail,
+    refetch,
+    isPending,
+  } = useQuery({
     queryKey: ["get-order-detail", orderId],
     queryFn: async () => {
       const response = await getOrderByOrderId({ orderId });
@@ -39,14 +41,6 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
     },
     refetchOnMount: "always",
     enabled: !!orderId,
-    initialData: {
-      id: "-",
-      customerName: "-",
-      status: "-",
-      table: {
-        name: "-",
-      },
-    },
   });
 
   useEffect(() => {
@@ -54,24 +48,6 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
       toast.error(errorGetOrderDetail.message);
     }
   }, [errorGetOrderDetail]);
-
-  const {
-    data: orderMenus,
-    isPending,
-    error: errorGetOrderMenu,
-    refetch,
-  } = useQuery({
-    queryKey: ["get-order-menu", orderId, currentLimit, currentPage],
-    queryFn: async () => {
-      return await getOrderMenuAction({
-        orderId,
-      });
-    },
-    enabled: !!orderId,
-    refetchOnMount: "always",
-  });
-
-  const params = useParams();
 
   useEffect(() => {
     const channel = supabase
@@ -92,10 +68,6 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
     };
   }, [order]);
 
-  useEffect(() => {
-    if (errorGetOrderMenu) toast.error(errorGetOrderMenu.message);
-  }, [errorGetOrderMenu]);
-
   const { mutate } = useMutation({
     mutationKey: ["update-status-order-menu"],
     mutationFn: async (params: {
@@ -113,8 +85,8 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
   });
 
   const filteredOrderMenus = useMemo(() => {
-    if (!orderMenus || orderMenus.length < 1) return [];
-    const results = orderMenus.map((orderMenu: OrderMenu, index: number) => {
+    if (!order?.orderMenus || order.orderMenus.length < 1) return [];
+    const results = order.orderMenus.map((orderMenu, index) => {
       if (!orderMenu.menu) return [];
       const discount = orderMenu.menu.price * (orderMenu.menu.discount / 100);
       const productPrice = orderMenu.menu.price - discount;
@@ -221,7 +193,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
     });
     if (results[0].length < 1) return [];
     return results;
-  }, [orderMenus]);
+  }, [order]);
 
   return (
     <>
@@ -251,7 +223,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
             hideRowsPerPage={true}
           />
         </div>
-        <OrderSummary orderMenu={orderMenus ?? []} order={order} />
+        <OrderSummary order={order} />
       </section>
     </>
   );
