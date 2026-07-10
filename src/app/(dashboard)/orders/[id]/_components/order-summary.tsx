@@ -166,14 +166,18 @@ export default function OrderSummary(props: OrderSummaryProps) {
                 </p>
                 <p>
                   Table:{" "}
-                  <span className="font-semibold">{order?.table?.name}</span>
+                  <span className="font-semibold">
+                    {order?.table?.name ?? "Takeaway"}
+                  </span>
                 </p>
                 <p>
                   Customer:{" "}
-                  <span className="font-semibold">{order?.customerName}</span>
+                  <span className="font-semibold capitalize">
+                    {order?.customerName}
+                  </span>
                 </p>
                 <p>
-                  Date:
+                  Date:{" "}
                   <span className="font-semibold">
                     {order?.createdAt.toLocaleString("id-ID")}
                   </span>
