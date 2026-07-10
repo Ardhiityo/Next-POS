@@ -53,7 +53,7 @@ export default function OrderCart(props: OrderCartProps) {
               id="table_name"
               type="text"
               disabled
-              value={order?.table?.name ?? "-"}
+              value={order?.table?.name ?? "Takeaway"}
             />
           </div>
         </div>

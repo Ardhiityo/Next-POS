@@ -110,7 +110,7 @@ export default function OrderSummary(props: OrderSummaryProps) {
                     id="table_name"
                     type="text"
                     disabled
-                    value={order?.table?.name ?? "-"}
+                    value={order?.table?.name ?? "Takeaway"}
                   />
                 </div>
               </div>

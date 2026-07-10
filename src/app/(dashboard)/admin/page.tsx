@@ -104,7 +104,8 @@ export default function Page() {
   });
 
   const averageRevenue = useMemo(() => {
-    return totalRevenueThisMonth / totalOrderSettledThisMonth;
+    const total = totalRevenueThisMonth / totalOrderSettledThisMonth;
+    return total > 0 ? total : 0;
   }, [totalRevenueThisMonth, totalOrderSettledThisMonth]);
 
   const growthRate = useMemo(() => {

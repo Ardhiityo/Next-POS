@@ -139,10 +139,11 @@ model OrderMenu {
   status    String
   quantity  Int
   notes     String?
+  nominal   Int
   createdAt DateTime @default(now())
 
-  orderId String?
-  order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   menuId String?
   menu   Menu?   @relation(fields: [menuId], references: [id], onDelete: SetNull)

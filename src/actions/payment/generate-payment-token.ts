@@ -22,6 +22,7 @@ export async function generatePaymentToken(
         orderMenus: {
           select: {
             quantity: true,
+            nominal: true,
             menu: {
               select: {
                 price: true,
@@ -42,50 +43,51 @@ export async function generatePaymentToken(
       };
     }
 
-    let snap = new midtransClient.Snap({
-      isProduction: environment.MIDTRANS_IS_PRODUCTION,
-      serverKey: environment.MIDTRANS_SERVER_KEY,
-      clientKey: environment.MIDTRANS_CLIENT_KEY,
-    });
+    let paymentToken = "";
 
-    const subtotal = order.orderMenus.reduce((total, orderMenu) => {
-      const productPrice = orderMenu.menu?.price ?? 0;
-      const discountPercentage = (orderMenu.menu?.discount ?? 0) / 100;
-      const discount = productPrice * discountPercentage;
-      const productDiscount = productPrice - discount;
-      const productTotalPrice = orderMenu.quantity * productDiscount;
-      return productTotalPrice + total;
-    }, 0);
+    if (order.paymentToken) {
+      paymentToken = order.paymentToken;
+    } else {
+      let snap = new midtransClient.Snap({
+        isProduction: environment.MIDTRANS_IS_PRODUCTION,
+        serverKey: environment.MIDTRANS_SERVER_KEY,
+        clientKey: environment.MIDTRANS_CLIENT_KEY,
+      });
 
-    const tax = subtotal * 0.12; // 12%
-    const service = subtotal * 0.05; // 5%
-    const grossAmount = subtotal + tax + service;
+      const subtotal = order.orderMenus.reduce((total, orderMenu) => {
+        return orderMenu.nominal + total;
+      }, 0);
 
-    let parameter = {
-      transaction_details: {
-        order_id: order.orderId,
-        gross_amount: grossAmount,
-      },
-      credit_card: {
-        secure: true,
-      },
-      customer_details: {
-        first_name: order.customerName,
-      },
-    };
+      const tax = subtotal * 0.12; // 12%
+      const service = subtotal * 0.05; // 5%
+      const grossAmount = subtotal + tax + service;
 
-    const paymentToken = await snap
-      .createTransaction(parameter)
-      .then((transaction) => transaction.token);
+      let parameter = {
+        transaction_details: {
+          order_id: order.orderId,
+          gross_amount: grossAmount,
+        },
+        credit_card: {
+          secure: true,
+        },
+        customer_details: {
+          first_name: order.customerName,
+        },
+      };
 
-    await prisma.order.update({
-      where: {
-        id: order.id,
-      },
-      data: {
-        paymentToken,
-      },
-    });
+      paymentToken = await snap
+        .createTransaction(parameter)
+        .then((transaction) => transaction.token);
+
+      await prisma.order.update({
+        where: {
+          id: order.id,
+        },
+        data: {
+          paymentToken,
+        },
+      });
+    }
 
     return {
       success: true,

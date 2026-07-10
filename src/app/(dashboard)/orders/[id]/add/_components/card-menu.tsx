@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { MENU_CATEGORIES } from "@/constants/menu-constants";
 import { Menu } from "@/generated/prisma/client";
 import { useDataTable } from "@/hooks/use-data-table";
-import { priceToIDR } from "@/lib/utils";
+import { cn, priceToIDR } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingCartIcon } from "lucide-react";
 import { useEffect } from "react";
@@ -115,9 +115,18 @@ const CardMenu = ({ handleAddToCart }: CardMenuProps) => {
               </CardDescription>
             </CardHeader>
             <CardFooter className="flex justify-between">
-              <h3 className="text-xl font-bold">
-                {priceToIDR(menu.price - menu.price * (menu.discount / 100))}
-              </h3>
+              <div className="flex flex-col gap-3 justify-center">
+                <h3
+                  className={cn("text-md text-slate-400 line-through", {
+                    invisible: menu.discount < 1,
+                  })}
+                >
+                  {priceToIDR(menu.price)}
+                </h3>
+                <h3 className="text-xl font-bold">
+                  {priceToIDR(menu.price - menu.price * (menu.discount / 100))}
+                </h3>
+              </div>
               <Button className="w-fit" onClick={() => handleAddToCart(menu)}>
                 <ShoppingCartIcon />
               </Button>

@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const LoadingCardMenu = () => {
   return (
     <>
-      {Array.from({ length: 6 }, (_, index) => (
+      {Array.from({ length: 3 }, (_, index) => (
         <Card
           className="relative lg:max-w-sm pt-0"
           key={`loading-card-menu-${index}`}
