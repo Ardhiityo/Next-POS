@@ -8,16 +8,30 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
-import { Order } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils";
 import { HEADER_TABLE_ORDER } from "@/constants/order-constants";
 import { getOrderAction } from "@/actions/order/get-order";
 import { OrderWithTable, UpdateOrder } from "@/types/order";
-import DialogCreateOrder from "./dialog-create-order";
-import { CircleXIcon, RocketIcon, ScrollTextIcon } from "lucide-react";
+import {
+  CircleXIcon,
+  HandbagIcon,
+  RocketIcon,
+  ScrollTextIcon,
+  UtensilsIcon,
+} from "lucide-react";
 import { updateOrderAction } from "@/actions/order/update-order";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/default";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import DialogCreateOrderDineIn from "./dialog-create-order-dine-in";
+import DialogCreateOrderTakeaway from "./dialog-create-order-takeaway";
 
 const OrderManagement = () => {
   const {
@@ -72,8 +86,7 @@ const OrderManagement = () => {
   }, []);
 
   const [selectedAction, setSelectedAction] = useState<null | {
-    type: "create";
-    order: Order | null;
+    orderType: "dine-in" | "takeaway";
   }>(null);
 
   const { mutate } = useMutation({
@@ -96,7 +109,7 @@ const OrderManagement = () => {
         currentLimit * (currentPage - 1) + index + 1,
         order.orderId,
         order.customerName,
-        order.table?.name,
+        order.table?.name ?? "Takeaway",
         <div
           className={cn(
             "text-center text-white capitalize py-1 w-fit px-2 rounded-lg",
@@ -174,12 +187,28 @@ const OrderManagement = () => {
           placeholder="Search order id/customer name"
           onChange={(e) => handleSearch(e.target.value)}
         />
-        <Button
-          variant="outline"
-          onClick={() => setSelectedAction({ type: "create", order: null })}
-        >
-          Create
-        </Button>
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">Create</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  onClick={() => setSelectedAction({ orderType: "dine-in" })}
+                >
+                  <UtensilsIcon /> Dine In
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setSelectedAction({ orderType: "takeaway" })}
+                >
+                  <HandbagIcon /> Takeaway
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <DataTable
         headers={HEADER_TABLE_ORDER}
@@ -191,11 +220,20 @@ const OrderManagement = () => {
         currentLimit={currentLimit}
         totalPages={totalPages}
       />
-      <DialogCreateOrder
-        refetch={refetch}
-        open={!!selectedAction && selectedAction.type === "create"}
-        setOpen={() => setSelectedAction(null)}
-      />
+      {selectedAction?.orderType === "dine-in" && (
+        <DialogCreateOrderDineIn
+          refetch={refetch}
+          open={true}
+          setOpen={() => setSelectedAction(null)}
+        />
+      )}
+      {selectedAction?.orderType === "takeaway" && (
+        <DialogCreateOrderTakeaway
+          refetch={refetch}
+          open={true}
+          setOpen={() => setSelectedAction(null)}
+        />
+      )}
     </section>
   );
 };

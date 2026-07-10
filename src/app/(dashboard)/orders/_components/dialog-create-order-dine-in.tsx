@@ -6,35 +6,35 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { SetStateAction, useEffect } from "react";
 import { applyFieldErrors } from "@/lib/utils";
-import { INITIAL_CREATE_ORDER_FORM } from "@/constants/order-constants";
-import {
-  CreateOrderForm,
-  createOrderFormSchema,
-} from "@/validations/order-validations";
-import { createOrderAction } from "@/actions/order/create-order";
+import { INITIAL_CREATE_ORDER_DINE_IN_FORM } from "@/constants/order-constants";
+import { createOrderDineIn } from "@/actions/order/create-order-dine-in";
 import FormOrder from "./form-order";
+import {
+  CreateOrderDineInForm,
+  createOrderDineInFormSchema,
+} from "@/validations/order-validations";
 
-type DialogCreateOrderProps = {
+type DialogCreateOrderDineInProps = {
   refetch: () => void;
   open: boolean;
   setOpen: (event: SetStateAction<boolean>) => void;
 };
 
-const DialogCreateOrder = (props: DialogCreateOrderProps) => {
+const DialogCreateOrderDineIn = (props: DialogCreateOrderDineInProps) => {
   const { open, setOpen, refetch } = props;
 
   const { control, handleSubmit, reset, setError } = useForm({
-    resolver: zodResolver(createOrderFormSchema),
-    defaultValues: INITIAL_CREATE_ORDER_FORM,
+    resolver: zodResolver(createOrderDineInFormSchema),
+    defaultValues: INITIAL_CREATE_ORDER_DINE_IN_FORM,
   });
 
   const { mutate, isPending } = useMutation({
-    mutationKey: ["create-order"],
-    mutationFn: async (form: CreateOrderForm) => {
-      const response = await createOrderAction(form);
+    mutationKey: ["create-order-dine-in"],
+    mutationFn: async (form: CreateOrderDineInForm) => {
+      const response = await createOrderDineIn(form);
       if (!response.success && response.error.fieldErrors) {
         applyFieldErrors(response.error.fieldErrors, setError);
-      } else if (!response.success && response.error.message) {
+      } else if (!response.success) {
         toast.error(response.error.message);
       } else if (response.success) {
         toast.success("Order created successfully");
@@ -58,12 +58,13 @@ const DialogCreateOrder = (props: DialogCreateOrderProps) => {
     <FormOrder
       open={open}
       setOpen={setOpen}
-      onSubmit={handleSubmit((data: CreateOrderForm) => mutate(data))}
+      onSubmit={handleSubmit((data: CreateOrderDineInForm) => mutate(data))}
       control={control}
       type="create"
       isPending={isPending}
+      typeOrder="dine-in"
     />
   );
 };
 
-export default DialogCreateOrder;
+export default DialogCreateOrderDineIn;

@@ -27,12 +27,15 @@ type FormOrderProps<T extends FieldValues> = {
   onSubmit: (event: BaseSyntheticEvent) => void;
   isPending: boolean;
   control: Control<T>;
+  typeOrder: "dine-in" | "takeaway";
 };
 
 const FormOrder = <T extends FieldValues>(props: FormOrderProps<T>) => {
-  const { open, setOpen, onSubmit, isPending, control, type } = props;
+  const { open, setOpen, onSubmit, isPending, control, type, typeOrder } =
+    props;
 
   const title = type === "create" ? "Create order" : "Update order";
+
   const description =
     type === "create"
       ? "Make new order here. Click submit when you're done."
@@ -44,6 +47,7 @@ const FormOrder = <T extends FieldValues>(props: FormOrderProps<T>) => {
       return await getAllTableAction();
     },
     refetchOnMount: "always",
+    enabled: typeOrder === "dine-in",
   });
 
   useEffect(() => {
@@ -54,7 +58,7 @@ const FormOrder = <T extends FieldValues>(props: FormOrderProps<T>) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <form onSubmit={onSubmit} id={`form-order-${type}`}>
+      <form onSubmit={onSubmit} id={`form-order-${type}-${typeOrder}`}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
@@ -68,22 +72,26 @@ const FormOrder = <T extends FieldValues>(props: FormOrderProps<T>) => {
               control={control}
               placeholder="Customer name"
             />
-            <FormSelect
-              name={"tableId" as Path<T>}
-              label="Table"
-              control={control}
-              items={(tables?.data || []).map((table) => ({
-                value: table.id,
-                label: table.name,
-                disabled: table.status != "available",
-              }))}
-            />
-            <FormSelect
-              name={"status" as Path<T>}
-              label="Status"
-              control={control}
-              items={STATUS_ORDER_CREATE}
-            />
+            {typeOrder === "dine-in" && (
+              <>
+                <FormSelect
+                  name={"tableId" as Path<T>}
+                  label="Table"
+                  control={control}
+                  items={(tables?.data || []).map((table) => ({
+                    value: table.id,
+                    label: table.name,
+                    disabled: table.status != "available",
+                  }))}
+                />
+                <FormSelect
+                  name={"status" as Path<T>}
+                  label="Status"
+                  control={control}
+                  items={STATUS_ORDER_CREATE}
+                />
+              </>
+            )}
           </div>
           <DialogFooter>
             <DialogClose asChild>
@@ -91,7 +99,7 @@ const FormOrder = <T extends FieldValues>(props: FormOrderProps<T>) => {
             </DialogClose>
             <Button
               type="submit"
-              form={`form-order-${type}`}
+              form={`form-order-${type}-${typeOrder}`}
               disabled={isPending}
             >
               {isPending ? <Loader2Icon className="animate-spin" /> : "Submit"}

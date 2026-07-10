@@ -7,10 +7,14 @@ export const HEADER_TABLE_ORDER = [
   "Action",
 ];
 
-export const INITIAL_CREATE_ORDER_FORM = {
+export const INITIAL_CREATE_ORDER_DINE_IN_FORM = {
   customerName: "",
   tableId: "",
   status: "",
+};
+
+export const INITIAL_CREATE_ORDER_TAKEAWAY_FORM = {
+  customerName: "",
 };
 
 export const STATUS_ORDER_CREATE = [

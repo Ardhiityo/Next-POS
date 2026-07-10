@@ -4,32 +4,17 @@ import prisma from "@/lib/prisma";
 import { ActionResponse } from "@/types/general";
 import { validationError } from "@/lib/utils";
 import {
-  CreateOrderForm,
-  createOrderFormSchema,
+  CreateOrderTakeawayForm,
+  createOrderTakeawayFormSchema,
 } from "@/validations/order-validations";
 
-export async function createOrderAction(
-  form: CreateOrderForm,
+export async function createOrderTakeaway(
+  form: CreateOrderTakeawayForm,
 ): Promise<ActionResponse> {
-  const validated = createOrderFormSchema.safeParse(form);
+  const validated = createOrderTakeawayFormSchema.safeParse(form);
 
   if (!validated.success) {
     return validationError(validated.error);
-  }
-
-  const tableId = await prisma.table.count({
-    where: {
-      id: form.tableId,
-    },
-  });
-
-  if (tableId < 1) {
-    return {
-      success: false,
-      error: {
-        message: "Table not found",
-      },
-    };
   }
 
   try {
@@ -37,16 +22,8 @@ export async function createOrderAction(
       await tx.order.create({
         data: {
           ...form,
+          status: "process",
           orderId: `CAFEKU-${Date.now()}`,
-        },
-      });
-
-      await tx.table.update({
-        where: {
-          id: form.tableId,
-        },
-        data: {
-          status: form.status === "reserved" ? "reserved" : "unavailable",
         },
       });
     });
