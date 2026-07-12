@@ -1,0 +1,91 @@
+"use server";
+
+import { uploadFileAction } from "../storage/upload-file";
+import { deleteFileAction } from "../storage/delete-file";
+import { UserWithRole } from "better-auth/plugins";
+import { ActionResponse } from "@/types/general";
+import { ProfileForm } from "@/validations/profile-validations";
+import prisma from "@/lib/prisma";
+import { cookies } from "next/headers";
+
+type UpdateUserParams = {
+  user: UserWithRole;
+  form: ProfileForm;
+};
+
+export async function updateProfile(
+  params: UpdateUserParams,
+): Promise<ActionResponse> {
+  const { user, form } = params;
+
+  let imageUrl: string = "";
+  let imagePath: string = "";
+
+  if (form.image instanceof File) {
+    // upload new image
+    const response = await uploadFileAction("images", "users", form.image);
+
+    if (!response.success) {
+      return {
+        success: false,
+        error: {
+          message: response.error.message,
+        },
+      };
+    }
+
+    imageUrl = response.data.publicUrl;
+    imagePath = response.data.filePath;
+
+    // delete old image
+    const path = user?.image?.split("/images/").pop();
+    if (path) {
+      await deleteFileAction("images", path);
+    }
+  } else if (typeof form.image === "string") {
+    imageUrl = form.image;
+  }
+
+  try {
+    const data = await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        name: form.name,
+        image: imageUrl,
+      },
+    });
+
+    const cookiesStore = await cookies();
+
+    cookiesStore.set("user", JSON.stringify(data), {
+      httpOnly: true,
+      path: "/",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 365,
+    });
+
+    return {
+      success: true,
+      data: null,
+    };
+  } catch (error) {
+    const response = await deleteFileAction("images", imagePath);
+    if (!response.success) {
+      return {
+        success: false,
+        error: {
+          message: response.error.message,
+        },
+      };
+    }
+    return {
+      success: false,
+      error: {
+        message:
+          error instanceof Error ? error.message : "Failed to update user",
+      },
+    };
+  }
+}

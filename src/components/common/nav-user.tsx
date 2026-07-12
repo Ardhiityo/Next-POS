@@ -28,12 +28,14 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import DialogUpdateProfile from "@/app/(dashboard)/admin/users/_components/dialog-update-profile";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const user = useAuthStore((state) => state.user);
   const { push } = useRouter();
   const [open, setOpen] = useState(false);
+  const [openProfile, setOpenProfile] = useState(false);
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["sign-out"],
@@ -50,40 +52,18 @@ export function NavUser() {
   });
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu open={open} onOpenChange={setOpen}>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <Avatar className="h-8 w-8 grayscale">
-                <AvatarImage src={user?.image ?? ""} alt={user?.name} />
-                <AvatarFallback>{user?.name.substring(0, 2)}</AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium capitalize">
-                  {user?.name}
-                </span>
-                <span className="truncate capitalize text-xs text-muted-foreground">
-                  {user?.role?.toLowerCase()}
-                </span>
-              </div>
-              <EllipsisVerticalIcon className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8">
+    <>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu open={open} onOpenChange={setOpen}>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              >
+                <Avatar className="h-8 w-8 grayscale">
                   <AvatarImage src={user?.image ?? ""} alt={user?.name} />
-                  <AvatarFallback> {user?.name.substring(0, 2)}</AvatarFallback>
+                  <AvatarFallback>{user?.name.substring(0, 2)}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium capitalize">
@@ -93,32 +73,64 @@ export function NavUser() {
                     {user?.role?.toLowerCase()}
                   </span>
                 </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <UserCircleIcon />
-                Account
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
-                mutate();
-              }}
+                <EllipsisVerticalIcon className="ml-auto size-4" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+              side={isMobile ? "bottom" : "right"}
+              align="end"
+              sideOffset={4}
             >
-              <LogOutIcon />
-              {isPending ? (
-                <Loader2Icon className="animate-spin" />
-              ) : (
-                "Sign out"
-              )}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+              <DropdownMenuLabel className="p-0 font-normal">
+                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user?.image ?? ""} alt={user?.name} />
+                    <AvatarFallback>
+                      {" "}
+                      {user?.name.substring(0, 2)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-medium capitalize">
+                      {user?.name}
+                    </span>
+                    <span className="truncate capitalize text-xs text-muted-foreground">
+                      {user?.role?.toLowerCase()}
+                    </span>
+                  </div>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={() => setOpenProfile(true)}>
+                  <UserCircleIcon />
+                  Profile
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  mutate();
+                }}
+              >
+                <LogOutIcon />
+                {isPending ? (
+                  <Loader2Icon className="animate-spin" />
+                ) : (
+                  "Sign out"
+                )}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+      <DialogUpdateProfile
+        open={openProfile}
+        setOpen={setOpenProfile}
+        user={user}
+      />
+    </>
   );
 }
