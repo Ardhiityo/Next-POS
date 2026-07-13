@@ -60,7 +60,7 @@ export async function generatePaymentToken(
 
       const tax = subtotal * 0.12; // 12%
       const service = subtotal * 0.05; // 5%
-      const grossAmount = subtotal + tax + service;
+      const grossAmount = Math.round(subtotal + tax + service);
 
       let parameter = {
         transaction_details: {

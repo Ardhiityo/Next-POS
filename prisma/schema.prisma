@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -12,16 +7,10 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
-  ADMIN
-  CASHIER
-  KITCHEN
-}
-
 model User {
   id            String    @id
   name          String
-  email         String
+  email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
@@ -30,28 +19,24 @@ model User {
   banned        Boolean?  @default(false)
   banReason     String?
   banExpires    DateTime?
+  accounts      Account[]
+  sessions      Session[]
 
-  sessions Session[]
-  accounts Account[]
-
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id             String   @id
   expiresAt      DateTime
-  token          String
+  token          String   @unique
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   ipAddress      String?
   userAgent      String?
   impersonatedBy String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([token])
   @@index([userId])
   @@map("session")
 }
@@ -67,11 +52,10 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
-
-  accountId  String
-  providerId String
-  userId     String
-  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -90,7 +74,7 @@ model Verification {
 }
 
 model Menu {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   name        String
   description String
   price       Int
@@ -98,9 +82,8 @@ model Menu {
   image       String
   category    String
   isAvailable Boolean
-  createdAt   DateTime @default(now())
-
-  orderMenus OrderMenu[]
+  createdAt   DateTime    @default(now())
+  orderMenus  OrderMenu[]
 
   @@map("menu")
 }
@@ -111,24 +94,24 @@ model Table {
   description String?
   capacity    Int
   status      String
+  positionX   Int
+  positionY   Int
   createdAt   DateTime @default(now())
-
-  orders Order[]
+  orders      Order[]
 
   @@map("table")
 }
 
 model Order {
-  id           String   @id @default(cuid())
-  orderId      String   @default(cuid())
+  id           String      @id @default(cuid())
+  orderId      String      @default(cuid())
   customerName String
   status       String
   paymentToken String?
-  createdAt    DateTime @default(now())
-
-  tableId    String?
-  table      Table?      @relation(fields: [tableId], references: [id], onDelete: SetNull)
-  orderMenus OrderMenu[]
+  createdAt    DateTime    @default(now())
+  tableId      String?
+  table        Table?      @relation(fields: [tableId], references: [id])
+  orderMenus   OrderMenu[]
 
   @@index([tableId])
   @@map("order")
@@ -141,13 +124,17 @@ model OrderMenu {
   notes     String?
   nominal   Int
   createdAt DateTime @default(now())
-
-  orderId String
-  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  menuId String?
-  menu   Menu?   @relation(fields: [menuId], references: [id], onDelete: SetNull)
+  orderId   String
+  menuId    String?
+  menu      Menu?    @relation(fields: [menuId], references: [id])
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([orderId, menuId])
   @@map("order_menu")
+}
+
+enum Role {
+  ADMIN
+  CASHIER
+  KITCHEN
 }

@@ -32,6 +32,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import DialogCreateOrderDineIn from "./dialog-create-order-dine-in";
 import DialogCreateOrderTakeaway from "./dialog-create-order-takeaway";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import TableMap from "./table-map";
+import { getAllTableAction } from "@/actions/table/get-all-table";
 
 const OrderManagement = () => {
   const {
@@ -180,46 +183,76 @@ const OrderManagement = () => {
     return orders.paging.total_page;
   }, [orders]);
 
+  const { data: tables, error: errorGetTables } = useQuery({
+    queryKey: ["get-all-tables"],
+    queryFn: async () => {
+      const response = await getAllTableAction();
+      return response.data;
+    },
+    refetchOnMount: "always",
+  });
+
+  useEffect(() => {
+    if (errorGetTables) toast.error(errorGetTables.message);
+  }, [errorGetTables]);
+
   return (
-    <section className="flex flex-col gap-8">
-      <div className="flex gap-3 w-1/4 self-end">
-        <Input
-          placeholder="Search order id/customer name"
-          onChange={(e) => handleSearch(e.target.value)}
-        />
-        <div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">Create</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  onClick={() => setSelectedAction({ orderType: "dine-in" })}
-                >
-                  <UtensilsIcon /> Dine In
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => setSelectedAction({ orderType: "takeaway" })}
-                >
-                  <HandbagIcon /> Takeaway
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-      <DataTable
-        headers={HEADER_TABLE_ORDER}
-        data={filteredOrders}
-        isPending={isPending}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        handleChangeLimit={handleChangeLimit}
-        currentLimit={currentLimit}
-        totalPages={totalPages}
-      />
+    <section>
+      <Tabs defaultValue="order-list" className="w-full flex flex-col gap-5">
+        <TabsList>
+          <TabsTrigger value="order-list">Order List</TabsTrigger>
+          <TabsTrigger value="table-map">Table Map</TabsTrigger>
+        </TabsList>
+        <TabsContent value="order-list">
+          <div className="flex flex-col gap-8">
+            <div className="flex gap-3 w-1/4 self-end">
+              <Input
+                placeholder="Search order id/customer name"
+                onChange={(e) => handleSearch(e.target.value)}
+              />
+              <div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline">Create</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          setSelectedAction({ orderType: "dine-in" })
+                        }
+                      >
+                        <UtensilsIcon /> Dine In
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() =>
+                          setSelectedAction({ orderType: "takeaway" })
+                        }
+                      >
+                        <HandbagIcon /> Takeaway
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+            <DataTable
+              headers={HEADER_TABLE_ORDER}
+              data={filteredOrders}
+              isPending={isPending}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              handleChangeLimit={handleChangeLimit}
+              currentLimit={currentLimit}
+              totalPages={totalPages}
+            />
+          </div>
+        </TabsContent>
+        <TabsContent value="table-map">
+          <TableMap tables={tables} />
+        </TabsContent>
+      </Tabs>
       {selectedAction?.orderType === "dine-in" && (
         <DialogCreateOrderDineIn
           refetch={refetch}

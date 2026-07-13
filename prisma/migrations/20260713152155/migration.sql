@@ -86,6 +86,8 @@ CREATE TABLE "table" (
     "description" TEXT,
     "capacity" INTEGER NOT NULL,
     "status" TEXT NOT NULL,
+    "positionX" INTEGER NOT NULL,
+    "positionY" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "table_pkey" PRIMARY KEY ("id")
@@ -97,7 +99,7 @@ CREATE TABLE "order" (
     "orderId" TEXT NOT NULL,
     "customerName" TEXT NOT NULL,
     "status" TEXT NOT NULL,
-    "paymentUrl" TEXT,
+    "paymentToken" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "tableId" TEXT,
 
@@ -108,11 +110,11 @@ CREATE TABLE "order" (
 CREATE TABLE "order_menu" (
     "id" TEXT NOT NULL,
     "status" TEXT NOT NULL,
-    "paymentUrl" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
-    "notes" TEXT NOT NULL,
+    "notes" TEXT,
+    "nominal" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "orderId" TEXT,
+    "orderId" TEXT NOT NULL,
     "menuId" TEXT,
 
     CONSTRAINT "order_menu_pkey" PRIMARY KEY ("id")
@@ -149,7 +151,7 @@ ALTER TABLE "account" ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "order" ADD CONSTRAINT "order_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "table"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "order_menu" ADD CONSTRAINT "order_menu_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "order"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "order_menu" ADD CONSTRAINT "order_menu_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "order_menu" ADD CONSTRAINT "order_menu_menuId_fkey" FOREIGN KEY ("menuId") REFERENCES "menu"("id") ON DELETE SET NULL ON UPDATE CASCADE;

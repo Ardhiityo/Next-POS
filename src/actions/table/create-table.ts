@@ -18,9 +18,25 @@ export async function createTableAction(
   }
 
   try {
+    const tables = await prisma.table.findFirst({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    let positionX = 100;
+    let positionY = 100;
+
+    if (tables) {
+      positionX += 100;
+      positionY += 100;
+    }
+
     await prisma.table.create({
       data: {
         ...form,
+        positionX,
+        positionY,
       },
     });
 
