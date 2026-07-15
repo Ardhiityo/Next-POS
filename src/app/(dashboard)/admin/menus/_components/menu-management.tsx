@@ -66,7 +66,7 @@ const MenuManagement = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [refetch]);
 
   const [selectedAction, setSelectedAction] = useState<null | {
     type: "create" | "update" | "delete";
@@ -78,7 +78,7 @@ const MenuManagement = () => {
     return menus.data.map((menu: Menu, index: number) => {
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center" key={`menu-${menu.id}`}>
           <Image
             src={menu.image}
             alt={menu.name}
@@ -90,7 +90,7 @@ const MenuManagement = () => {
           {menu.name}
         </div>,
         menu.category,
-        <div>
+        <div key={`menu-price-${menu.id}`}>
           <p>Base {priceToIDR(menu.price)}</p>
           <p>Discount {menu.discount}%</p>
           <p>
@@ -98,7 +98,7 @@ const MenuManagement = () => {
             {priceToIDR(menu.price - (menu.price * menu.discount) / 100)}
           </p>
         </div>,
-        <div
+        <div key={`menu-availability-${menu.id}`}
           className={cn(
             "text-center text-white py-1 w-fit px-2 rounded-lg",
             menu.isAvailable ? "bg-green-600" : "bg-red-600",
@@ -106,7 +106,7 @@ const MenuManagement = () => {
         >
           {menu.isAvailable ? "Available" : "Not available"}
         </div>,
-        <DropwdownAction
+        <DropwdownAction key={`menu-action-${menu.id}`}
           menus={[
             {
               label: <ActionLabel type="edit" />,
@@ -134,7 +134,7 @@ const MenuManagement = () => {
         />,
       ];
     });
-  }, [menus]);
+  }, [menus, currentLimit, currentPage]);
 
   const totalPages = useMemo(() => {
     if (!menus) return 1;

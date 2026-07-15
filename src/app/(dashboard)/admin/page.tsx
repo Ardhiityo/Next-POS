@@ -1,8 +1,8 @@
 "use client";
 
-import { getOrderAction } from "@/actions/order/get-order";
 import { getOrderRevenueByMonth } from "@/actions/order/get-order-revenue-by-month";
 import { getOrderTotalByStatus } from "@/actions/order/get-order-total-by-status";
+import { getOrderByStatuses } from "@/actions/order/get-order-by-status";
 import LineCharts from "@/components/common/line-charts";
 import { Button } from "@/components/ui/button";
 import {
@@ -76,7 +76,6 @@ export default function Page() {
     queryKey: ["get-total-order"],
     initialData: 0,
     queryFn: async () => {
-      const thisMonth = new Date();
       const response = await getOrderTotalByStatus({ status: "settled" });
       if (!response.success) {
         toast.error(response.error.message);
@@ -90,9 +89,12 @@ export default function Page() {
   const { data: latestOrders, error } = useQuery({
     queryKey: ["get-latest-order"],
     queryFn: async () => {
-      const take = 5;
-      const page = 1;
-      return await getOrderAction({ take, page });
+      const response = await getOrderByStatuses({ statuses: ['process'] });
+      if (!response.success) {
+        toast.error(response.error.message)
+        return [];
+      }
+      return response.data
     },
     refetchOnMount: "always",
   });
@@ -180,21 +182,23 @@ export default function Page() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-3">
-              {latestOrders?.data.map((order) => (
-                <div
-                  className="flex items-center justify-between"
-                  key={`latest-order-${order.id}`}
-                >
-                  <div>
-                    <h3>{order.customerName}</h3>
-                    <p className="text-slate-400">Table: {order.table?.name}</p>
-                    <p className="text-slate-400">Order Id: {order.orderId}</p>
+              {(latestOrders || []).length > 1 ?
+                (latestOrders || []).map((order) => (
+                  <div
+                    className="flex items-center justify-between"
+                    key={`latest-order-${order.id}`}
+                  >
+                    <div>
+                      <h3>{order.customerName}</h3>
+                      <p className="text-slate-400">Table: {order.table?.name}</p>
+                      <p className="text-slate-400">Order Id: {order.orderId}</p>
+                    </div>
+                    <Button asChild>
+                      <Link href={`/orders/${order.orderId}`}>Detail</Link>
+                    </Button>
                   </div>
-                  <Button asChild>
-                    <Link href={`/orders/${order.orderId}`}>Detail</Link>
-                  </Button>
-                </div>
-              ))}
+                )) : 'No active orders were found'
+              }
             </div>
           </CardContent>
         </Card>

@@ -10,7 +10,7 @@ const ActionLabel = (props: ActionLabelProps) => {
   return (
     <div className="flex gap-1 items-center">
       {props.type === "edit" ? <PencilIcon /> : <Trash2Icon />}
-      Edit
+      {props.type === 'edit' ? 'Edit' : 'Delete'}
     </div>
   );
 };

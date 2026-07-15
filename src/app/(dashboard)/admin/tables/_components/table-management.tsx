@@ -66,7 +66,7 @@ const TableManagement = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [refetch]);
 
   const [selectedAction, setSelectedAction] = useState<null | {
     type: "create" | "update" | "delete";
@@ -78,12 +78,12 @@ const TableManagement = () => {
     return tables.data.map((table: Table, index: number) => {
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        <div>
+        <div key={`tables-${table.id}`}>
           <h4 className="font-bold">{table.name}</h4>
           <p>{table.description}</p>
         </div>,
         table.capacity,
-        <div
+        <div key={`table-status-${table.id}`}
           className={cn(
             "text-white px-2 py-1 rounded-lg w-fit text-center capitalize",
             {
@@ -95,7 +95,7 @@ const TableManagement = () => {
         >
           {table.status}
         </div>,
-        <DropwdownAction
+        <DropwdownAction key={`table-action-${table.id}`}
           menus={[
             {
               label: <ActionLabel type="edit" />,
@@ -123,7 +123,7 @@ const TableManagement = () => {
         />,
       ];
     });
-  }, [tables]);
+  }, [tables, currentLimit, currentPage]);
 
   const totalPages = useMemo(() => {
     if (!tables) return 1;

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useEffect } from "react";
 import FormMenu from "./form-table";
 import { applyFieldErrors } from "@/lib/utils";
 import {
@@ -52,7 +52,7 @@ const DialogCreateTable = (props: DialogCreateTableProps) => {
     if (!open) {
       reset();
     }
-  }, [open]);
+  }, [open, reset]);
 
   return (
     <FormMenu

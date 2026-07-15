@@ -35,6 +35,7 @@ import DialogCreateOrderTakeaway from "./dialog-create-order-takeaway";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TableMap from "./table-map";
 import { getAllTableAction } from "@/actions/table/get-all-table";
+import { getOrderByStatuses } from "@/actions/order/get-order-by-status";
 
 const OrderManagement = () => {
   const {
@@ -51,8 +52,8 @@ const OrderManagement = () => {
   const {
     data: orders,
     isPending,
-    refetch,
-    error,
+    refetch: refetchOrders,
+    error: errorGetOrders,
   } = useQuery({
     queryKey: ["orders", currentPage, currentLimit, currentSearch],
     queryFn: async () => {
@@ -66,27 +67,40 @@ const OrderManagement = () => {
   });
 
   useEffect(() => {
-    if (error) toast.error(error.message);
-  }, [error]);
+    if (errorGetOrders) toast.error(errorGetOrders.message);
+  }, [errorGetOrders]);
+
+  const { data: tables, error: errorGetTables, refetch: refetchTables } = useQuery({
+    queryKey: ["get-all-tables"],
+    queryFn: async () => {
+      const response = await getAllTableAction();
+      return response.data;
+    },
+    refetchOnMount: "always",
+  });
 
   useEffect(() => {
-    const channel = supabase
-      .channel(`order}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "order",
-        },
-        () => refetch(),
-      )
-      .subscribe();
+    if (errorGetTables) toast.error(errorGetTables.message);
+  }, [errorGetTables]);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+  const { data: orderByStatuses, error: errorGetOrderByStatus, refetch: refetchOrderByStatuses } = useQuery({
+    queryKey: ["get-order-by-statuses"],
+    queryFn: async () => {
+      const response = await getOrderByStatuses({
+        statuses: ['process', 'reserved']
+      });
+      if (!response.success) {
+        toast.error(response.error.message);
+        return
+      }
+      return response.data;
+    },
+    refetchOnMount: "always",
+  });
+
+  useEffect(() => {
+    if (errorGetOrderByStatus) toast.error(errorGetOrderByStatus.message);
+  }, [errorGetOrderByStatus]);
 
   const [selectedAction, setSelectedAction] = useState<null | {
     orderType: "dine-in" | "takeaway";
@@ -100,7 +114,7 @@ const OrderManagement = () => {
         toast.error(response.error.message);
       } else if (response.success) {
         toast.success("Order updated successfully");
-        refetch();
+        refetchOrders();
       }
     },
   });
@@ -113,7 +127,7 @@ const OrderManagement = () => {
         order.orderId,
         order.customerName,
         order.table?.name ?? "Takeaway",
-        <div
+        <div key={`order-status-${order.id}`}
           className={cn(
             "text-center text-white capitalize py-1 w-fit px-2 rounded-lg",
             {
@@ -126,75 +140,84 @@ const OrderManagement = () => {
         >
           {order.status}
         </div>,
-        <DropwdownAction
+        <DropwdownAction key={`order-action-${order.id}`}
           menus={
             order.status === "reserved"
               ? [
-                  {
-                    label: (
-                      <div className="flex gap-1 items-center">
-                        <RocketIcon />
-                        Process
-                      </div>
-                    ),
-                    variant: "default",
-                    action: () => {
-                      mutate({ order, status: "process" });
-                    },
-                    type: "button",
+                {
+                  label: (
+                    <div className="flex gap-1 items-center">
+                      <RocketIcon />
+                      Process
+                    </div>
+                  ),
+                  variant: "default",
+                  action: () => {
+                    mutate({ order, status: "process" });
                   },
-                  {
-                    label: (
-                      <div className="flex gap-1 items-center">
-                        <CircleXIcon />
-                        Cancel
-                      </div>
-                    ),
-                    variant: "destructive",
-                    action: () => {
-                      mutate({ order, status: "cancelled" });
-                    },
-                    type: "button",
+                  type: "button",
+                },
+                {
+                  label: (
+                    <div className="flex gap-1 items-center">
+                      <CircleXIcon />
+                      Cancel
+                    </div>
+                  ),
+                  variant: "destructive",
+                  action: () => {
+                    mutate({ order, status: "cancelled" });
                   },
-                ]
+                  type: "button",
+                },
+              ]
               : [
-                  {
-                    label: (
-                      <div className="flex gap-1 items-center">
-                        <ScrollTextIcon />
-                        Details
-                      </div>
-                    ),
-                    variant: "default",
-                    action: () => {
-                      push(`/orders/${order.orderId}`);
-                    },
-                    type: "button",
+                {
+                  label: (
+                    <div className="flex gap-1 items-center">
+                      <ScrollTextIcon />
+                      Details
+                    </div>
+                  ),
+                  variant: "default",
+                  action: () => {
+                    push(`/orders/${order.orderId}`);
                   },
-                ]
+                  type: "button",
+                },
+              ]
           }
         />,
       ];
     });
-  }, [orders]);
+  }, [orders, currentLimit, currentPage, mutate, push]);
 
   const totalPages = useMemo(() => {
     if (!orders) return 1;
     return orders.paging.total_page;
   }, [orders]);
 
-  const { data: tables, error: errorGetTables } = useQuery({
-    queryKey: ["get-all-tables"],
-    queryFn: async () => {
-      const response = await getAllTableAction();
-      return response.data;
-    },
-    refetchOnMount: "always",
-  });
-
   useEffect(() => {
-    if (errorGetTables) toast.error(errorGetTables.message);
-  }, [errorGetTables]);
+    const channel = supabase
+      .channel(`order}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "order",
+        },
+        () => {
+          refetchOrders()
+          refetchTables()
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetchOrders, refetchTables]);
 
   return (
     <section>
@@ -250,19 +273,19 @@ const OrderManagement = () => {
           </div>
         </TabsContent>
         <TabsContent value="table-map">
-          <TableMap tables={tables} />
+          <TableMap tables={tables} orders={orderByStatuses} refetch={refetchOrderByStatuses} />
         </TabsContent>
       </Tabs>
       {selectedAction?.orderType === "dine-in" && (
         <DialogCreateOrderDineIn
-          refetch={refetch}
+          refetch={refetchOrders}
           open={true}
           setOpen={() => setSelectedAction(null)}
         />
       )}
       {selectedAction?.orderType === "takeaway" && (
         <DialogCreateOrderTakeaway
-          refetch={refetch}
+          refetch={refetchOrders}
           open={true}
           setOpen={() => setSelectedAction(null)}
         />

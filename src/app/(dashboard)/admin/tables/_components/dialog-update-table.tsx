@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useEffect } from "react";
 import { Table } from "@/generated/prisma/client";
 import { applyFieldErrors } from "@/lib/utils";
 import {
@@ -24,7 +24,7 @@ type DialogUpdateTableProps = {
 const DialogUpdateTable = (props: DialogUpdateTableProps) => {
   const { table, open, setOpen, refetch } = props;
 
-  const { control, handleSubmit, reset, setValue, setError, getValues } =
+  const { control, handleSubmit, reset, setValue, setError } =
     useForm({
       resolver: zodResolver(updateTableFormSchema),
     });
@@ -64,7 +64,7 @@ const DialogUpdateTable = (props: DialogUpdateTableProps) => {
     if (!open) {
       reset();
     }
-  }, [table, open]);
+  }, [table, open, setValue, reset]);
 
   return (
     <FormTable

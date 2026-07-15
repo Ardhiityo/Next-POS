@@ -44,7 +44,7 @@ const DialogDeleteTable = (props: DialogDeleteTableProps) => {
     if (table) {
       setValue("tableId", table.id);
     }
-  }, [table]);
+  }, [table, setValue]);
 
   return (
     <DialogDelete

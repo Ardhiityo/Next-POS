@@ -59,14 +59,16 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
           schema: "public",
           table: "order_menu",
         },
-        () => refetch(),
+        () => {
+          refetch()
+        },
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [order]);
+  }, [refetch]);
 
   const { mutate } = useMutation({
     mutationKey: ["update-status-order-menu"],
@@ -92,7 +94,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
       const productPrice = orderMenu.menu.price - discount;
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center" key={`order-menu-image-${orderMenu.id}`}>
           <Image
             src={orderMenu.menu.image}
             alt={orderMenu.menu.name}
@@ -108,7 +110,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
           </div>
         </div>,
         priceToIDR(orderMenu.quantity * productPrice),
-        <div
+        <div key={`order-menu-status-${orderMenu.id}`}
           className={cn(
             "text-center text-white capitalize py-1 w-fit px-2 rounded-lg",
             {
@@ -193,7 +195,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
     });
     if (results[0].length < 1) return [];
     return results;
-  }, [order]);
+  }, [order, currentLimit, currentPage, mutate, user?.role]);
 
   return (
     <>

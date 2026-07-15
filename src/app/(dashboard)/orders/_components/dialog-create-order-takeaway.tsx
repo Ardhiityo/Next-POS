@@ -52,7 +52,7 @@ const DialogCreateOrderTakeaway = (props: DialogCreateOrderTakeawayProps) => {
     if (!open) {
       reset();
     }
-  }, [open]);
+  }, [open, reset]);
 
   return (
     <FormOrder

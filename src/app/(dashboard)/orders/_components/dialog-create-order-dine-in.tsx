@@ -18,12 +18,16 @@ type DialogCreateOrderDineInProps = {
   refetch: () => void;
   open: boolean;
   setOpen: (event: SetStateAction<boolean>) => void;
+  table?: {
+    id: string,
+    name: string
+  } | null
 };
 
 const DialogCreateOrderDineIn = (props: DialogCreateOrderDineInProps) => {
-  const { open, setOpen, refetch } = props;
+  const { open, setOpen, refetch, table } = props;
 
-  const { control, handleSubmit, reset, setError } = useForm({
+  const { control, handleSubmit, reset, setError, setValue } = useForm({
     resolver: zodResolver(createOrderDineInFormSchema),
     defaultValues: INITIAL_CREATE_ORDER_DINE_IN_FORM,
   });
@@ -49,10 +53,16 @@ const DialogCreateOrderDineIn = (props: DialogCreateOrderDineInProps) => {
   });
 
   useEffect(() => {
+    if (table) {
+      setValue('tableId', table.id)
+    }
+  }, [table, setValue]);
+
+  useEffect(() => {
     if (!open) {
       reset();
     }
-  }, [open]);
+  }, [open, reset]);
 
   return (
     <FormOrder
@@ -63,6 +73,7 @@ const DialogCreateOrderDineIn = (props: DialogCreateOrderDineInProps) => {
       type="create"
       isPending={isPending}
       typeOrder="dine-in"
+      selectedTable={table?.name ?? null}
     />
   );
 };

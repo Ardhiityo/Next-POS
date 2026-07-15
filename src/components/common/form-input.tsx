@@ -15,7 +15,8 @@ type FormInputProps<T extends FieldValues> = {
   label: string;
   type?: "text" | "email" | "password" | "textarea";
   control: Control<T>;
-  placeholder: string;
+  placeholder?: string;
+  disabled?: boolean
 };
 
 const FormInput = <T extends FieldValues>({
@@ -24,6 +25,7 @@ const FormInput = <T extends FieldValues>({
   type = "text",
   control,
   placeholder,
+  disabled = false
 }: FormInputProps<T>) => {
   return (
     <FieldGroup>
@@ -41,6 +43,7 @@ const FormInput = <T extends FieldValues>({
                 aria-invalid={fieldState.invalid}
                 placeholder={placeholder}
                 autoComplete="off"
+                disabled={disabled}
               />
             ) : (
               <Textarea

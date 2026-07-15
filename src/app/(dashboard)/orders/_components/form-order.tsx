@@ -28,11 +28,20 @@ type FormOrderProps<T extends FieldValues> = {
   isPending: boolean;
   control: Control<T>;
   typeOrder: "dine-in" | "takeaway";
+  selectedTable: string | null
 };
 
 const FormOrder = <T extends FieldValues>(props: FormOrderProps<T>) => {
-  const { open, setOpen, onSubmit, isPending, control, type, typeOrder } =
-    props;
+  const {
+    open,
+    setOpen,
+    onSubmit,
+    isPending,
+    control,
+    type,
+    typeOrder,
+    selectedTable
+  } = props;
 
   const title = type === "create" ? "Create order" : "Update order";
 
@@ -73,7 +82,21 @@ const FormOrder = <T extends FieldValues>(props: FormOrderProps<T>) => {
               placeholder="Customer name"
             />
             {typeOrder === "dine-in" && (
-              <>
+              selectedTable ? <>
+                <FormInput name={"placeholder" as Path<T>}
+                  label="Table"
+                  type="text"
+                  control={control}
+                  disabled={true}
+                  placeholder={selectedTable}
+                />
+                <FormSelect
+                  name={"status" as Path<T>}
+                  label="Status"
+                  control={control}
+                  items={STATUS_ORDER_CREATE}
+                />
+              </> : <>
                 <FormSelect
                   name={"tableId" as Path<T>}
                   label="Table"

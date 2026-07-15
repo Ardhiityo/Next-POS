@@ -28,8 +28,8 @@ export async function createTableAction(
     let positionY = 100;
 
     if (tables) {
-      positionX += 100;
-      positionY += 100;
+      positionX = tables.positionX += 100;
+      positionY = tables.positionY += 100;
     }
 
     await prisma.table.create({
@@ -45,6 +45,7 @@ export async function createTableAction(
       data: null,
     };
   } catch (error) {
+    console.log(error)
     return {
       success: false,
       error: {
