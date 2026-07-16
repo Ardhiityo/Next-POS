@@ -1,4 +1,4 @@
-import { Prisma } from "@/generated/prisma/client";
+import { Order, Prisma } from "@/generated/prisma/client";
 
 export type OrderWithTable = Prisma.OrderGetPayload<{
   include: {
@@ -11,7 +11,7 @@ export type OrderWithTable = Prisma.OrderGetPayload<{
 }>;
 
 export type UpdateOrder = {
-  order: OrderWithTable;
+  order: Order;
   status: "process" | "cancelled";
 };
 

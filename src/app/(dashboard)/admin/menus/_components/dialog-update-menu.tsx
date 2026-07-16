@@ -72,7 +72,7 @@ const DialogUpdateMenu = (props: DialogUpdateMenuProps) => {
       setFile(undefined);
       setImagePreview(undefined);
     }
-  }, [menu, open]);
+  }, [menu, open, reset, setValue]);
 
   useEffect(() => {
     if (file) {

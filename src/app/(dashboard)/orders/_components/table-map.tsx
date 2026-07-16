@@ -13,6 +13,11 @@ import { Order, Table } from "@/generated/prisma/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import DialogCreateOrderDineIn from "./dialog-create-order-dine-in";
+import { useMutation } from "@tanstack/react-query";
+import { UpdateOrder } from "@/types/order";
+import { updateOrderAction } from "@/actions/order/update-order";
+import { toast } from "sonner";
+import { Loader2Icon } from "lucide-react";
 
 type NodeProps = {
   data: {
@@ -21,8 +26,13 @@ type NodeProps = {
     status: string;
     tableId: string;
     order: {
+      id: string;
       orderId: string;
       customerName: string;
+      status: string;
+      paymentToken: string | null;
+      createdAt: Date;
+      tableId: string | null;
     } | undefined
     refetch: () => void
   };
@@ -31,6 +41,19 @@ type NodeProps = {
 export function TableNode(props: NodeProps) {
   const [open, setOpen] = useState(false);
   const { data } = props;
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["update-order"],
+    mutationFn: async ({ order, status }: UpdateOrder) => {
+      const response = await updateOrderAction({ order, status });
+      if (!response.success && response.error.message) {
+        toast.error(response.error.message);
+      } else if (response.success) {
+        data.refetch();
+        toast.success("Order updated successfully");
+      }
+    },
+  });
 
   return (
     <HoverCard openDelay={10} closeDelay={100}>
@@ -58,13 +81,32 @@ export function TableNode(props: NodeProps) {
           Status : <span className="capitalize">{data.status}</span>
         </div>
         {data.order ? (
-          <>
-            <div className="text-muted-foreground">Order Id : {data.order.orderId}</div>
-            <div className="text-muted-foreground">Customer : {data.order.customerName}</div>
-            <Button asChild className="mt-2">
-              <Link href={`/orders/${data.order.orderId}`}>View Order Detail</Link>
-            </Button>
-          </>
+          data.order.status === 'reserved' ? (
+            <>
+              <div className="text-muted-foreground">Order Id : {data.order.orderId}</div>
+              <div className="text-muted-foreground">Customer : {data.order.customerName}</div>
+              <div className="flex gap-2 mt-2">
+                <Button variant="destructive" className="flex-1"
+                  disabled={isPending}
+                  onClick={() => mutate({ order: data.order!, status: 'cancelled' })}>
+                  {isPending ? <Loader2Icon className="animate-spin" /> : 'Cancel'}
+                </Button>
+                <Button className="flex-1"
+                  disabled={isPending}
+                  onClick={() => mutate({ order: data.order!, status: 'process' })}>
+                  {isPending ? <Loader2Icon className="animate-spin" /> : 'Process'}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-muted-foreground">Order Id : {data.order.orderId}</div>
+              <div className="text-muted-foreground">Customer : {data.order.customerName}</div>
+              <Button asChild className="mt-2">
+                <Link href={`/orders/${data.order.orderId}`}>View Order Detail</Link>
+              </Button>
+            </>
+          )
         ) : (
           <>
             <Button className="w-full" onClick={() => setOpen(true)}>Create Order</Button>

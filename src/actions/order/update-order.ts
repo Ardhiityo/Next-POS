@@ -2,10 +2,10 @@
 
 import { ActionResponse } from "@/types/general";
 import prisma from "@/lib/prisma";
-import { OrderWithTable } from "@/types/order";
+import { Order } from "@/generated/prisma/client";
 
 type UpdateOrderParams = {
-  order: OrderWithTable;
+  order: Order;
   status: "process" | "cancelled";
 };
 
