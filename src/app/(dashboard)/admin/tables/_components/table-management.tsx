@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
 import { Table } from "@/generated/prisma/client";
 import ActionLabel from "../../users/_components/action-label";
-import { getTableAction } from "@/actions/table/get-table";
+import { getTable } from "@/actions/table/get-table";
 import { HEADER_TABLE_TABLE } from "@/constants/table-constants";
 import { cn } from "@/lib/utils";
 import DialogCreateTable from "./dialog-create-table";
@@ -36,7 +36,7 @@ const TableManagement = () => {
   } = useQuery({
     queryKey: ["tables", currentPage, currentLimit, currentSearch],
     queryFn: async () => {
-      return await getTableAction({
+      return await getTable({
         take: currentLimit,
         page: currentPage,
         search: currentSearch,

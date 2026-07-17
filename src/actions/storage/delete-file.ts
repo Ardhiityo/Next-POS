@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { ActionResponse } from "@/types/general";
 
-export async function deleteFileAction(
+export async function deleteFile(
   bucket: string,
   filePath: string,
 ): Promise<ActionResponse> {

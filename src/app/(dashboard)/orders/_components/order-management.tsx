@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
 import { cn } from "@/lib/utils";
 import { HEADER_TABLE_ORDER } from "@/constants/order-constants";
-import { getOrderAction } from "@/actions/order/get-order";
+import { getOrder } from "@/actions/order/get-order";
 import { OrderWithTable, UpdateOrder } from "@/types/order";
 import {
   CircleXIcon,
@@ -19,7 +19,7 @@ import {
   ScrollTextIcon,
   UtensilsIcon,
 } from "lucide-react";
-import { updateOrderAction } from "@/actions/order/update-order";
+import { updateOrder } from "@/actions/order/update-order";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/default";
 import {
@@ -34,7 +34,7 @@ import DialogCreateOrderDineIn from "./dialog-create-order-dine-in";
 import DialogCreateOrderTakeaway from "./dialog-create-order-takeaway";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TableMap from "./table-map";
-import { getAllTableAction } from "@/actions/table/get-all-table";
+import { getAllTable } from "@/actions/table/get-all-table";
 import { getOrderByStatuses } from "@/actions/order/get-order-by-status";
 
 const OrderManagement = () => {
@@ -57,7 +57,7 @@ const OrderManagement = () => {
   } = useQuery({
     queryKey: ["orders", currentPage, currentLimit, currentSearch],
     queryFn: async () => {
-      return await getOrderAction({
+      return await getOrder({
         take: currentLimit,
         page: currentPage,
         search: currentSearch,
@@ -73,7 +73,7 @@ const OrderManagement = () => {
   const { data: tables, error: errorGetTables, refetch: refetchTables } = useQuery({
     queryKey: ["get-all-tables"],
     queryFn: async () => {
-      const response = await getAllTableAction();
+      const response = await getAllTable();
       return response.data;
     },
     refetchOnMount: "always",
@@ -109,7 +109,7 @@ const OrderManagement = () => {
   const { mutate } = useMutation({
     mutationKey: ["update-order"],
     mutationFn: async ({ order, status }: UpdateOrder) => {
-      const response = await updateOrderAction({ order, status });
+      const response = await updateOrder({ order, status });
       if (!response.success && response.error.message) {
         toast.error(response.error.message);
       } else if (response.success) {

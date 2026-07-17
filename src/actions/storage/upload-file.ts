@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { ActionResponse } from "@/types/general";
 
-export async function uploadFileAction(
+export async function uploadFile(
   bucket: string,
   path: string,
   file: File,

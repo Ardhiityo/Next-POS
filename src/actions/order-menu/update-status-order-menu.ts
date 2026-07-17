@@ -8,7 +8,7 @@ type UpdateStatusOrderMenuParams = {
   status: "process" | "ready" | "served";
 };
 
-export async function updateStatusOrderMenuAction(
+export async function updateStatusOrderMenu(
   params: UpdateStatusOrderMenuParams,
 ): Promise<ActionResponse> {
   const { orderMenuId, status } = params;

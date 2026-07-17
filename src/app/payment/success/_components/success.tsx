@@ -1,6 +1,6 @@
 "use client";
 
-import { updateOrderStatusAction } from "@/actions/order/update-order-status";
+import { updateOrderStatus } from "@/actions/order/update-order-status";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { SquareCheckIcon } from "lucide-react";
@@ -18,7 +18,7 @@ const Success = () => {
     mutationKey: ["update-payment-status", orderId],
     mutationFn: async () => {
       if (!orderId) throw new Error("Order not found");
-      const response = await updateOrderStatusAction({ orderId });
+      const response = await updateOrderStatus({ orderId });
       if (!response.success) {
         throw new Error(response.error.message);
       }
@@ -32,7 +32,7 @@ const Success = () => {
 
   useEffect(() => {
     mutate();
-  }, []);
+  }, [mutate]);
 
   return (
     <section className="flex flex-col gap-5 justify-center items-center max-w-sm">

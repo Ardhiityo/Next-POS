@@ -1,7 +1,7 @@
 "use server";
 
-import { uploadFileAction } from "../storage/upload-file";
-import { deleteFileAction } from "../storage/delete-file";
+import { uploadFile } from "../storage/upload-file";
+import { deleteFile } from "../storage/delete-file";
 import { ActionResponse } from "@/types/general";
 import { ProfileForm } from "@/validations/profile-validations";
 import prisma from "@/lib/prisma";
@@ -23,7 +23,7 @@ export async function updateProfile(
 
   if (form.image instanceof File) {
     // upload new image
-    const response = await uploadFileAction("images", "users", form.image);
+    const response = await uploadFile("images", "users", form.image);
 
     if (!response.success) {
       return {
@@ -40,7 +40,7 @@ export async function updateProfile(
     // delete old image
     const path = user?.image?.split("/images/").pop();
     if (path) {
-      await deleteFileAction("images", path);
+      await deleteFile("images", path);
     }
   } else if (typeof form.image === "string") {
     imageUrl = form.image;
@@ -71,7 +71,7 @@ export async function updateProfile(
       data: null,
     };
   } catch (error) {
-    const response = await deleteFileAction("images", imagePath);
+    const response = await deleteFile("images", imagePath);
     if (!response.success) {
       return {
         success: false,

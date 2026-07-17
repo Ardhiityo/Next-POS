@@ -6,7 +6,7 @@ import { SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import DialogDelete from "@/components/common/dialog-delete";
 import { Menu } from "@/generated/prisma/client";
-import { deleteMenuAction } from "@/actions/menu/delete-menu";
+import { deleteMenu } from "@/actions/menu/delete-menu";
 import { DeleteMenuForm } from "@/validations/menu-validations";
 
 type DialogDeleteMenuProps = {
@@ -25,7 +25,7 @@ const DialogDeleteMenu = (props: DialogDeleteMenuProps) => {
     mutationKey: ["delete-menu"],
     mutationFn: async (form: DeleteMenuForm) => {
       if (!form) throw new Error("Menu not found");
-      const response = await deleteMenuAction(form);
+      const response = await deleteMenu(form);
       if (!response.success) {
         toast.error(response.error.message);
       } else if (response.success) {

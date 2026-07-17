@@ -19,7 +19,7 @@ type GetOrderResponse = {
   };
 };
 
-export async function getOrderAction(
+export async function getOrder(
   params: GetOrderParams,
 ): Promise<GetOrderResponse> {
   const take = params.take;

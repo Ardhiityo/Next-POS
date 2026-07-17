@@ -6,7 +6,7 @@ import { signInFormSchema } from "@/validations/auth-validations";
 import { ActionResponse } from "@/types/general";
 import { validationError } from "@/lib/utils";
 
-export async function signInAction(form: SignInForm): Promise<ActionResponse> {
+export async function signIn(form: SignInForm): Promise<ActionResponse> {
   const validated = signInFormSchema.safeParse(form);
 
   if (!validated.success) {

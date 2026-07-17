@@ -7,7 +7,7 @@ type GetTableResponse = {
   data: Table[];
 };
 
-export async function getAllTableAction(): Promise<GetTableResponse> {
+export async function getAllTable(): Promise<GetTableResponse> {
   const response = await prisma.table.findMany();
 
   return {

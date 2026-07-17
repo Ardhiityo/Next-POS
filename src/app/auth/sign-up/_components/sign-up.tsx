@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import { signUpAction } from "@/actions/auth/sign-up";
+import { signUp } from "@/actions/auth/sign-up";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { applyFieldErrors } from "@/lib/utils";
@@ -33,7 +33,7 @@ export default function SignUp() {
   const { mutate, isPending } = useMutation({
     mutationKey: ["sign-up"],
     mutationFn: async (data: SignUpForm) => {
-      const response = await signUpAction(data);
+      const response = await signUp(data);
       if (!response.success && response.error.fieldErrors) {
         applyFieldErrors(response.error.fieldErrors, setError);
       } else if (!response.success && response.error.message) {

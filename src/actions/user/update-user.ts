@@ -1,9 +1,9 @@
 "use server";
 
 import { UpdateUserForm } from "@/validations/auth-validations";
-import { uploadFileAction } from "../storage/upload-file";
+import { uploadFile } from "../storage/upload-file";
 import { auth } from "@/lib/auth";
-import { deleteFileAction } from "../storage/delete-file";
+import { deleteFile } from "../storage/delete-file";
 import { headers } from "next/headers";
 import { ActionResponse } from "@/types/general";
 import { UserWithRole } from "better-auth/plugins";
@@ -23,7 +23,7 @@ export async function updateUserAction(
 
   if (form.image instanceof File) {
     // upload new image
-    const response = await uploadFileAction("images", "users", form.image);
+    const response = await uploadFile("images", "users", form.image);
 
     if (!response.success) {
       return {
@@ -40,7 +40,7 @@ export async function updateUserAction(
     // delete old image
     const path = user?.image?.split("/images/").pop();
     if (path) {
-      await deleteFileAction("images", path);
+      await deleteFile("images", path);
     }
   } else if (typeof form.image === "string") {
     imageUrl = form.image;
@@ -64,7 +64,7 @@ export async function updateUserAction(
       data: null,
     };
   } catch (error) {
-    const response = await deleteFileAction("images", imagePath);
+    const response = await deleteFile("images", imagePath);
     if (!response.success) {
       return {
         success: false,

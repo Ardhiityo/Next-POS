@@ -11,7 +11,7 @@ import {
   UpdateTableForm,
   updateTableFormSchema,
 } from "@/validations/table-validations";
-import { updateTableAction } from "@/actions/table/update-table";
+import { updateTable } from "@/actions/table/update-table";
 import FormTable from "./form-table";
 
 type DialogUpdateTableProps = {
@@ -33,7 +33,7 @@ const DialogUpdateTable = (props: DialogUpdateTableProps) => {
     mutationKey: ["update-table"],
     mutationFn: async (form: UpdateTableForm) => {
       if (!table) throw new Error("Table not found");
-      const response = await updateTableAction({
+      const response = await updateTable({
         table,
         form,
       });

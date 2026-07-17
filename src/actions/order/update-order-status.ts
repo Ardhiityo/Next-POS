@@ -7,7 +7,7 @@ type UpdateOrderStatusParams = {
   orderId: string;
 };
 
-export async function updateOrderStatusAction(
+export async function updateOrderStatus(
   params: UpdateOrderStatusParams,
 ): Promise<ActionResponse> {
   const { orderId } = params;

@@ -14,7 +14,7 @@ type UpdateTableParams = {
   form: UpdateTableForm;
 };
 
-export async function updateTableAction(
+export async function updateTable(
   params: UpdateTableParams,
 ): Promise<ActionResponse> {
   const { table, form } = params;

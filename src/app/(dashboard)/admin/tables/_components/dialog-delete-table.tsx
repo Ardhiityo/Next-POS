@@ -6,7 +6,7 @@ import { SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import DialogDelete from "@/components/common/dialog-delete";
 import { DeleteTableForm } from "@/validations/table-validations";
-import { deleteTableAction } from "@/actions/table/delete-table";
+import { deleteTable } from "@/actions/table/delete-table";
 import { Table } from "@/generated/prisma/client";
 
 type DialogDeleteTableProps = {
@@ -25,7 +25,7 @@ const DialogDeleteTable = (props: DialogDeleteTableProps) => {
     mutationKey: ["delete-table"],
     mutationFn: async (form: DeleteTableForm) => {
       if (!form) throw new Error("Table not found");
-      const response = await deleteTableAction(form);
+      const response = await deleteTable(form);
       if (!response.success) {
         toast.error(response.error.message);
       } else if (response.success) {

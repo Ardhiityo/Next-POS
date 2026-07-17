@@ -1,6 +1,6 @@
 "use client";
 
-import { signOutAction } from "@/actions/auth/sign-out";
+import { signOut } from "@/actions/auth/sign-out";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -40,7 +40,7 @@ export function NavUser() {
   const { mutate, isPending } = useMutation({
     mutationKey: ["sign-out"],
     mutationFn: async () => {
-      const response = await signOutAction();
+      const response = await signOut();
       if (!response.success && response.error.message) {
         toast.error(response.error.message);
       } else if (response.success) {

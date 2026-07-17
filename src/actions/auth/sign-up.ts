@@ -5,7 +5,7 @@ import { SignUpForm, signUpFormSchema } from "@/validations/auth-validations";
 import { ActionResponse } from "@/types/general";
 import { validationError } from "@/lib/utils";
 
-export async function signUpAction(form: SignUpForm): Promise<ActionResponse> {
+export async function signUp(form: SignUpForm): Promise<ActionResponse> {
   const validated = signUpFormSchema.safeParse(form);
 
   if (!validated.success) {

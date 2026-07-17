@@ -7,7 +7,7 @@ type DeleteMenuParams = {
   tableId: string;
 };
 
-export async function deleteTableAction(
+export async function deleteTable(
   params: DeleteMenuParams,
 ): Promise<ActionResponse> {
   const { tableId } = params;

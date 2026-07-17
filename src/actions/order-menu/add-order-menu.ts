@@ -9,7 +9,7 @@ type AddOrderMenuParams = {
   orderId: string;
 };
 
-export async function addOrderMenuAction(
+export async function addOrderMenu(
   params: AddOrderMenuParams,
 ): Promise<ActionResponse> {
   const { carts, orderId } = params;

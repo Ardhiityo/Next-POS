@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Menu } from "@/generated/prisma/client";
 import { CartMenu } from "@/types/cart";
-import { addOrderMenuAction } from "@/actions/order-menu/add-order-menu";
+import { addOrderMenu } from "@/actions/order-menu/add-order-menu";
 import { useRouter } from "next/navigation";
 import { getOrderByOrderId } from "@/actions/order/get-order-by-orderId";
 
@@ -129,7 +129,7 @@ const AddOrderItem = ({ orderId }: { orderId: string }) => {
   const { mutate, isPending } = useMutation({
     mutationKey: ["add-order-menus", orderId],
     mutationFn: async () => {
-      const response = await addOrderMenuAction({
+      const response = await addOrderMenu({
         orderId,
         carts,
       });

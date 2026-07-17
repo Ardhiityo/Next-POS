@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { deleteFileAction } from "../storage/delete-file";
+import { deleteFile } from "../storage/delete-file";
 import { headers } from "next/headers";
 import { ActionResponse } from "@/types/general";
 
@@ -33,7 +33,7 @@ export async function deleteUserAction(
       headers: await headers(),
     });
     if (imagePath) {
-      const response = await deleteFileAction("images", imagePath);
+      const response = await deleteFile("images", imagePath);
       if (!response.success) {
         return {
           success: false,

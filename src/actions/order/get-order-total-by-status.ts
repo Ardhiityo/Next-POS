@@ -21,7 +21,7 @@ export async function getOrderTotalByStatus(
   try {
     const total = await prisma.order.count({
       where: {
-        status: "settled",
+        status,
         createdAt: {
           gte: thisMonth,
         },

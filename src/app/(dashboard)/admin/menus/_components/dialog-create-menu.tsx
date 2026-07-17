@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { SetStateAction, useEffect, useState } from "react";
 import { INITIAL_CREATE_MENU_FORM } from "@/constants/menu-constants";
-import { createMenuAction } from "@/actions/menu/create-menu";
+import { createMenu } from "@/actions/menu/create-menu";
 import FormMenu from "./form-menu";
 import { applyFieldErrors } from "@/lib/utils";
 import {
@@ -31,7 +31,7 @@ const DialogCreateMenu = (props: DialogCreateMenuProps) => {
   const { mutate, isPending } = useMutation({
     mutationKey: ["create-menu"],
     mutationFn: async (form: CreateMenuForm) => {
-      const response = await createMenuAction(form);
+      const response = await createMenu(form);
       if (!response.success && response.error.fieldErrors) {
         applyFieldErrors(response.error.fieldErrors, setError);
       } else if (!response.success && response.error.message) {

@@ -18,7 +18,7 @@ type GetTableResponse = {
   };
 };
 
-export async function getTableAction(
+export async function getTable(
   params: GetTableParams,
 ): Promise<GetTableResponse> {
   const take = params.take;

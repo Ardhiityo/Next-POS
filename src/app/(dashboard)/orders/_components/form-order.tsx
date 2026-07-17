@@ -1,6 +1,6 @@
 "use client";
 
-import { getAllTableAction } from "@/actions/table/get-all-table";
+import { getAllTable } from "@/actions/table/get-all-table";
 import FormInput from "@/components/common/form-input";
 import FormSelect from "@/components/common/form-select";
 import { Button } from "@/components/ui/button";
@@ -53,7 +53,7 @@ const FormOrder = <T extends FieldValues>(props: FormOrderProps<T>) => {
   const { data: tables, error } = useQuery({
     queryKey: ["getAll-tables"],
     queryFn: async () => {
-      return await getAllTableAction();
+      return await getAllTable();
     },
     refetchOnMount: "always",
     enabled: typeOrder === "dine-in",

@@ -17,7 +17,7 @@ import Link from "next/link";
 import DialogCreateOrderDineIn from "./dialog-create-order-dine-in";
 import { useMutation } from "@tanstack/react-query";
 import { UpdateOrder } from "@/types/order";
-import { updateOrderAction } from "@/actions/order/update-order";
+import { updateOrder } from "@/actions/order/update-order";
 import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
 import { updateTablePosition } from "@/actions/table/update-table-position";
@@ -78,11 +78,13 @@ export function TableNode(props: NodeProps) {
   const [open, setOpen] = useState(false);
   const { data } = props;
   const user = useContext(UserContext);
+  const [isPendingProcess, setIsPendingProcess] = useState(false);
+  const [isPendingCancelled, setIsPendingCancelled] = useState(false);
 
-  const { mutate, isPending } = useMutation({
+  const { mutate } = useMutation({
     mutationKey: ["update-order"],
     mutationFn: async ({ order, status }: UpdateOrder) => {
-      const response = await updateOrderAction({ order, status });
+      const response = await updateOrder({ order, status });
       if (!response.success && response.error.message) {
         toast.error(response.error.message);
       } else if (response.success) {
@@ -90,6 +92,10 @@ export function TableNode(props: NodeProps) {
         toast.success("Order updated successfully");
       }
     },
+    onSettled: () => {
+      setIsPendingCancelled(false);
+      setIsPendingProcess(false);
+    }
   });
 
   return (
@@ -124,14 +130,20 @@ export function TableNode(props: NodeProps) {
               <div className="text-muted-foreground">Customer : {data.order.customerName}</div>
               <div className="flex gap-2 mt-2">
                 <Button variant="destructive" className="flex-1"
-                  disabled={isPending}
-                  onClick={() => mutate({ order: data.order!, status: 'cancelled' })}>
-                  {isPending ? <Loader2Icon className="animate-spin" /> : 'Cancel'}
+                  disabled={isPendingCancelled}
+                  onClick={() => {
+                    setIsPendingCancelled(true)
+                    mutate({ order: data.order!, status: 'cancelled' })
+                  }}>
+                  {isPendingCancelled ? <Loader2Icon className="animate-spin" /> : 'Cancel'}
                 </Button>
                 <Button className="flex-1"
-                  disabled={isPending}
-                  onClick={() => mutate({ order: data.order!, status: 'process' })}>
-                  {isPending ? <Loader2Icon className="animate-spin" /> : 'Process'}
+                  disabled={isPendingProcess}
+                  onClick={() => {
+                    setIsPendingProcess(true)
+                    mutate({ order: data.order!, status: 'process' })
+                  }}>
+                  {isPendingProcess ? <Loader2Icon className="animate-spin" /> : 'Process'}
                 </Button>
               </div>
             </>
@@ -192,7 +204,7 @@ const TableMap = (props: TableMapProps) => {
       if (!response.success && response.error.message) {
         toast.error(response.error.message);
       } else if (response.success) {
-        toast.success("Table updated successfully");
+        toast.success("Table position updated successfully");
       }
       return response;
     },

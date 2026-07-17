@@ -1,9 +1,9 @@
 "use server";
 
 import { CreateUserForm } from "@/validations/auth-validations";
-import { uploadFileAction } from "../storage/upload-file";
+import { uploadFile } from "../storage/upload-file";
 import { auth } from "@/lib/auth";
-import { deleteFileAction } from "../storage/delete-file";
+import { deleteFile } from "../storage/delete-file";
 import { ActionResponse } from "@/types/general";
 
 export async function createUserAction(
@@ -18,17 +18,17 @@ export async function createUserAction(
     };
   }
 
-  const responseUploadFileAction = await uploadFileAction(
+  const responseUploadFile = await uploadFile(
     "images",
     "users",
     form.image,
   );
 
-  if (!responseUploadFileAction.success) {
+  if (!responseUploadFile.success) {
     return {
       success: false,
       error: {
-        message: responseUploadFileAction.error.message,
+        message: responseUploadFile.error.message,
       },
     };
   }
@@ -41,7 +41,7 @@ export async function createUserAction(
         role: form.role,
         password: form.password,
         data: {
-          image: responseUploadFileAction.data?.publicUrl,
+          image: responseUploadFile.data?.publicUrl,
         },
       },
     });
@@ -52,15 +52,15 @@ export async function createUserAction(
     };
   } catch (error) {
     try {
-      const responseDeleteFileAction = await deleteFileAction(
+      const responseDeleteFile = await deleteFile(
         "images",
-        responseUploadFileAction.data.filePath,
+        responseUploadFile.data.filePath,
       );
-      if (!responseDeleteFileAction.success) {
+      if (!responseDeleteFile.success) {
         return {
           success: false,
           error: {
-            message: responseDeleteFileAction.error.message,
+            message: responseDeleteFile.error.message,
           },
         };
       }

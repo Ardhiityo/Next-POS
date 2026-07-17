@@ -1,7 +1,7 @@
 "use server";
 
-import { uploadFileAction } from "../storage/upload-file";
-import { deleteFileAction } from "../storage/delete-file";
+import { uploadFile } from "../storage/upload-file";
+import { deleteFile } from "../storage/delete-file";
 import prisma from "@/lib/prisma";
 import { ActionResponse } from "@/types/general";
 import { validationError } from "@/lib/utils";
@@ -10,7 +10,7 @@ import {
   createMenuFormSchema,
 } from "@/validations/menu-validations";
 
-export async function createMenuAction(
+export async function createMenu(
   form: CreateMenuForm,
 ): Promise<ActionResponse> {
   const validated = createMenuFormSchema.safeParse(form);
@@ -31,7 +31,7 @@ export async function createMenuAction(
     };
   }
 
-  const response = await uploadFileAction("images", "menus", form.image);
+  const response = await uploadFile("images", "menus", form.image);
 
   if (!response.success) {
     return {
@@ -59,7 +59,8 @@ export async function createMenuAction(
       data: null,
     };
   } catch (error) {
-    const response = await deleteFileAction("images", imagePath);
+    console.log(error)
+    const response = await deleteFile("images", imagePath);
     if (!response.success) {
       return {
         success: false,

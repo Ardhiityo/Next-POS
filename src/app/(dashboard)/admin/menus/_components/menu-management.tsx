@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
 import { Menu } from "@/generated/prisma/client";
 import { HEADER_TABLE_MENU } from "@/constants/menu-constants";
-import { getMenuAction } from "@/actions/menu/get-menu";
+import { getMenu } from "@/actions/menu/get-menu";
 import ActionLabel from "../../users/_components/action-label";
 import { cn, priceToIDR } from "@/lib/utils";
 import Image from "next/image";
@@ -37,7 +37,7 @@ const MenuManagement = () => {
   } = useQuery({
     queryKey: ["menus", currentPage, currentLimit, currentSearch],
     queryFn: async () => {
-      return await getMenuAction({
+      return await getMenu({
         take: currentLimit,
         page: currentPage,
         search: currentSearch,

@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { ActionResponse } from "@/types/general";
 import { cookies, headers } from "next/headers";
 
-export async function signOutAction(): Promise<ActionResponse> {
+export async function signOut(): Promise<ActionResponse> {
   const { success } = await auth.api.signOut({
     headers: await headers(),
   });

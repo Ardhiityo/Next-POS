@@ -9,7 +9,7 @@ type UpdateOrderParams = {
   status: "process" | "cancelled";
 };
 
-export async function updateOrderAction(
+export async function updateOrder(
   params: UpdateOrderParams,
 ): Promise<ActionResponse> {
   const { order, status } = params;

@@ -8,7 +8,7 @@ import {
   createTableFormSchema,
 } from "@/validations/table-validations";
 
-export async function createTableAction(
+export async function createTable(
   form: CreateTableForm,
 ): Promise<ActionResponse> {
   const validated = createTableFormSchema.safeParse(form);

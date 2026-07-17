@@ -1,6 +1,6 @@
 "use server";
 
-import { deleteFileAction } from "../storage/delete-file";
+import { deleteFile } from "../storage/delete-file";
 import { ActionResponse } from "@/types/general";
 import prisma from "@/lib/prisma";
 
@@ -9,7 +9,7 @@ type DeleteMenuParams = {
   image?: string | null;
 };
 
-export async function deleteMenuAction(
+export async function deleteMenu(
   params: DeleteMenuParams,
 ): Promise<ActionResponse> {
   const { menuId, image } = params;
@@ -31,7 +31,7 @@ export async function deleteMenuAction(
       },
     });
     if (imagePath) {
-      const response = await deleteFileAction("images", imagePath);
+      const response = await deleteFile("images", imagePath);
       if (!response.success) {
         return {
           success: false,

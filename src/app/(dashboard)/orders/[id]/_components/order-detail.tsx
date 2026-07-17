@@ -13,7 +13,7 @@ import Image from "next/image";
 import OrderSummary from "./order-summary";
 import Link from "next/link";
 import { CheckCheckIcon, CircleCheckBigIcon, RocketIcon } from "lucide-react";
-import { updateStatusOrderMenuAction } from "@/actions/order-menu/update-status-order-menu";
+import { updateStatusOrderMenu } from "@/actions/order-menu/update-status-order-menu";
 import { getOrderByOrderId } from "@/actions/order/get-order-by-orderId";
 import { Role } from "@/generated/prisma/enums";
 import { supabase } from "@/lib/supabase/default";
@@ -76,7 +76,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
       orderMenuId: string;
       status: "process" | "ready" | "served";
     }) => {
-      const response = await updateStatusOrderMenuAction(params);
+      const response = await updateStatusOrderMenu(params);
       if (!response.success && response.error.message) {
         toast.error(response.error.message);
       } else if (response.success) {

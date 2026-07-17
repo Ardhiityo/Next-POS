@@ -12,7 +12,7 @@ import {
   createTableFormSchema,
 } from "@/validations/table-validations";
 import { INITIAL_CREATE_TABLE_FORM } from "@/constants/table-constants";
-import { createTableAction } from "@/actions/table/create-table";
+import { createTable } from "@/actions/table/create-table";
 
 type DialogCreateTableProps = {
   refetch: () => void;
@@ -31,7 +31,7 @@ const DialogCreateTable = (props: DialogCreateTableProps) => {
   const { mutate, isPending } = useMutation({
     mutationKey: ["create-table"],
     mutationFn: async (form: CreateTableForm) => {
-      const response = await createTableAction(form);
+      const response = await createTable(form);
       if (!response.success && response.error.fieldErrors) {
         applyFieldErrors(response.error.fieldErrors, setError);
       } else if (!response.success && response.error.message) {

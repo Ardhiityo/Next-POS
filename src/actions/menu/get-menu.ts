@@ -19,7 +19,7 @@ type GetMenuResponse = {
   };
 };
 
-export async function getMenuAction(
+export async function getMenu(
   params: GetMenuParams,
 ): Promise<GetMenuResponse> {
   const take = params.take;

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { SetStateAction, useEffect, useState } from "react";
 import { Menu } from "@/generated/prisma/client";
-import { updateMenuAction } from "@/actions/menu/update-menu";
+import { updateMenu } from "@/actions/menu/update-menu";
 import { applyFieldErrors } from "@/lib/utils";
 import FormMenu from "./form-menu";
 import {
@@ -32,7 +32,7 @@ const DialogUpdateMenu = (props: DialogUpdateMenuProps) => {
     mutationKey: ["update-menu"],
     mutationFn: async (form: UpdateMenuForm) => {
       if (!menu) throw new Error("Menu not found");
-      const response = await updateMenuAction({
+      const response = await updateMenu({
         menu,
         form,
       });
