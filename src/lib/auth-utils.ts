@@ -32,3 +32,17 @@ export const authIsNotRequired = async function () {
 
   return session;
 };
+export const requirePermission = async (permissions: { [key: string]: string[] }) => {
+  const session = await authSession();
+
+  const hasPermission = await auth.api.userHasPermission({
+    body: {
+      userId: session?.user.id,
+      permissions,
+    },
+  });
+
+  if (!hasPermission.success) {
+    redirect('/403');
+  }
+}

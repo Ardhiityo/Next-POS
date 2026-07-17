@@ -31,8 +31,7 @@ const TableManagement = () => {
   const {
     data: tables,
     isPending,
-    refetch,
-    error,
+    refetch
   } = useQuery({
     queryKey: ["tables", currentPage, currentLimit, currentSearch],
     queryFn: async () => {
@@ -44,10 +43,6 @@ const TableManagement = () => {
     },
     refetchOnMount: "always",
   });
-
-  useEffect(() => {
-    if (error) toast.error(error.message);
-  }, [error]);
 
   useEffect(() => {
     const channel = supabase

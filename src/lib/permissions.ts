@@ -6,11 +6,17 @@ import { defaultStatements, adminAc } from "better-auth/plugins/admin/access";
  */
 const statement = {
   ...defaultStatements,
+  table: ['list'],
+  menu: ['list']
 } as const;
 
-const ac = createAccessControl(statement);
+export const ac = createAccessControl(statement);
 
-export const ADMIN = ac.newRole({ ...adminAc.statements });
+export const ADMIN = ac.newRole({
+  table: ['list'],
+  menu: ['list']
+  , ...adminAc.statements
+});
 
 export const CASHIER = ac.newRole({});
 
