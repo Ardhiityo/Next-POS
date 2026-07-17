@@ -3,7 +3,7 @@
 import { DataTable } from "@/components/common/data-table";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
@@ -15,15 +15,15 @@ import Link from "next/link";
 import { CheckCheckIcon, CircleCheckBigIcon, RocketIcon } from "lucide-react";
 import { updateStatusOrderMenuAction } from "@/actions/order-menu/update-status-order-menu";
 import { getOrderByOrderId } from "@/actions/order/get-order-by-orderId";
-import { useAuthStore } from "@/stores/auth-store";
 import { Role } from "@/generated/prisma/enums";
 import { supabase } from "@/lib/supabase/default";
+import { UserContext } from "@/context/user-context";
 
 const OrderDetail = ({ orderId }: { orderId: string }) => {
   const { currentLimit, currentPage, setCurrentPage, handleChangeLimit } =
     useDataTable();
 
-  const user = useAuthStore((state) => state.user);
+  const user = useContext(UserContext);
 
   const {
     data: order,

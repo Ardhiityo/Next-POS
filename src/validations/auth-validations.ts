@@ -1,4 +1,5 @@
-import { Role } from "@/generated/prisma/enums";
+
+import { Role } from "@/constants/user-constant";
 import z from "zod";
 
 export const signInFormSchema = z.object({

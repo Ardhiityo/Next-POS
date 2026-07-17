@@ -11,9 +11,9 @@ import { toast } from "sonner";
 import { SetStateAction, useEffect, useState } from "react";
 import FormUser from "./form-user";
 import { updateUserAction } from "@/actions/user/update-user";
-import { UserWithRole } from "better-auth/plugins";
 import { Role } from "@/generated/prisma/enums";
 import { applyFieldErrors } from "@/lib/utils";
+import type { UserWithRole } from "better-auth/plugins";
 
 type DialogUpdateUserProps = {
   user?: UserWithRole | null;
@@ -70,7 +70,7 @@ const DialogUpdateUser = (props: DialogUpdateUserProps) => {
       setFile(undefined);
       setImagePreview(undefined);
     }
-  }, [user, open]);
+  }, [user, open, reset, setValue]);
 
   useEffect(() => {
     if (file) {

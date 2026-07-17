@@ -60,6 +60,7 @@ const UserManagement = () => {
         user.email,
         user.role,
         <DropwdownAction
+          key={`user-action-${user.id}`}
           menus={[
             {
               label: <ActionLabel type="edit" />,
@@ -87,7 +88,7 @@ const UserManagement = () => {
         />,
       ];
     });
-  }, [users]);
+  }, [users, currentPage, currentLimit]);
 
   const totalPages = useMemo(() => {
     if (!users) return 1;

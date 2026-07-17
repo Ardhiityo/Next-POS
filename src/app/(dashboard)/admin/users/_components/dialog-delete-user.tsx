@@ -3,11 +3,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { SetStateAction, useEffect } from "react";
-import { UserWithRole } from "better-auth/plugins";
 import { deleteUserAction } from "@/actions/user/delete-user";
 import { useForm } from "react-hook-form";
 import DialogDelete from "@/components/common/dialog-delete";
 import { DeleteUserForm } from "@/validations/auth-validations";
+import type { UserWithRole } from "better-auth/plugins";
 
 type DialogDeleteUserProps = {
   user?: UserWithRole | null;
@@ -45,7 +45,7 @@ const DialogDeleteUser = (props: DialogDeleteUserProps) => {
       setValue("userId", user.id);
       setValue("image", user?.image ?? null);
     }
-  }, [user]);
+  }, [user, setValue]);
 
   return (
     <DialogDelete

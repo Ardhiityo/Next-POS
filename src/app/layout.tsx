@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { cookies } from "next/headers";
 import "./globals.css";
 import ReactQueryProvider from "@/providers/react-query-provider";
 import AuthStoreProvider from "@/providers/auth-store-provider";
 import AppToaster from "@/components/common/app-toaster";
+import { authSession } from "@/lib/auth-utils";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -23,10 +23,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookiesStore = await cookies();
-  const userCookie = cookiesStore.get("user")?.value;
-  const user = userCookie ? JSON.parse(userCookie) : null;
-
+  const session = await authSession();
   return (
     <html
       lang="en"
@@ -35,7 +32,7 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ReactQueryProvider>
-          <AuthStoreProvider user={user}>
+          <AuthStoreProvider user={session?.user ?? null}>
             <ThemeProvider
               attribute="class"
               defaultTheme="system"

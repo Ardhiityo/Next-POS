@@ -17,7 +17,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useAuthStore } from "@/stores/auth-store";
 import { useMutation } from "@tanstack/react-query";
 import {
   EllipsisVerticalIcon,
@@ -26,13 +25,14 @@ import {
   UserCircleIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "sonner";
 import DialogUpdateProfile from "@/app/(dashboard)/admin/users/_components/dialog-update-profile";
+import { UserContext } from "@/context/user-context";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const user = useAuthStore((state) => state.user);
+  const user = useContext(UserContext);
   const { push } = useRouter();
   const [open, setOpen] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
@@ -129,7 +129,7 @@ export function NavUser() {
       <DialogUpdateProfile
         open={openProfile}
         setOpen={setOpenProfile}
-        user={user}
+        user={user!}
       />
     </>
   );

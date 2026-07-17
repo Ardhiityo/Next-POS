@@ -10,14 +10,15 @@ import {
   SIDEBAR_MENU_LIST,
   SIDEBAR_MENU_LIST_KEY,
 } from "@/constants/sidebar-constant";
+import { UserContext } from "@/context/user-context";
 import { cn } from "@/lib/utils";
-import { useAuthStore } from "@/stores/auth-store";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useContext } from "react";
 
 export function NavMenu() {
   const path = usePathname();
-  const user = useAuthStore((state) => state.user);
+  const user = useContext(UserContext);
 
   return (
     <SidebarGroup>
@@ -30,7 +31,7 @@ export function NavMenu() {
               className={cn(
                 "py-6 my-1",
                 path === item.url &&
-                  "bg-slate-500 text-white font-semibold  hover:bg-slate-500 hover:text-white hover:font-semibold",
+                "bg-slate-500 text-white font-semibold  hover:bg-slate-500 hover:text-white hover:font-semibold",
               )}
             >
               <Link href={item.url}>

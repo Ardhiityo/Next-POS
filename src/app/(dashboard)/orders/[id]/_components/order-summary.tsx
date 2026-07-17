@@ -3,7 +3,6 @@
 import { generatePaymentToken } from "@/actions/payment/generate-payment-token";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useAuthStore } from "@/stores/auth-store";
 import { useMutation } from "@tanstack/react-query";
 import { useReactToPrint } from "react-to-print";
 import { Button } from "@/components/ui/button";
@@ -15,8 +14,9 @@ import { useRouter } from "next/navigation";
 import { priceToIDR } from "@/lib/utils";
 import { toast } from "sonner";
 import { OrderWithRelations } from "@/types/order";
-import { useRef } from "react";
+import { useContext, useRef } from "react";
 import { OrderMenuWithMenu } from "@/types/order-menu";
+import { UserContext } from "@/context/user-context";
 
 type OrderSummaryProps = {
   order: OrderWithRelations | undefined;
@@ -25,7 +25,7 @@ type OrderSummaryProps = {
 export default function OrderSummary(props: OrderSummaryProps) {
   const { order } = props;
   const { push } = useRouter();
-  const user = useAuthStore((state) => state.user);
+  const user = useContext(UserContext);
 
   const { subtotal, tax, service, total } = usePricing(order);
 
@@ -33,8 +33,8 @@ export default function OrderSummary(props: OrderSummaryProps) {
     order?.orderMenus.length === 0
       ? true
       : order?.orderMenus.some((orderMenu) => {
-          return orderMenu.status != "served";
-        });
+        return orderMenu.status != "served";
+      });
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["generate-payment-token", order?.id],
@@ -45,13 +45,13 @@ export default function OrderSummary(props: OrderSummaryProps) {
         throw new Error(response.error.message);
       } else if (response.success) {
         window.snap.pay(response.data.paymentToken, {
-          onSuccess: function (result: any) {
+          onSuccess: function (result: { order_id: string }) {
             push(`/payment/success?order_id=${result.order_id}`);
           },
-          onPending: function (result: any) {
+          onPending: function () {
             toast.info("Waiting your payment!");
           },
-          onError: function (result: any) {
+          onError: function (result: { order_id: string }) {
             push(`/payment/failed?order_id=${result.order_id}`);
           },
           onClose: function () {

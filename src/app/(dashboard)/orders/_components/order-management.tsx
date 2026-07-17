@@ -198,7 +198,7 @@ const OrderManagement = () => {
   }, [orders]);
 
   useEffect(() => {
-    const channel = supabase
+    const orderChannel = supabase
       .channel(`order}`)
       .on(
         "postgres_changes",
@@ -210,14 +210,31 @@ const OrderManagement = () => {
         () => {
           refetchOrders()
           refetchTables()
+          refetchOrderByStatuses()
+        },
+      )
+      .subscribe();
+
+    const tableChannel = supabase
+      .channel(`table}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "table",
+        },
+        () => {
+          refetchTables()
         },
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(orderChannel);
+      supabase.removeChannel(tableChannel);
     };
-  }, [refetchOrders, refetchTables]);
+  }, [refetchOrders, refetchTables, refetchOrderByStatuses]);
 
   return (
     <section>

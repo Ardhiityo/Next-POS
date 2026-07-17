@@ -5,8 +5,8 @@ import { uploadFileAction } from "../storage/upload-file";
 import { auth } from "@/lib/auth";
 import { deleteFileAction } from "../storage/delete-file";
 import { headers } from "next/headers";
-import { UserWithRole } from "better-auth/plugins";
 import { ActionResponse } from "@/types/general";
+import { UserWithRole } from "better-auth/plugins";
 
 type UpdateUserParams = {
   user: UserWithRole;

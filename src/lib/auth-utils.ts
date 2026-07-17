@@ -7,7 +7,7 @@ export const authSession = async function () {
     query: {
       disableCookieCache: true,
     },
-    headers: await headers(), // headers containing the user's session token
+    headers: await headers(),
   });
 
   return session;

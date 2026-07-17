@@ -11,13 +11,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { User } from "@/types/user";
 import {
   ProfileForm,
   profileFormSchema,
 } from "@/validations/profile-validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { UserWithRole } from "better-auth/plugins";
 import { Loader2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -26,7 +26,7 @@ import { toast } from "sonner";
 type Props = {
   open: boolean;
   setOpen: (value: boolean) => void;
-  user: UserWithRole | null;
+  user: User | null;
 };
 
 const DialogUpdateProfile = (props: Props) => {
@@ -84,7 +84,7 @@ const DialogUpdateProfile = (props: Props) => {
       setValue("image", user.image ?? "");
       setImagePreview(user?.image ?? undefined);
     }
-  }, [user]);
+  }, [user, setValue]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

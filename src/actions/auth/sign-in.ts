@@ -1,7 +1,6 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { cookies } from "next/headers";
 import { SignInForm } from "@/validations/auth-validations";
 import { signInFormSchema } from "@/validations/auth-validations";
 import { ActionResponse } from "@/types/general";
@@ -15,17 +14,8 @@ export async function signInAction(form: SignInForm): Promise<ActionResponse> {
   }
 
   try {
-    const response = await auth.api.signInEmail({
+    await auth.api.signInEmail({
       body: validated.data,
-    });
-
-    const cookiesStore = await cookies();
-
-    cookiesStore.set("user", JSON.stringify(response.user), {
-      httpOnly: true,
-      path: "/",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 365,
     });
 
     return {

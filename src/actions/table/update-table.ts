@@ -40,6 +40,7 @@ export async function updateTableAction(
       data: null,
     };
   } catch (error) {
+    console.log(error)
     return {
       success: false,
       error: {

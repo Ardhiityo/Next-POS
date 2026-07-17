@@ -2,14 +2,14 @@
 
 import { uploadFileAction } from "../storage/upload-file";
 import { deleteFileAction } from "../storage/delete-file";
-import { UserWithRole } from "better-auth/plugins";
 import { ActionResponse } from "@/types/general";
 import { ProfileForm } from "@/validations/profile-validations";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { User } from "@/types/user";
 
 type UpdateUserParams = {
-  user: UserWithRole;
+  user: User;
   form: ProfileForm;
 };
 

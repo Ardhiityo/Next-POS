@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
-import { ReactFlow } from "@xyflow/react";
+"use client"
+
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { applyNodeChanges, NodeChange, ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useTheme } from "next-themes";
 import "@xyflow/react/dist/style.css";
@@ -9,7 +11,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Order, Table } from "@/generated/prisma/client";
+import type { Order, Table } from "@/generated/prisma/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import DialogCreateOrderDineIn from "./dialog-create-order-dine-in";
@@ -18,6 +20,9 @@ import { UpdateOrder } from "@/types/order";
 import { updateOrderAction } from "@/actions/order/update-order";
 import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
+import { updateTablePosition } from "@/actions/table/update-table-position";
+import { UserContext } from "@/context/user-context";
+import { Role } from "@/constants/user-constant";
 
 type NodeProps = {
   data: {
@@ -38,9 +43,41 @@ type NodeProps = {
   };
 };
 
+type TableMapProps = {
+  tables: Table[] | undefined,
+  orders: Order[] | undefined,
+  refetch: () => void
+}
+
+type Node = NodeChange<{
+  id: string;
+  position: {
+    x: number;
+    y: number;
+  };
+  data: {
+    label: string;
+    tableId: string;
+    status: string;
+    capacity: number;
+    order: {
+      id: string;
+      status: string;
+      createdAt: Date;
+      orderId: string;
+      customerName: string;
+      paymentToken: string | null;
+      tableId: string | null;
+    } | undefined;
+    refetch: () => void;
+  };
+  type: string;
+}>[];
+
 export function TableNode(props: NodeProps) {
   const [open, setOpen] = useState(false);
   const { data } = props;
+  const user = useContext(UserContext);
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["update-order"],
@@ -80,8 +117,8 @@ export function TableNode(props: NodeProps) {
         <div className="text-muted-foreground">
           Status : <span className="capitalize">{data.status}</span>
         </div>
-        {data.order ? (
-          data.order.status === 'reserved' ? (
+        {data.order && (
+          data.order.status === 'reserved' && user?.role != Role.KITCHEN ? (
             <>
               <div className="text-muted-foreground">Order Id : {data.order.orderId}</div>
               <div className="text-muted-foreground">Customer : {data.order.customerName}</div>
@@ -107,9 +144,10 @@ export function TableNode(props: NodeProps) {
               </Button>
             </>
           )
-        ) : (
+        )}
+        {!data.order && user?.role != Role.KITCHEN && (
           <>
-            <Button className="w-full" onClick={() => setOpen(true)}>Create Order</Button>
+            <Button className="w-full mt-2" onClick={() => setOpen(true)}>Create Order</Button>
             <DialogCreateOrderDineIn
               refetch={data.refetch}
               open={open}
@@ -123,26 +161,20 @@ export function TableNode(props: NodeProps) {
   );
 }
 
-type TableMapProps = {
-  tables: Table[] | undefined,
-  orders: Order[] | undefined,
-  refetch: () => void
-}
-
 const TableMap = (props: TableMapProps) => {
   const { tables, orders, refetch } = props
+  const { resolvedTheme } = useTheme();
 
   const nodeTypes = {
     tableNode: TableNode,
   };
 
-  const nodes = useMemo(() => {
+  const initialNodes = useMemo(() => {
     return (tables ?? []).map((table) => ({
       id: table.id,
       position: { x: table.positionX, y: table.positionY },
       data: {
         label: table.name,
-        table: table.name,
         tableId: table.id,
         status: table.status,
         capacity: table.capacity,
@@ -153,13 +185,45 @@ const TableMap = (props: TableMapProps) => {
     }));
   }, [tables, orders, refetch]);
 
-  const { resolvedTheme } = useTheme();
+  const { mutate: updateTable } = useMutation({
+    mutationKey: ["update-order"],
+    mutationFn: async ({ tableId, positionX, positionY }: { tableId: string, positionX: number, positionY: number }) => {
+      const response = await updateTablePosition({ tableId, positionX, positionY });
+      if (!response.success && response.error.message) {
+        toast.error(response.error.message);
+      } else if (response.success) {
+        toast.success("Table updated successfully");
+      }
+      return response;
+    },
+  });
+
+  const [nodes, setNodes] = useState(initialNodes);
+
+  useEffect(() => {
+    setNodes(initialNodes);
+  }, [tables, initialNodes])
+
+  const onNodesChange = useCallback(
+    (changes: Node) => {
+      setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot))
+      changes.forEach((change) => {
+        if (change.type === 'position' && change?.dragging === false) {
+          if (change.position?.x && change.position.y) {
+            updateTable({ tableId: change.id, positionX: change?.position.x, positionY: change?.position.y })
+          }
+        }
+      });
+    },
+    [updateTable],
+  );
 
   return (
     <div className="w-[full] h-[80vh] border rounded-lg">
       <ReactFlow
         nodes={nodes}
         nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
         proOptions={{ hideAttribution: true }}
         colorMode={(resolvedTheme ?? "system") as "light" | "dark" | "system"}
       />
