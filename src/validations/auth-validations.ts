@@ -68,3 +68,23 @@ export const deleteUserFormSchema = z.object({
 });
 
 export type DeleteUserForm = z.infer<typeof deleteUserFormSchema>;
+
+export const resetPasswordFormSchema = z.object({
+  email: z.email(),
+});
+
+export type ResetPasswordForm = z.infer<typeof resetPasswordFormSchema>;
+
+export const resetPasswordVerifyFormSchema = z.object({
+  password: z
+    .string()
+    .min(8, "Password field must be at least 8 characters."),
+  passwordConfirmation: z
+    .string()
+    .min(8, "Password confirmation field must be at least 8 characters."),
+}).refine((data) => data.password === data.passwordConfirmation, {
+  message: "Password do not match",
+  path: ["password"], // error akan muncul di field ini
+});
+
+export type ResetPasswordVerifyForm = z.infer<typeof resetPasswordVerifyFormSchema>;

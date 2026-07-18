@@ -5,6 +5,8 @@ import { nextCookies } from "better-auth/next-js";
 import { Role } from "@/generated/prisma/enums";
 import { admin } from "better-auth/plugins";
 import { ac, ADMIN, CASHIER, KITCHEN } from "./permissions";
+import SendResetPassword from "@/components/common/send-reset-password";
+import { environment } from "@/configs/environment";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -21,6 +23,15 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
+    sendResetPassword: async ({ user, url }) => {
+      await SendResetPassword({
+        from: environment.SMTP_USER,
+        to: user.email,
+        subject: 'Reset Password',
+        username: user.name,
+        url
+      })
+    }
   },
   user: {
     additionalFields: {

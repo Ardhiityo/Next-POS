@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     description: "Don't have permission.",
 };
 
-export default function ForbiddenPage() {
+export default function Page() {
     return (
         <main className="flex min-h-screen items-center justify-center">
             <div className="text-center">

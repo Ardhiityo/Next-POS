@@ -50,3 +50,12 @@ export const ROLE_LIST = [
     value: Role.KITCHEN,
   },
 ];
+
+export const INITIAL_RESET_PASSWORD_FORM = {
+  email: ""
+};
+
+export const INITIAL_RESET_PASSWORD_VERIFY_FORM = {
+  password: "",
+  passwordConfirmation: ""
+};

@@ -21,6 +21,7 @@ import { signIn } from "@/actions/auth/sign-in";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { applyFieldErrors } from "@/lib/utils";
+import Link from "next/link";
 
 export default function SignIn() {
   const { push, refresh } = useRouter();
@@ -75,12 +76,19 @@ export default function SignIn() {
       </CardContent>
       <CardFooter>
         <Field orientation="horizontal">
-          <Button type="button" variant="outline" onClick={() => reset()}>
-            Reset
-          </Button>
-          <Button type="submit" form="sign-in" disabled={isPending}>
-            {isPending ? <Loader2Icon className="animate-spin" /> : "Submit"}
-          </Button>
+          <div className="flex justify-between w-full flex-wrap">
+            <div className="flex gap-4">
+              <Button type="button" variant="outline" onClick={() => reset()}>
+                Reset
+              </Button>
+              <Button type="submit" form="sign-in" disabled={isPending}>
+                {isPending ? <Loader2Icon className="animate-spin" /> : "Submit"}
+              </Button>
+            </div>
+            <Button asChild variant={'link'}>
+              <Link href='/auth/reset-password'>Forgot your password?</Link>
+            </Button>
+          </div>
         </Field>
       </CardFooter>
     </Card>
