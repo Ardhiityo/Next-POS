@@ -28,7 +28,7 @@ type FormOrderProps<T extends FieldValues> = {
   isPending: boolean;
   control: Control<T>;
   typeOrder: "dine-in" | "takeaway";
-  selectedTable: string | null
+  selectedTable?: string | null
 };
 
 const FormOrder = <T extends FieldValues>(props: FormOrderProps<T>) => {

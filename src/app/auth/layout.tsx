@@ -1,5 +1,4 @@
-import { DarkModeToggle } from "@/components/ui/darkmode-toggle";
-import { authIsRequired } from "@/lib/auth-utils";
+import { DarkModeToggle } from "@/components/ui/darkmode-toggle";;
 
 type LayoutProps = {
   children: React.ReactNode;

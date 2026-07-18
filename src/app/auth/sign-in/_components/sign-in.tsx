@@ -23,7 +23,7 @@ import { useRouter } from "next/navigation";
 import { applyFieldErrors } from "@/lib/utils";
 
 export default function SignIn() {
-  const { push } = useRouter();
+  const { push, refresh } = useRouter();
 
   const { control, handleSubmit, reset, setError } = useForm<SignInForm>({
     resolver: zodResolver(signInFormSchema),
@@ -40,6 +40,7 @@ export default function SignIn() {
         toast.error(response.error.message);
       } else if (response.success) {
         push("/");
+        refresh();
       }
     },
   });

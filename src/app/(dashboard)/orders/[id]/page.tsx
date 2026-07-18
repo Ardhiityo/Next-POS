@@ -16,7 +16,7 @@ type PageProps = {
 
 declare global {
   interface Window {
-    snap: any;
+    snap: unknown;
   }
 }
 

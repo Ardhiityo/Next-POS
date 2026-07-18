@@ -1,6 +1,6 @@
 "use client";
 
-import { getMenuAction } from "@/actions/menu/get-menu";
+import { getMenu } from "@/actions/menu/get-menu";
 import PaginationDataTable from "@/components/common/pagination-data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ import { ShoppingCartIcon } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import LoadingCardMenu from "./loading-card-menu";
+import Image from "next/image";
 
 type CardMenuProps = {
   handleAddToCart: (menu: Menu) => void;
@@ -50,7 +51,7 @@ const CardMenu = ({ handleAddToCart }: CardMenuProps) => {
       currentFilter,
     ],
     queryFn: async () => {
-      return await getMenuAction({
+      return await getMenu({
         take: currentLimit,
         page: currentPage,
         search: currentSearch,
@@ -103,9 +104,11 @@ const CardMenu = ({ handleAddToCart }: CardMenuProps) => {
             className="relative lg:max-w-sm pt-0"
             key={`card-menu-${index}-${menu.name}`}
           >
-            <img
+            <Image
               src={menu.image}
               alt={menu?.name}
+              width={300}
+              height={300}
               className="relative z-20 aspect-square w-full object-cover"
             />
             <CardHeader>
