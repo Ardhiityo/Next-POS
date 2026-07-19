@@ -25,12 +25,18 @@ export function DashboardBreadcrumb() {
           <Fragment key={index}>
             <BreadcrumbItem>
               {index + 1 === pathFormatted.length ? (
-                <BreadcrumbPage>{path}</BreadcrumbPage>
+                <BreadcrumbPage>
+                  <p className="text-wrap">
+                    {path}
+                  </p>
+                </BreadcrumbPage>
               ) : (
                 <BreadcrumbLink
                   href={`/${pathFormatted.slice(0, index + 1).join("/")}`}
                 >
-                  {path}
+                  <p className="text-wrap">
+                    {path}
+                  </p>
                 </BreadcrumbLink>
               )}
             </BreadcrumbItem>
