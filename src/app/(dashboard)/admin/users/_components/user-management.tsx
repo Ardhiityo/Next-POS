@@ -97,7 +97,7 @@ const UserManagement = () => {
 
   return (
     <section className="flex flex-col gap-8">
-      <div className="flex gap-3 w-1/4 self-end">
+      <div className="flex gap-3 w-80 self-end">
         <Input
           placeholder="Search name"
           onChange={(e) => handleSearch(e.target.value)}

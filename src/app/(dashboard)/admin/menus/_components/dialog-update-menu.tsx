@@ -42,13 +42,15 @@ const DialogUpdateMenu = (props: DialogUpdateMenuProps) => {
         toast.error(response.error.message);
       } else if (response.success) {
         toast.success("Menu updated successfully");
-        setOpen(false);
         refetch();
       }
       return response;
     },
     onError: (error) => {
       toast.error(error.message);
+    },
+    onSettled: () => {
+      setOpen(false);
     },
   });
 

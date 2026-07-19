@@ -78,7 +78,7 @@ const MenuManagement = () => {
     return menus.data.map((menu: Menu, index: number) => {
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        <div className="flex gap-2 items-center" key={`menu-${menu.id}`}>
+        <div className="flex flex-wrap justify-center gap-2 items-center" key={`menu-${menu.id}`}>
           <Image
             src={menu.image}
             alt={menu.name}
@@ -89,7 +89,7 @@ const MenuManagement = () => {
           />
           {menu.name}
         </div>,
-        menu.category,
+        <span className="capitalize" key={`menu-category-${menu.id}`}>{menu.category}</span>,
         <div key={`menu-price-${menu.id}`}>
           <p>Base {priceToIDR(menu.price)}</p>
           <p>Discount {menu.discount}%</p>
@@ -100,7 +100,7 @@ const MenuManagement = () => {
         </div>,
         <div key={`menu-availability-${menu.id}`}
           className={cn(
-            "text-center text-white py-1 w-fit px-2 rounded-lg",
+            "text-center text-white py-1 w-fit px-2 rounded-lg mx-auto",
             menu.isAvailable ? "bg-green-600" : "bg-red-600",
           )}
         >
@@ -143,7 +143,7 @@ const MenuManagement = () => {
 
   return (
     <section className="flex flex-col gap-8">
-      <div className="flex gap-3 w-1/4 self-end">
+      <div className="flex gap-3 w-80 self-end">
         <Input
           placeholder="Search name/category"
           onChange={(e) => handleSearch(e.target.value)}

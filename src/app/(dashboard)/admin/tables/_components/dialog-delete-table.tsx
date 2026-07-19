@@ -30,13 +30,15 @@ const DialogDeleteTable = (props: DialogDeleteTableProps) => {
         toast.error(response.error.message);
       } else if (response.success) {
         toast.success("Table deleted successfully");
-        setOpen(false);
         refetch();
       }
       return response;
     },
     onError: (error) => {
       toast.error(error.message);
+    },
+    onSettled: () => {
+      setOpen(false);
     },
   });
 

@@ -112,7 +112,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
         priceToIDR(orderMenu.quantity * productPrice),
         <div key={`order-menu-status-${orderMenu.id}`}
           className={cn(
-            "text-center text-white capitalize py-1 w-fit px-2 rounded-lg",
+            "text-center text-white capitalize mx-auto py-1 w-fit px-2 rounded-lg",
             {
               "bg-red-600": orderMenu.status === "pending",
               "bg-yellow-600": orderMenu.status === "process",

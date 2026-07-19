@@ -129,7 +129,7 @@ const OrderManagement = () => {
         order.table?.name ?? "Takeaway",
         <div key={`order-status-${order.id}`}
           className={cn(
-            "text-center text-white capitalize py-1 w-fit px-2 rounded-lg",
+            "text-white capitalize py-1 w-fit px-2 mx-auto rounded-lg",
             {
               "bg-green-600": order.status === "settled",
               "bg-yellow-600": order.status === "process",
@@ -245,7 +245,7 @@ const OrderManagement = () => {
         </TabsList>
         <TabsContent value="order-list">
           <div className="flex flex-col gap-8">
-            <div className="flex gap-3 w-1/4 self-end">
+            <div className="flex gap-3 w-80 self-end">
               <Input
                 placeholder="Search order id/customer name"
                 onChange={(e) => handleSearch(e.target.value)}

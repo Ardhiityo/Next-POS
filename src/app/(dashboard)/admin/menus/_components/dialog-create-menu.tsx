@@ -38,13 +38,15 @@ const DialogCreateMenu = (props: DialogCreateMenuProps) => {
         toast.error(response.error.message);
       } else if (response.success) {
         toast.success("Menu created successfully");
-        setOpen(false);
         refetch();
       }
       return response;
     },
     onError: (error) => {
       toast.error(error.message);
+    },
+    onSettled: () => {
+      setOpen(false);
     },
   });
 

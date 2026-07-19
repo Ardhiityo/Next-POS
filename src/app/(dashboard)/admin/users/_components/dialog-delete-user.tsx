@@ -30,13 +30,15 @@ const DialogDeleteUser = (props: DialogDeleteUserProps) => {
         toast.error(response.error.message);
       } else if (response.success) {
         toast.success("User deleted successfully");
-        setOpen(false);
         refetch();
       }
       return response;
     },
     onError: (error) => {
       toast.error(error.message);
+    },
+    onSettled: () => {
+      setOpen(false);
     },
   });
 

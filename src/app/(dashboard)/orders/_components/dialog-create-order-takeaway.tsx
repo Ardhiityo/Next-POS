@@ -38,13 +38,15 @@ const DialogCreateOrderTakeaway = (props: DialogCreateOrderTakeawayProps) => {
         toast.error(response.error.message);
       } else if (response.success) {
         toast.success("Order created successfully");
-        setOpen(false);
         refetch();
       }
       return response;
     },
     onError: (error) => {
       toast.error(error.message);
+    },
+    onSettled: () => {
+      setOpen(false);
     },
   });
 

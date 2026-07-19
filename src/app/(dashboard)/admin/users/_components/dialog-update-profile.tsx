@@ -46,12 +46,14 @@ const DialogUpdateProfile = (props: Props) => {
       }
       if (response.success) {
         toast.success("Update profile successfully");
-        setOpen(false);
       }
       return response;
     },
     onError: (error) => {
       toast.error(error.message);
+    },
+    onSettled: () => {
+      setOpen(false);
     },
   });
 

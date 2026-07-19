@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import DropwdownAction from "@/components/common/dropdown-action";
 import { Table } from "@/generated/prisma/client";
@@ -80,7 +79,7 @@ const TableManagement = () => {
         table.capacity,
         <div key={`table-status-${table.id}`}
           className={cn(
-            "text-white px-2 py-1 rounded-lg w-fit text-center capitalize",
+            "text-white px-2 py-1 rounded-lg w-fit text-center capitalize mx-auto",
             {
               "bg-green-600": table.status === "available",
               "bg-red-600": table.status === "unavailable",
@@ -127,7 +126,7 @@ const TableManagement = () => {
 
   return (
     <section className="flex flex-col gap-8">
-      <div className="flex gap-3 w-1/4 self-end">
+      <div className="flex gap-3 w-80 self-end">
         <Input
           placeholder="Search name/status"
           onChange={(e) => handleSearch(e.target.value)}

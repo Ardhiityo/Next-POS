@@ -43,13 +43,15 @@ const DialogUpdateTable = (props: DialogUpdateTableProps) => {
         toast.error(response.error.message);
       } else if (response.success) {
         toast.success("Table updated successfully");
-        setOpen(false);
         refetch();
       }
       return response;
     },
     onError: (error) => {
       toast.error(error.message);
+    },
+    onSettled: () => {
+      setOpen(false);
     },
   });
 

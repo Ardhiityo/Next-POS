@@ -10,16 +10,18 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="flex flex-1 flex-col gap-7 p-5">
-        <header className="flex flex-col gap-7">
-          <section className="flex justify-between">
-            <SidebarTrigger />
+      <section className="flex flex-1 flex-col gap-7 p-5">
+        <header className="flex flex-col gap-5">
+          <section className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <SidebarTrigger />
+              <DashboardBreadcrumb />
+            </div>
             <DarkModeToggle />
           </section>
-          <DashboardBreadcrumb />
         </header>
         <section>{children}</section>
-      </main>
+      </section>
     </SidebarProvider>
   );
 };
