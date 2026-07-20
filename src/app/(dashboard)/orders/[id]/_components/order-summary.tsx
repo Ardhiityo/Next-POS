@@ -88,7 +88,7 @@ export default function OrderSummary(props: OrderSummaryProps) {
         <Card>
           <CardContent className="flex flex-col gap-4">
             <section>
-              <h1 className="text-2xl font-extrabold">Customer Information</h1>
+              <h1 className="text-lg font-extrabold">Customer Information</h1>
               <h3 className="text-gray-400">
                 Customer information order details
               </h3>
@@ -117,7 +117,7 @@ export default function OrderSummary(props: OrderSummaryProps) {
             </form>
             <Separator />
             <section className="flex flex-col gap-3">
-              <h1 className="text-2xl font-extrabold">Order Summary</h1>
+              <h1 className="text-lg font-extrabold">Order Summary</h1>
               <div className="flex justify-between">
                 <h3>Subtotal</h3>
                 <p>{priceToIDR(subtotal)}</p>
@@ -133,8 +133,8 @@ export default function OrderSummary(props: OrderSummaryProps) {
             </section>
             <Separator />
             <section className="flex justify-between">
-              <h1 className="text-2xl font-extrabold">Total</h1>
-              <h1 className="text-2xl font-extrabold">{priceToIDR(total)}</h1>
+              <h1 className="text-lg font-extrabold">Total</h1>
+              <h1 className="text-lg font-extrabold">{priceToIDR(total)}</h1>
             </section>
           </CardContent>
           <CardFooter>

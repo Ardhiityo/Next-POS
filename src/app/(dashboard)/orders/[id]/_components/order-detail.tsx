@@ -94,7 +94,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
       const productPrice = orderMenu.menu.price - discount;
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        <div className="flex gap-2 items-center" key={`order-menu-image-${orderMenu.id}`}>
+        <div className="flex flex-wrap justify-center gap-2 items-center" key={`order-menu-image-${orderMenu.id}`}>
           <Image
             src={orderMenu.menu.image}
             alt={orderMenu.menu.name}
@@ -103,10 +103,10 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
             className="size-14 rounded-lg"
             loading="eager"
           />
-          <div>
-            <p>{orderMenu.menu.name}</p>
-            <p className="text-gray-300">x{orderMenu.quantity}</p>
-            <p className="text-gray-400">{orderMenu?.notes ?? "No Notes"}</p>
+          <div className="md:text-start text-center text-wrap">
+            <p>{orderMenu.menu.name} x{orderMenu.quantity} <br />
+              <span className="text-gray-400">{orderMenu?.notes ?? "No Notes"}</span>
+            </p>
           </div>
         </div>,
         priceToIDR(orderMenu.quantity * productPrice),
@@ -198,10 +198,10 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
   }, [order, currentLimit, currentPage, mutate, user?.role]);
 
   return (
-    <>
-      <h1 className="text-3xl font-extrabold">Detail Order</h1>
-      <section className="grid lg:grid-cols-3 gap-5 order-2">
-        <div className="flex flex-col gap-5 xl:col-span-2 col-span-3">
+    <section>
+      <h1 className="text-2xl font-extrabold">Detail Order</h1>
+      <div className="grid lg:grid-cols-3 gap-5 order-2 w-full">
+        <div className="flex flex-col gap-5 xl:col-span-2 min-w-0 col-span-3">
           <div className="flex justify-end">
             {user?.role !== Role.KITCHEN && (
               <Button variant="default" asChild>
@@ -226,8 +226,8 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
           />
         </div>
         <OrderSummary order={order} />
-      </section>
-    </>
+      </div>
+    </section>
   );
 };
 
