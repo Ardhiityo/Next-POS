@@ -77,7 +77,7 @@ export function DataTable(props: TableListProps) {
                     {row.map((column, columnIndex) => (
                       <TableCell
                         key={`column-${columnIndex}`}
-                        className="py-3 text-center"
+                        className="py-3 px-7 text-center"
                       >
                         {column}
                       </TableCell>

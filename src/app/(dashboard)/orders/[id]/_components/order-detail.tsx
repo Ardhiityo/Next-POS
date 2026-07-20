@@ -94,7 +94,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
       const productPrice = orderMenu.menu.price - discount;
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        <div className="flex flex-wrap justify-center gap-2 items-center" key={`order-menu-image-${orderMenu.id}`}>
+        <div className="flex justify-center gap-3 items-center" key={`order-menu-image-${orderMenu.id}`}>
           <Image
             src={orderMenu.menu.image}
             alt={orderMenu.menu.name}
@@ -103,7 +103,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
             className="size-14 rounded-lg"
             loading="eager"
           />
-          <div className="md:text-start text-center text-wrap">
+          <div className="text-start text-nowrap">
             <p>{orderMenu.menu.name} x{orderMenu.quantity} <br />
               <span className="text-gray-400">{orderMenu?.notes ?? "No Notes"}</span>
             </p>

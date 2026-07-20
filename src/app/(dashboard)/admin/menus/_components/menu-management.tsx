@@ -78,7 +78,7 @@ const MenuManagement = () => {
     return menus.data.map((menu: Menu, index: number) => {
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        <div className="flex flex-wrap justify-center gap-2 items-center" key={`menu-${menu.id}`}>
+        <div className="flex justify-center gap-3 items-center" key={`menu-${menu.id}`}>
           <Image
             src={menu.image}
             alt={menu.name}
