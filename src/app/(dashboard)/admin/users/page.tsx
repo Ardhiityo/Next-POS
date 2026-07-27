@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import UserManagement from "./_components/user-management";
-import { requirePermission } from "@/lib/auth-utils";
+import { authIsRequired, requirePermission } from "@/lib/auth-utils";
 
 export const metadata: Metadata = {
   title: "POS | Users Management",
@@ -8,9 +8,10 @@ export const metadata: Metadata = {
 };
 
 const Page = async () => {
-  await requirePermission({
+  const session = await authIsRequired();
+  await requirePermission(session, {
     user: ['list']
-  })
+  });
   return <UserManagement />;
 };
 

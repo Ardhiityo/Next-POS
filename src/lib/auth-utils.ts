@@ -4,9 +4,6 @@ import { redirect } from "next/navigation";
 
 export const authSession = async function () {
   const session = await auth.api.getSession({
-    query: {
-      disableCookieCache: true,
-    },
     headers: await headers(),
   });
 
@@ -32,9 +29,11 @@ export const authIsNotRequired = async function () {
 
   return session;
 };
-export const requirePermission = async (permissions: { [key: string]: string[] }) => {
-  const session = await authSession();
 
+export const requirePermission = async (
+  session: Awaited<ReturnType<typeof authSession>>,
+  permissions: { [key: string]: string[] }
+) => {
   const hasPermission = await auth.api.userHasPermission({
     body: {
       userId: session?.user.id,
@@ -43,6 +42,6 @@ export const requirePermission = async (permissions: { [key: string]: string[] }
   });
 
   if (!hasPermission.success) {
-    redirect('/403');
+    redirect("/403");
   }
-}
+};

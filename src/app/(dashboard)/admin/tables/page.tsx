@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import TableManagement from "./_components/table-management";
-import { requirePermission } from "@/lib/auth-utils";
+import { authIsRequired, requirePermission } from "@/lib/auth-utils";
 
 export const metadata: Metadata = {
   title: "POS | Tables Management",
@@ -8,9 +8,10 @@ export const metadata: Metadata = {
 };
 
 const Page = async () => {
-  await requirePermission({
+  const session = await authIsRequired();
+  await requirePermission(session, {
     table: ['list']
-  })
+  });
   return <TableManagement />;
 };
 
