@@ -22,9 +22,12 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { applyFieldErrors } from "@/lib/utils";
 import Link from "next/link";
+import { useContext } from "react";
+import { UserContext } from "@/context/user-context";
 
 export default function SignIn() {
-  const { push, refresh } = useRouter();
+  const { push } = useRouter();
+  const context = useContext(UserContext);
 
   const { control, handleSubmit, reset, setError } = useForm<SignInForm>({
     resolver: zodResolver(signInFormSchema),
@@ -40,8 +43,8 @@ export default function SignIn() {
       } else if (!response.success && response.error.message) {
         toast.error(response.error.message);
       } else if (response.success) {
+        context?.setUser(response.data);
         push("/");
-        refresh();
       }
     },
   });

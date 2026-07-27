@@ -23,7 +23,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
   const { currentLimit, currentPage, setCurrentPage, handleChangeLimit } =
     useDataTable();
 
-  const user = useContext(UserContext);
+  const user = useContext(UserContext)?.user;
 
   const {
     data: order,
@@ -225,7 +225,7 @@ const OrderDetail = ({ orderId }: { orderId: string }) => {
             hideRowsPerPage={true}
           />
         </div>
-        <OrderSummary order={order} />
+        <OrderSummary order={order ?? undefined} />
       </div>
     </section>
   );

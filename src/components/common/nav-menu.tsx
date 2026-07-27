@@ -18,7 +18,7 @@ import { useContext } from "react";
 
 export function NavMenu() {
   const path = usePathname();
-  const user = useContext(UserContext);
+  const user = useContext(UserContext)?.user;
 
   return (
     <SidebarGroup>

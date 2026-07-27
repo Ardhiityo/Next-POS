@@ -32,7 +32,7 @@ import { UserContext } from "@/context/user-context";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const user = useContext(UserContext);
+  const user = useContext(UserContext)?.user;
   const { push } = useRouter();
   const [open, setOpen] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);

@@ -77,7 +77,7 @@ type Node = NodeChange<{
 export function TableNode(props: NodeProps) {
   const [open, setOpen] = useState(false);
   const { data } = props;
-  const user = useContext(UserContext);
+  const user = useContext(UserContext)?.user;
   const [isPendingProcess, setIsPendingProcess] = useState(false);
   const [isPendingCancelled, setIsPendingCancelled] = useState(false);
 

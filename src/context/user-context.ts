@@ -1,4 +1,9 @@
+import { createContext, Dispatch, SetStateAction } from "react";
 import { User } from "@/types/user";
-import { createContext } from "react";
 
-export const UserContext = createContext<User | null>(null);
+export type UserContextType = {
+    user: User | null;
+    setUser: Dispatch<SetStateAction<User | null>>;
+};
+
+export const UserContext = createContext<UserContextType | null>(null);

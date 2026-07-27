@@ -48,7 +48,7 @@ export async function generatePaymentToken(
     if (order.paymentToken) {
       paymentToken = order.paymentToken;
     } else {
-      let snap = new midtransClient.Snap({
+      const snap = new midtransClient.Snap({
         isProduction: environment.MIDTRANS_IS_PRODUCTION,
         serverKey: environment.MIDTRANS_SERVER_KEY,
         clientKey: environment.MIDTRANS_CLIENT_KEY,
@@ -62,7 +62,7 @@ export async function generatePaymentToken(
       const service = subtotal * 0.05; // 5%
       const grossAmount = Math.round(subtotal + tax + service);
 
-      let parameter = {
+      const parameter = {
         transaction_details: {
           order_id: order.orderId,
           gross_amount: grossAmount,
@@ -77,7 +77,7 @@ export async function generatePaymentToken(
 
       paymentToken = await snap
         .createTransaction(parameter)
-        .then((transaction) => transaction.token);
+        .then((transaction: { token: string }) => transaction.token);
 
       await prisma.order.update({
         where: {

@@ -2,7 +2,7 @@
 
 import { UserContext } from "@/context/user-context";
 import { User } from "@/types/user";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 type AuthStoreProviderProps = {
   children: ReactNode;
@@ -10,7 +10,12 @@ type AuthStoreProviderProps = {
 };
 
 const AuthStoreProvider = ({ user, children }: AuthStoreProviderProps) => {
-  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
+  const [currentUser, setCurrentUser] = useState(user);
+  return <UserContext.Provider value={{
+    user: currentUser, setUser: setCurrentUser
+  }}>
+    {children}
+  </UserContext.Provider>;
 };
 
 export default AuthStoreProvider;

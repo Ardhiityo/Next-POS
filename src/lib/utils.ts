@@ -16,7 +16,9 @@ export function priceToIDR(price: number) {
   }).format(price);
 }
 
-export function validationError(error: ZodError): ActionResponse {
+export function validationError<T>(
+  error: ZodError
+): ActionResponse<T> {
   return {
     success: false,
     error: {

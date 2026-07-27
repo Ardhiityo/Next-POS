@@ -25,7 +25,7 @@ type OrderSummaryProps = {
 export default function OrderSummary(props: OrderSummaryProps) {
   const { order } = props;
   const { push } = useRouter();
-  const user = useContext(UserContext);
+  const user = useContext(UserContext)?.user;
 
   const { subtotal, tax, service, total } = usePricing(order);
 
