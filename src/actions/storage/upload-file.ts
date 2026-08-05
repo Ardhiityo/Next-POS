@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { supabase } from "@/lib/supabase/default";
 import { ActionResponse } from "@/types/general";
 
 export async function uploadFile(
@@ -8,7 +8,6 @@ export async function uploadFile(
   path: string,
   file: File,
 ): Promise<ActionResponse<{ publicUrl: string; filePath: string }>> {
-  const supabase = await createClient();
 
   const fileExt = file.name.split(".").pop();
 

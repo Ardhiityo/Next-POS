@@ -1,13 +1,12 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { supabase } from "@/lib/supabase/default";
 import { ActionResponse } from "@/types/general";
 
 export async function deleteFile(
   bucket: string,
   filePath: string,
 ): Promise<ActionResponse> {
-  const supabase = await createClient();
 
   const { error } = await supabase.storage.from(bucket).remove([filePath]);
 
